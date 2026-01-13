@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database with PostGIS
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: civic-issues-db
+    environment:
+      POSTGRES_DB: civic_issues
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres123}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/seed_data.sql:/docker-entrypoint-initdb.d/02-seed_data.sql
+    networks:
+      - civic-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API Server
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: civic-issues-backend
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: civic_issues
+      DB_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD:-postgres123}
+      JWT_SECRET: ${JWT_SECRET:-your_secret_key_change_in_production}
+      AI_SERVICE_URL: http://ai-service:5000
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - civic-network
+    restart: unless-stopped
+
+  # AI Service
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: civic-issues-ai
+    environment:
+      PORT: 5000
+      DEBUG: "False"
+    ports:
+      - "5000:5000"
+    networks:
+      - civic-network
+    restart: unless-stopped
+
+  # Frontend Web Dashboard
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: civic-issues-frontend
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+    networks:
+      - civic-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  civic-network:
+    driver: bridge
