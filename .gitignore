@@ -3,38 +3,106 @@ node_modules/
 */node_modules/
 __pycache__/
 *.pyc
+*.pyo
 venv/
 env/
+.venv/
+*.egg-info/
+.Python
 
 # Environment variables
 .env
+.env.*
+!.env.example
 .env.local
-.env.*.local
+.env.production
+.env.development
 
 # Build outputs
 dist/
 build/
 *.log
+logs/
+*.log.*
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*.sublime-*
+.vs/
 
 # OS
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 # Database
 *.db
 *.sqlite
+*.sqlite3
+backups/
 
-# Uploads
+# Uploads & Temp
 uploads/
 temp/
+tmp/
+
+# Testing
+coverage/
+.nyc_output/
+.pytest_cache/
+*.cover
+.coverage
+.coverage.*
+
+# ML Models
+ai-service/models/*.h5
+ai-service/models/*.tflite
+ai-service/dataset/
+!ai-service/models/.gitkeep
 
 # React Native
 mobile-app/.expo/
 mobile-app/ios/Pods/
 mobile-app/android/.gradle/
+mobile-app/android/app/build/
+mobile-app/ios/build/
+*.jks
+*.keystore
+
+# Local documentation (keep main docs)
+TESTING_GUIDE.md
+.github/copilot-instructions.md
+WORK_ORGANIZATION.md
+ADVANCED_FEATURES.md
+IMPLEMENTATION_COMPLETE.md
+IMPROVEMENTS.md
+README_main.md
+FREE_TIER_DEPLOYMENT.md
+
+# Extra features (keep local)
+backend/src/websocket.js
+backend/src/routes/feedback.js
+backend/src/routes/reports.js
+backend/src/routes/geospatial.js
+backend/src/routes/notifications.js
+backend/src/utils/cacheService.js
+backend/src/utils/pushNotificationService.js
+ai-service/train_model.py
+ai-service/predictive_analytics.py
+ai-service/test_app.py
+database/advanced_features.sql
+database/enhancements.sql
+frontend/src/components/ThemeToggle.jsx
+frontend/src/context/ThemeContext.jsx
+frontend/src/styles/
+mobile-app/src/i18n/
+mobile-app/src/utils/offlineManager.js
+plans/REQUIREMENTS.md
+plans/TEAM_ASSIGNMENTS.md
+plans/IMPLEMENTATION.md
+plans/USER_WORKFLOWS.md
+plans/DEPLOYMENT.md

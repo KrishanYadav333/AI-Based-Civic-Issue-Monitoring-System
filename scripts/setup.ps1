@@ -78,7 +78,7 @@ function Setup-Environment {
 }
 
 # Create necessary directories
-function Create-Directories {
+function New-Directories {
     Write-Host "Creating necessary directories..." -ForegroundColor Yellow
     
     New-Item -ItemType Directory -Force -Path "backend\uploads" | Out-Null
@@ -129,7 +129,7 @@ function Install-Dependencies {
 }
 
 # Setup database
-function Setup-Database {
+function Initialize-Database {
     Write-Host "Setting up database..." -ForegroundColor Yellow
     
     $DB_USER = Read-Host "Enter PostgreSQL username [postgres]"

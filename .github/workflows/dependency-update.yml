@@ -1,0 +1,65 @@
+name: Dependency Update
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Weekly on Monday
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Update backend dependencies
+      working-directory: ./backend
+      run: |
+        npm update
+        npm audit fix
+    
+    - name: Update frontend dependencies
+      working-directory: ./frontend
+      run: |
+        npm update
+        npm audit fix
+    
+    - name: Update mobile app dependencies
+      working-directory: ./mobile-app
+      run: |
+        npm update
+        npm audit fix
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Update Python dependencies
+      working-directory: ./ai-service
+      run: |
+        pip install --upgrade pip
+        pip list --outdated --format=json | python -c "import json, sys; pkgs = json.load(sys.stdin); print('\n'.join([p['name'] for p in pkgs]))" | xargs -n1 pip install -U
+        pip freeze > requirements.txt
+    
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        commit-message: 'chore: update dependencies'
+        title: 'chore: Weekly dependency updates'
+        body: |
+          Automated dependency updates
+          
+          - Backend dependencies updated
+          - Frontend dependencies updated
+          - Mobile app dependencies updated
+          - Python dependencies updated
+          
+          Please review changes before merging.
+        branch: dependency-updates
+        delete-branch: true
