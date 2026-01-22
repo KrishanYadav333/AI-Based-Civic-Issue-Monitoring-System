@@ -47,8 +47,8 @@
 ### Database (Open-Source & Free)
 
 - **Primary Database**: ✅ **PostgreSQL 14+** (free, open-source)
-  - **Spatial Extension**: ✅ **PostGIS** (free, open-source for geo-fencing)
-  - **Connection Pooling**: pg-pool
+ - **Spatial Extension**: ✅ **PostGIS** (free, open-source for geo-fencing)
+ - **Connection Pooling**: pg-pool
 - **Caching**: ✅ **Redis** (Render Free Tier)
 - **Reverse Geocoding**: ✅ **Nominatim** (OpenStreetMap, free API)
 
@@ -81,94 +81,94 @@
 AI-Based-Civic-Issue-Monitoring-System/
 │
 ├── backend/
-│   ├── src/
-│   │   ├── controllers/          # Request handlers
-│   │   ├── services/             # Business logic
-│   │   ├── models/               # Database models
-│   │   ├── routes/               # API routes
-│   │   ├── middleware/           # Auth, validation, logging
-│   │   ├── utils/                # Helper functions
-│   │   ├── config/               # Configuration files
-│   │   └── app.js                # Express app setup
-│   ├── tests/                    # Unit & integration tests
-│   ├── migrations/               # Database migrations
-│   ├── seeds/                    # Seed data
-│   ├── package.json
-│   ├── .env.example
-│   └── Dockerfile
+│ ├── src/
+│ │ ├── controllers/   # Request handlers
+│ │ ├── services/    # Business logic
+│ │ ├── models/    # Database models
+│ │ ├── routes/    # API routes
+│ │ ├── middleware/   # Auth, validation, logging
+│ │ ├── utils/    # Helper functions
+│ │ ├── config/    # Configuration files
+│ │ └── app.js    # Express app setup
+│ ├── tests/     # Unit & integration tests
+│ ├── migrations/    # Database migrations
+│ ├── seeds/     # Seed data
+│ ├── package.json
+│ ├── .env.example
+│ └── Dockerfile
 │
 ├── mobile/
-│   ├── src/
-│   │   ├── screens/              # Screen components
-│   │   ├── components/           # Reusable components
-│   │   ├── services/             # API calls, storage
-│   │   ├── redux/                # State management
-│   │   ├── utils/                # Helper functions
-│   │   ├── config/               # Constants, config
-│   │   └── App.js
-│   ├── assets/                   # Images, fonts
-│   ├── tests/                    # Unit tests
-│   ├── package.json
-│   ├── app.json
-│   └── .env.example
+│ ├── src/
+│ │ ├── screens/    # Screen components
+│ │ ├── components/   # Reusable components
+│ │ ├── services/    # API calls, storage
+│ │ ├── redux/    # State management
+│ │ ├── utils/    # Helper functions
+│ │ ├── config/    # Constants, config
+│ │ └── App.js
+│ ├── assets/     # Images, fonts
+│ ├── tests/     # Unit tests
+│ ├── package.json
+│ ├── app.json
+│ └── .env.example
 │
 ├── web/
-│   ├── src/
-│   │   ├── pages/                # Page components
-│   │   ├── components/           # Reusable components
-│   │   ├── services/             # API calls
-│   │   ├── redux/                # State management
-│   │   ├── utils/                # Helper functions
-│   │   └── App.js
-│   ├── public/                   # Static assets
-│   ├── tests/                    # Unit tests
-│   ├── package.json
-│   └── .env.example
+│ ├── src/
+│ │ ├── pages/    # Page components
+│ │ ├── components/   # Reusable components
+│ │ ├── services/    # API calls
+│ │ ├── redux/    # State management
+│ │ ├── utils/    # Helper functions
+│ │ └── App.js
+│ ├── public/     # Static assets
+│ ├── tests/     # Unit tests
+│ ├── package.json
+│ └── .env.example
 │
 ├── ai-service/
-│   ├── models/
-│   │   ├── issue_classifier.pt   # PyTorch model
-│   │   └── class_mapping.json    # Issue type mapping
-│   ├── src/
-│   │   ├── main.py               # FastAPI app
-│   │   ├── inference.py          # Model inference
-│   │   ├── utils.py              # Helper functions
-│   │   └── config.py             # Config
-│   ├── requirements.txt
-│   ├── Dockerfile
-│   └── .env.example
+│ ├── models/
+│ │ ├── issue_classifier.pt # PyTorch model
+│ │ └── class_mapping.json # Issue type mapping
+│ ├── src/
+│ │ ├── main.py    # FastAPI app
+│ │ ├── inference.py   # Model inference
+│ │ ├── utils.py    # Helper functions
+│ │ └── config.py    # Config
+│ ├── requirements.txt
+│ ├── Dockerfile
+│ └── .env.example
 │
 ├── database/
-│   ├── migrations/
-│   │   ├── 001_create_tables.sql
-│   │   ├── 002_add_indexes.sql
-│   │   └── ...
-│   ├── seeds/
-│   │   ├── wards.sql
-│   │   ├── departments.sql
-│   │   └── users.sql
-│   └── schema.sql                # Complete schema
+│ ├── migrations/
+│ │ ├── 001_create_tables.sql
+│ │ ├── 002_add_indexes.sql
+│ │ └── ...
+│ ├── seeds/
+│ │ ├── wards.sql
+│ │ ├── departments.sql
+│ │ └── users.sql
+│ └── schema.sql    # Complete schema
 │
 ├── plans/
-│   ├── README.md                 # Main documentation
-│   ├── REQUIREMENTS.md           # Functional & non-functional requirements
-│   ├── IMPLEMENTATION.md         # This file
-│   ├── USER_WORKFLOWS.md         # User roles & workflows
-│   ├── API_DOCUMENTATION.md      # Detailed API docs
-│   ├── DEPLOYMENT.md             # Deployment guide
-│   ├── api_list.md               # API endpoints overview
-│   ├── architecture.md           # System architecture
-│   └── database_schema.md        # Database schema details
+│ ├── README.md     # Main documentation
+│ ├── REQUIREMENTS.md   # Functional & non-functional requirements
+│ ├── IMPLEMENTATION.md   # This file
+│ ├── USER_WORKFLOWS.md   # User roles & workflows
+│ ├── API_DOCUMENTATION.md  # Detailed API docs
+│ ├── DEPLOYMENT.md    # Deployment guide
+│ ├── api_list.md    # API endpoints overview
+│ ├── architecture.md   # System architecture
+│ └── database_schema.md  # Database schema details
 │
-├── docker-compose.yml            # Local development stack
+├── docker-compose.yml   # Local development stack
 ├── Dockerfile.backend
 ├── Dockerfile.mobile
 ├── Dockerfile.web
 ├── .github/
-│   └── workflows/
-│       ├── backend-ci.yml        # Backend CI/CD
-│       ├── mobile-ci.yml         # Mobile CI/CD
-│       └── web-ci.yml            # Web CI/CD
+│ └── workflows/
+│  ├── backend-ci.yml  # Backend CI/CD
+│  ├── mobile-ci.yml   # Mobile CI/CD
+│  └── web-ci.yml   # Web CI/CD
 │
 ├── .gitignore
 ├── .env.example
@@ -183,12 +183,12 @@ AI-Based-Civic-Issue-Monitoring-System/
 
 ```bash
 # Check versions
-node --version      # v16.0.0+
-npm --version       # v7.0.0+
-python --version    # 3.8+
-postgres --version  # 12+
-docker --version    # 20.10+
-git --version       # 2.30+
+node --version  # v16.0.0+
+npm --version  # v7.0.0+
+python --version # 3.8+
+postgres --version # 12+
+docker --version # 20.10+
+git --version  # 2.30+
 ```
 
 ### 1. Database Setup (PostgreSQL + PostGIS)
@@ -238,8 +238,8 @@ npm run migrate
 npm run seed
 
 # Start server
-npm run dev         # Development (http://localhost:3000)
-npm start          # Production
+npm run dev   # Development (http://localhost:3000)
+npm start   # Production
 ```
 
 ### 3. AI Service Setup (Python + FastAPI)
@@ -249,7 +249,7 @@ cd ai-service
 
 # Create virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -263,7 +263,7 @@ cp .env.example .env
 # Update .env with model paths and configuration
 
 # Start service
-python src/main.py         # Development (http://localhost:8001)
+python src/main.py   # Development (http://localhost:8001)
 gunicorn -w 4 src.main:app # Production
 ```
 
@@ -311,7 +311,7 @@ cp .env.example .env
 # - REACT_APP_MAPS_API_KEY=your_google_maps_key
 
 # Start development server
-npm run start       # http://localhost:3001
+npm run start  # http://localhost:3001
 
 # Build for production
 npm run build
@@ -509,29 +509,29 @@ DEBUG=true
 
 ```bash
 # Database
-psql civic_issues                    # Connect to database
-\dt                                   # List tables
-\d issues                             # Describe table
+psql civic_issues     # Connect to database
+\dt         # List tables
+\d issues        # Describe table
 
 # Backend
-npm run dev                           # Start development server
-npm test                              # Run tests
-npm run lint                          # Lint code
-npm run migrate                       # Run migrations
+npm run dev       # Start development server
+npm test        # Run tests
+npm run lint       # Lint code
+npm run migrate      # Run migrations
 
 # Mobile
-npm run android                       # Run on Android
-npm run ios                           # Run on iOS
-npm run test                          # Run tests
+npm run android      # Run on Android
+npm run ios       # Run on iOS
+npm run test       # Run tests
 
 # Web
-npm start                             # Start dev server
-npm run build                         # Build for production
-npm test                              # Run tests
+npm start        # Start dev server
+npm run build       # Build for production
+npm test        # Run tests
 
 # Docker
-docker-compose up -d                 # Start all services
-docker-compose logs -f               # View logs
+docker-compose up -d     # Start all services
+docker-compose logs -f    # View logs
 docker-compose exec backend npm test # Run tests in container
 ```
 
@@ -626,3 +626,4 @@ cd ios && pod install && cd ..
 - [Docker Documentation](https://docs.docker.com/)
 - [Kubernetes Docs](https://kubernetes.io/)
 - [OWASP Top 10](https://owasp.org/Top10/)
+

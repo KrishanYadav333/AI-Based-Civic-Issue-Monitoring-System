@@ -41,47 +41,47 @@ Field Surveyors are VMC employees who conduct field surveys using two-wheelers t
 **Scenario**: Field Surveyor spots a pothole on Ward 5 Street
 
 1. **Open App**
-   - Launch mobile application
-   - Auto-authentication if already logged in
-   - App displays current location map
+ - Launch mobile application
+ - Auto-authentication if already logged in
+ - App displays current location map
 
 2. **Navigate to Issue Report Section**
-   - Tap "Report Issue" button
-   - App shows issue categories: Pothole, Garbage, Debris, Cattle, Broken Road, Open Manhole
+ - Tap "Report Issue" button
+ - App shows issue categories: Pothole, Garbage, Debris, Cattle, Broken Road, Open Manhole
 
 3. **Capture Image**
-   - Tap "Take Photo" or "Select from Gallery"
-   - App automatically captures GPS coordinates
-   - Image is compressed locally (70% quality)
-   - Ensure image shows issue clearly
+ - Tap "Take Photo" or "Select from Gallery"
+ - App automatically captures GPS coordinates
+ - Image is compressed locally (70% quality)
+ - Ensure image shows issue clearly
 
 4. **AI Auto-Detection (Optional)**
-   - App sends image to backend
-   - AI service analyzes image (backend processing, not on device)
-   - AI returns detected issue type with confidence score
-   - App displays: "Detected: Pothole (92% confidence)"
-   - Surveyor can confirm or override detection
+ - App sends image to backend
+ - AI service analyzes image (backend processing, not on device)
+ - AI returns detected issue type with confidence score
+ - App displays: "Detected: Pothole (92% confidence)"
+ - Surveyor can confirm or override detection
 
 5. **Review Issue Details**
-   ```
-   Issue Type: Pothole [confirmed]
-   Location: Ward 5, Street Name
-   GPS: 22.3072° N, 73.1812° E
-   Date/Time: 13-Jan-2026 10:30 AM
-   ```
+ ```
+ Issue Type: Pothole [confirmed]
+ Location: Ward 5, Street Name
+ GPS: 22.3072° N, 73.1812° E
+ Date/Time: 13-Jan-2026 10:30 AM
+ ```
 
 6. **Submit Report**
-   - Tap "Submit Issue"
-   - App shows loading indicator
-   - Issue sent to backend with all metadata
-   - Confirmation message: "Issue #5421 submitted successfully"
-   - Issue stored locally for offline access
+ - Tap "Submit Issue"
+ - App shows loading indicator
+ - Issue sent to backend with all metadata
+ - Confirmation message: "Issue #5421 submitted successfully"
+ - Issue stored locally for offline access
 
 7. **View Submitted Issues**
-   - Tap "My Reports" to view all submitted issues
-   - Filter by date, status, type
-   - View statuses: Pending → Assigned → Resolved
-   - Receive push notifications on status changes
+ - Tap "My Reports" to view all submitted issues
+ - Filter by date, status, type
+ - View statuses: Pending → Assigned → Resolved
+ - Receive push notifications on status changes
 
 ### Key Features for Field Surveyor
 
@@ -164,127 +164,127 @@ Ward Engineers are responsible for reviewing, verifying, and resolving civic iss
 #### Phase 1: Issue Review & Assignment
 
 1. **Access Dashboard**
-   - Log in to web dashboard (http://localhost:3001/engineer)
-   - Dashboard displays summary: "3 New Issues, 5 Pending, 2 In Progress"
+ - Log in to web dashboard (http://localhost:3001/engineer)
+ - Dashboard displays summary: "3 New Issues, 5 Pending, 2 In Progress"
 
 2. **View New Issues**
-   - Click "New Issues" tab
-   - List displays issues assigned to engineer's ward
-   - Sort by priority: High → Medium → Low
-   - Issue card shows:
-     ```
-     Issue #5421 - Pothole [HIGH]
-     Location: Ward 5, Street Name
-     Submitted: 13-Jan-2026 10:30 AM
-     AI Confidence: 92%
-     ```
+ - Click "New Issues" tab
+ - List displays issues assigned to engineer's ward
+ - Sort by priority: High → Medium → Low
+ - Issue card shows:
+  ```
+  Issue #5421 - Pothole [HIGH]
+  Location: Ward 5, Street Name
+  Submitted: 13-Jan-2026 10:30 AM
+  AI Confidence: 92%
+  ```
 
 3. **Review Issue Details**
-   - Click issue card to open detailed view
-   - Display:
-     ```
-     Issue ID: 5421
-     Type: Pothole
-     Status: Assigned
-     Priority: High
-     Ward: 5
-     Location: 22.3072° N, 73.1812° E (map view)
-     Submitted By: Surveyor Name (ID: S001)
-     Submitted Date: 13-Jan-2026 10:30 AM
-     Confidence Score: 92%
-     
-     [Primary Image] [Zoom] [Open in Maps]
-     ```
+ - Click issue card to open detailed view
+ - Display:
+  ```
+  Issue ID: 5421
+  Type: Pothole
+  Status: Assigned
+  Priority: High
+  Ward: 5
+  Location: 22.3072° N, 73.1812° E (map view)
+  Submitted By: Surveyor Name (ID: S001)
+  Submitted Date: 13-Jan-2026 10:30 AM
+  Confidence Score: 92%
+  
+  [Primary Image] [Zoom] [Open in Maps]
+  ```
 
 4. **Field Verification (Optional)**
-   - Engineer may visit site to verify issue
-   - Capture verification photo
-   - Update status: "Verified - Ready for Resolution"
-   - Add notes: "Confirmed pothole 2m x 0.5m, safety hazard"
+ - Engineer may visit site to verify issue
+ - Capture verification photo
+ - Update status: "Verified - Ready for Resolution"
+ - Add notes: "Confirmed pothole 2m x 0.5m, safety hazard"
 
 5. **Accept Issue**
-   - Click "Accept Issue" button
-   - Status changes: Assigned → In Progress
-   - Engineer name added to issue
-   - Notification sent to surveyor
+ - Click "Accept Issue" button
+ - Status changes: Assigned → In Progress
+ - Engineer name added to issue
+ - Notification sent to surveyor
 
 #### Phase 2: Issue Resolution
 
 6. **Plan Resolution**
-   - Department auto-assigned based on issue type:
-     - Pothole → Roads Department
-     - Garbage → Sanitation Department
-     - Cattle → Animal Control Department
-     - Drainage → Drainage Department
-     - Water Supply → Water Department
-   - Engineer coordinates with department
-   - Timeline recorded (estimated completion date)
+ - Department auto-assigned based on issue type:
+  - Pothole → Roads Department
+  - Garbage → Sanitation Department
+  - Cattle → Animal Control Department
+  - Drainage → Drainage Department
+  - Water Supply → Water Department
+ - Engineer coordinates with department
+ - Timeline recorded (estimated completion date)
 
 7. **Execute Resolution**
-   - Roads department fills/repairs pothole
-   - Follow VMC standard procedures
-   - Document work progress (optional in-progress updates)
+ - Roads department fills/repairs pothole
+ - Follow VMC standard procedures
+ - Document work progress (optional in-progress updates)
 
 8. **Document Resolution**
-   - Engineer captures after-resolution photos
-   - Multiple angles showing completed work
-   - Quality verification
+ - Engineer captures after-resolution photos
+ - Multiple angles showing completed work
+ - Quality verification
 
 #### Phase 3: Issue Closure
 
 9. **Upload Resolution Evidence**
-   - Click "Upload Resolution Images" button
-   - Select 2-3 after-resolution photos
-   - Add description: "Pothole filled and compacted, surface smooth"
-   - System validates image quality
+ - Click "Upload Resolution Images" button
+ - Select 2-3 after-resolution photos
+ - Add description: "Pothole filled and compacted, surface smooth"
+ - System validates image quality
 
 10. **Final Review & Closure**
-    - Review issue resolution:
-      ```
-      Status Change: In Progress → Resolved
-      Resolution Date: 15-Jan-2026 2:15 PM
-      Resolution Time: 1.75 days
-      Department: Roads
-      Cost: [optional field]
-      Notes: [resolution details]
-      ```
-    - Click "Mark as Resolved"
-    - Status updated in database
-    - Surveyor receives notification
+ - Review issue resolution:
+  ```
+  Status Change: In Progress → Resolved
+  Resolution Date: 15-Jan-2026 2:15 PM
+  Resolution Time: 1.75 days
+  Department: Roads
+  Cost: [optional field]
+  Notes: [resolution details]
+  ```
+ - Click "Mark as Resolved"
+ - Status updated in database
+ - Surveyor receives notification
 
 11. **View Resolution Confirmation**
-    - Issue appears in "Resolved" tab
-    - Summary shows:
-      ```
-      Issue #5421 - RESOLVED
-      Reported: 13-Jan-2026
-      Resolved: 15-Jan-2026
-      Duration: 1.75 days
-      Department: Roads
-      ```
+ - Issue appears in "Resolved" tab
+ - Summary shows:
+  ```
+  Issue #5421 - RESOLVED
+  Reported: 13-Jan-2026
+  Resolved: 15-Jan-2026
+  Duration: 1.75 days
+  Department: Roads
+  ```
 
 ### Dashboard Views
 
 #### 1. Overview Dashboard
 - **Widget 1**: Issue Statistics
-  - Total assigned: 25
-  - New (7 days): 8
-  - Pending: 12
-  - In progress: 5
-  - Resolved (7 days): 8
+ - Total assigned: 25
+ - New (7 days): 8
+ - Pending: 12
+ - In progress: 5
+ - Resolved (7 days): 8
 
 - **Widget 2**: Priority Distribution
-  - Bar chart: High (8) | Medium (12) | Low (5)
+ - Bar chart: High (8) | Medium (12) | Low (5)
 
 - **Widget 3**: Ward Map
-  - Interactive map showing issue locations
-  - Color-coded by priority
-  - Click to view issue details
+ - Interactive map showing issue locations
+ - Color-coded by priority
+ - Click to view issue details
 
 - **Widget 4**: Recent Activity
-  - Issue #5421: Resolved 2 hours ago
-  - Issue #5420: Assigned 4 hours ago
-  - Issue #5419: In Progress since yesterday
+ - Issue #5421: Resolved 2 hours ago
+ - Issue #5420: Assigned 4 hours ago
+ - Issue #5419: In Progress since yesterday
 
 #### 2. Issues List View
 - Columns: ID | Type | Priority | Status | Location | Submitted | Days Pending
@@ -404,175 +404,175 @@ System Administrators oversee the entire civic issue monitoring system, manage u
 #### Task 1: Monitor System Health
 
 1. **Access Admin Dashboard**
-   - Log in to http://localhost:3001/admin
-   - Dashboard displays key metrics at a glance
+ - Log in to http://localhost:3001/admin
+ - Dashboard displays key metrics at a glance
 
 2. **System Health Widget**
-   ```
-   Status: OPERATIONAL (Green)
-   - API Server: UP (200ms response)
-   - Database: UP (95% health)
-   - Redis Cache: UP
-   - AI Service: UP
-   - Storage: 85% utilized
-   - Last Backup: 2 hours ago
-   ```
+ ```
+ Status: OPERATIONAL (Green)
+ - API Server: UP (200ms response)
+ - Database: UP (95% health)
+ - Redis Cache: UP
+ - AI Service: UP
+ - Storage: 85% utilized
+ - Last Backup: 2 hours ago
+ ```
 
 3. **Performance Metrics**
-   - Daily issues submitted: 45
-   - Average resolution time: 1.3 days
-   - Total users: 95
-   - Active users today: 67
-   - System load: 42%
+ - Daily issues submitted: 45
+ - Average resolution time: 1.3 days
+ - Total users: 95
+ - Active users today: 67
+ - System load: 42%
 
 #### Task 2: Manage Users
 
 4. **View User List**
-   - Navigate to "Users" section
-   - Table displays:
-     ```
-     | Name | Email | Role | Ward | Status | Last Active |
-     | Raj Kumar | raj@vmc.in | Surveyor | 5 | Active | 2 mins ago |
-     | Priya Singh | priya@vmc.in | Engineer | 5 | Active | 1 hour ago |
-     | Admin User | admin@vmc.in | Admin | - | Active | 15 mins ago |
-     ```
+ - Navigate to "Users" section
+ - Table displays:
+  ```
+  | Name | Email | Role | Ward | Status | Last Active |
+  | Raj Kumar | raj@vmc.in | Surveyor | 5 | Active | 2 mins ago |
+  | Priya Singh | priya@vmc.in | Engineer | 5 | Active | 1 hour ago |
+  | Admin User | admin@vmc.in | Admin | - | Active | 15 mins ago |
+  ```
 
 5. **Create New User**
-   - Click "Add User" button
-   - Form:
-     ```
-     Name: John Doe
-     Email: john@vmc.in
-     Role: Field Surveyor
-     Ward: 8
-     Password: [auto-generated]
-     Send Invite: [checkbox]
-     ```
-   - Submit → User created → Invite email sent
+ - Click "Add User" button
+ - Form:
+  ```
+  Name: John Doe
+  Email: john@vmc.in
+  Role: Field Surveyor
+  Ward: 8
+  Password: [auto-generated]
+  Send Invite: [checkbox]
+  ```
+ - Submit → User created → Invite email sent
 
 6. **Edit User**
-   - Click user row → Edit option
-   - Update role, ward, status
-   - Changes logged with timestamp
+ - Click user row → Edit option
+ - Update role, ward, status
+ - Changes logged with timestamp
 
 7. **Deactivate/Delete User**
-   - Click user → Deactivate
-   - History maintained, access revoked
-   - Can reactivate if needed
+ - Click user → Deactivate
+ - History maintained, access revoked
+ - Can reactivate if needed
 
 #### Task 3: Analytics & Reporting
 
 8. **View System Analytics**
-   - Navigate to "Analytics" dashboard
-   - Multiple chart widgets:
+ - Navigate to "Analytics" dashboard
+ - Multiple chart widgets:
 
-   **Chart 1: Issues Over Time**
-   - Line graph: Daily issue submissions (30-day view)
-   - Y-axis: Number of issues (0-100)
-   - X-axis: Dates
-   - Filter: Date range, issue type
+ **Chart 1: Issues Over Time**
+ - Line graph: Daily issue submissions (30-day view)
+ - Y-axis: Number of issues (0-100)
+ - X-axis: Dates
+ - Filter: Date range, issue type
 
-   **Chart 2: Ward-wise Distribution**
-   - Bar chart: Issues by ward
-   - Horizontal: Wards (1-19)
-   - Vertical: Issue count
-   - Sorted: High to low
+ **Chart 2: Ward-wise Distribution**
+ - Bar chart: Issues by ward
+ - Horizontal: Wards (1-19)
+ - Vertical: Issue count
+ - Sorted: High to low
 
-   **Chart 3: Issue Type Distribution**
-   - Pie chart: Percentage by type
-   - Pothole: 32%
-   - Garbage: 28%
-   - Debris: 18%
-   - Cattle: 12%
-   - Broken Road: 7%
-   - Open Manhole: 3%
+ **Chart 3: Issue Type Distribution**
+ - Pie chart: Percentage by type
+ - Pothole: 32%
+ - Garbage: 28%
+ - Debris: 18%
+ - Cattle: 12%
+ - Broken Road: 7%
+ - Open Manhole: 3%
 
-   **Chart 4: Resolution Statistics**
-   - Bar chart: Submitted vs Resolved
-   - Trend line: Resolution rate over time
-   - Target: 95% resolution rate
+ **Chart 4: Resolution Statistics**
+ - Bar chart: Submitted vs Resolved
+ - Trend line: Resolution rate over time
+ - Target: 95% resolution rate
 
-   **Chart 5: Priority Analysis**
-   - Stacked bar: High/Medium/Low
-   - Time to resolution by priority
-   - High: 0.8 days avg
-   - Medium: 1.5 days avg
-   - Low: 3.2 days avg
+ **Chart 5: Priority Analysis**
+ - Stacked bar: High/Medium/Low
+ - Time to resolution by priority
+ - High: 0.8 days avg
+ - Medium: 1.5 days avg
+ - Low: 3.2 days avg
 
 9. **Generate Reports**
-   - Click "Generate Report" button
-   - Report type: Daily, Weekly, Monthly, Custom
-   - Format: PDF, CSV, Excel
-   - Include sections:
-     - Executive Summary
-     - Statistics & Trends
-     - Ward-wise Performance
-     - Department Performance
-     - Top Issues
-     - Recommendations
-   - Email report to stakeholders
+ - Click "Generate Report" button
+ - Report type: Daily, Weekly, Monthly, Custom
+ - Format: PDF, CSV, Excel
+ - Include sections:
+  - Executive Summary
+  - Statistics & Trends
+  - Ward-wise Performance
+  - Department Performance
+  - Top Issues
+  - Recommendations
+ - Email report to stakeholders
 
 #### Task 4: Heatmap Visualization
 
 10. **View Issue Heatmap**
-    - Navigate to "Heatmap" section
-    - Interactive map of Vadodara
-    - Color intensity shows issue concentration:
-      - Red: High density (>10 issues/area)
-      - Orange: Medium (5-10 issues)
-      - Yellow: Low (1-5 issues)
-      - Green: No issues
-    - Click area → Detailed breakdown
-    - Filter by: Type, priority, date range, ward
+ - Navigate to "Heatmap" section
+ - Interactive map of Vadodara
+ - Color intensity shows issue concentration:
+  - Red: High density (>10 issues/area)
+  - Orange: Medium (5-10 issues)
+  - Yellow: Low (1-5 issues)
+  - Green: No issues
+ - Click area → Detailed breakdown
+ - Filter by: Type, priority, date range, ward
 
 #### Task 5: System Configuration
 
 11. **Configure System Settings**
-    - Navigate to "Settings"
-    - Sections:
-      ```
-      General Settings
-      - System Name
-      - City Boundaries (GeoJSON upload)
-      - Timezone
-      - Language
-      
-      Issue Configuration
-      - Issue Types (add/edit/delete)
-      - Priority Rules (automated assignment)
-      - Department Mapping
-      
-      Notification Settings
-      - Email server configuration
-      - SMS gateway configuration
-      - Notification frequency
-      
-      Integration Settings
-      - OpenStreetMap configuration (free, no API key)
-      - Local storage configuration (Render disk)
-      - AI Service endpoint
-      ```
+ - Navigate to "Settings"
+ - Sections:
+  ```
+  General Settings
+  - System Name
+  - City Boundaries (GeoJSON upload)
+  - Timezone
+  - Language
+  
+  Issue Configuration
+  - Issue Types (add/edit/delete)
+  - Priority Rules (automated assignment)
+  - Department Mapping
+  
+  Notification Settings
+  - Email server configuration
+  - SMS gateway configuration
+  - Notification frequency
+  
+  Integration Settings
+  - OpenStreetMap configuration (free, no API key)
+  - Local storage configuration (Render disk)
+  - AI Service endpoint
+  ```
 
 12. **Ward Management**
-    - Upload/update ward boundaries (GeoJSON)
-    - Map preview with boundaries
-    - Assign engineers per ward
-    - Verify geo-fencing logic
+ - Upload/update ward boundaries (GeoJSON)
+ - Map preview with boundaries
+ - Assign engineers per ward
+ - Verify geo-fencing logic
 
 #### Task 6: Activity & Audit Logs
 
 13. **View Activity Logs**
-    - Navigate to "Activity Logs"
-    - Table displays all system actions:
-      ```
-      | Timestamp | User | Action | Resource | Details |
-      | 13-Jan 2:15 PM | Raj Kumar | Created | Issue #5421 | Pothole Ward 5 |
-      | 13-Jan 2:20 PM | AI Service | Classified | Issue #5421 | Confidence 92% |
-      | 13-Jan 3:00 PM | Priya Singh | Assigned | Issue #5421 | Ward 5 Engineer |
-      ```
-    - Filter: User, action type, date range, resource type
-    - Export: CSV, JSON
-    - Retention: 12 months minimum
+ - Navigate to "Activity Logs"
+ - Table displays all system actions:
+  ```
+  | Timestamp | User | Action | Resource | Details |
+  | 13-Jan 2:15 PM | Raj Kumar | Created | Issue #5421 | Pothole Ward 5 |
+  | 13-Jan 2:20 PM | AI Service | Classified | Issue #5421 | Confidence 92% |
+  | 13-Jan 3:00 PM | Priya Singh | Assigned | Issue #5421 | Ward 5 Engineer |
+  ```
+ - Filter: User, action type, date range, resource type
+ - Export: CSV, JSON
+ - Retention: 12 months minimum
 
 ### Admin Dashboard Widgets
 
@@ -689,32 +689,32 @@ System Administrators oversee the entire civic issue monitoring system, manage u
 
 ```
 1. FIELD SURVEYOR
-   ├─ Identifies issue
-   ├─ Captures image + GPS
-   └─ Submits report via mobile app
-   
+ ├─ Identifies issue
+ ├─ Captures image + GPS
+ └─ Submits report via mobile app
+ 
 2. BACKEND SYSTEM
-   ├─ Receives submission
-   ├─ Geo-fences to ward
-   ├─ Sends to AI service
-   ├─ Stores in database
-   └─ Notifies assigned engineer
-   
+ ├─ Receives submission
+ ├─ Geo-fences to ward
+ ├─ Sends to AI service
+ ├─ Stores in database
+ └─ Notifies assigned engineer
+ 
 3. WARD ENGINEER
-   ├─ Receives notification
-   ├─ Reviews issue details
-   ├─ Field verification (optional)
-   ├─ Accepts issue assignment
-   ├─ Coordinates resolution
-   ├─ Documents with photos
-   └─ Closes issue
-   
+ ├─ Receives notification
+ ├─ Reviews issue details
+ ├─ Field verification (optional)
+ ├─ Accepts issue assignment
+ ├─ Coordinates resolution
+ ├─ Documents with photos
+ └─ Closes issue
+ 
 4. ADMIN
-   ├─ Monitors resolution
-   ├─ Views analytics
-   ├─ Tracks performance
-   ├─ Generates reports
-   └─ Optimizes operations
+ ├─ Monitors resolution
+ ├─ Views analytics
+ ├─ Tracks performance
+ ├─ Generates reports
+ └─ Optimizes operations
 ```
 
 ### Escalation Workflow
@@ -722,30 +722,30 @@ System Administrators oversee the entire civic issue monitoring system, manage u
 **High-Priority Issues**
 ```
 Issue Created (Priority: HIGH)
-    ↓
+ ↓
 Immediate Engineer Notification
-    ↓
+ ↓
 Required Start: 4 hours
-    ↓
+ ↓
 Admin Alert if not started
-    ↓
+ ↓
 Daily Status Updates
-    ↓
+ ↓
 Completion Target: 24 hours
 ```
 
 **Complex/Safety Issues**
 ```
 Issue Reported
-    ↓
+ ↓
 Escalation Flag Set
-    ↓
+ ↓
 Senior Engineer Notification
-    ↓
+ ↓
 Expert Team Assignment
-    ↓
+ ↓
 Extended Timeline Approval
-    ↓
+ ↓
 Regular Progress Updates
 ```
 
@@ -832,3 +832,4 @@ Regular Progress Updates
 - Ticketing system
 - Video tutorials
 - User documentation
+
