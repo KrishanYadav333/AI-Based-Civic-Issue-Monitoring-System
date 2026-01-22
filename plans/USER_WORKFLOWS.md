@@ -26,15 +26,15 @@ Field Surveyors are VMC employees who conduct field surveys using two-wheelers t
 - Verify issue description and category
 
 ### Permissions
-- ✅ Access mobile application
-- ✅ Capture images
-- ✅ Submit issue reports
-- ✅ View personal issue history
-- ✅ View issue status updates
-- ❌ Cannot access web dashboards
-- ❌ Cannot resolve issues
-- ❌ Cannot view other surveyors' data
-- ❌ Cannot access admin functions
+- Access mobile application
+- Capture images
+- Submit issue reports
+- View personal issue history
+- View issue status updates
+- Cannot access web dashboards
+- Cannot resolve issues
+- Cannot view other surveyors' data
+- Cannot access admin functions
 
 ### Workflow: Reporting an Issue
 
@@ -141,21 +141,21 @@ Ward Engineers are responsible for reviewing, verifying, and resolving civic iss
 - Track resolution timelines
 
 ### Permissions
-- ✅ Access web dashboard
-- ✅ View assigned ward issues
-- ✅ Filter and search issues
-- ✅ View issue details and images
-- ✅ Accept/claim issues
-- ✅ Upload resolution images
-- ✅ Add notes/comments
-- ✅ Close issues
-- ✅ View personal performance metrics
-- ✅ View assigned issue history
-- ❌ Cannot access issues from other wards
-- ❌ Cannot view other engineers' data
-- ❌ Cannot access system admin functions
-- ❌ Cannot modify issue assignment algorithm
-- ❌ Cannot delete issues
+- Access web dashboard
+- View assigned ward issues
+- Filter and search issues
+- View issue details and images
+- Accept/claim issues
+- Upload resolution images
+- Add notes/comments
+- Close issues
+- View personal performance metrics
+- View assigned issue history
+- Cannot access issues from other wards
+- Cannot view other engineers' data
+- Cannot access system admin functions
+- Cannot modify issue assignment algorithm
+- Cannot delete issues
 
 ### Workflow: Resolving an Issue
 
@@ -382,20 +382,20 @@ System Administrators oversee the entire civic issue monitoring system, manage u
 - Security and compliance
 
 ### Permissions
-- ✅ Full access to all dashboards
-- ✅ Create/edit/delete user accounts
-- ✅ View all issues (all wards, all engineers)
-- ✅ View system-wide analytics
-- ✅ Access admin settings
-- ✅ Manage ward configurations
-- ✅ View user activity logs
-- ✅ Generate reports
-- ✅ Configure system parameters
-- ✅ View system health metrics
-- ✅ Override issue assignments
-- ✅ Delete/archive issues (with audit trail)
-- ✅ Access API configuration
-- ✅ Manage integrations
+- Full access to all dashboards
+- Create/edit/delete user accounts
+- View all issues (all wards, all engineers)
+- View system-wide analytics
+- Access admin settings
+- Manage ward configurations
+- View user activity logs
+- Generate reports
+- Configure system parameters
+- View system health metrics
+- Override issue assignments
+- Delete/archive issues (with audit trail)
+- Access API configuration
+- Manage integrations
 
 ### Workflow: Admin Dashboard Usage
 
@@ -583,10 +583,10 @@ System Administrators oversee the entire civic issue monitoring system, manage u
 - Critical alerts: 2
 
 #### 2. System Health
-- API Server: ✅ UP
-- Database: ✅ UP
-- Redis: ✅ UP
-- AI Service: ✅ UP
+- API Server: UP
+- Database: UP
+- Redis: UP
+- AI Service: UP
 - Storage: 85% used
 
 #### 3. Top Issues by Type
@@ -777,13 +777,13 @@ Regular Progress Updates
 
 | Data | Field Surveyor | Ward Engineer | Admin |
 |------|----------------|---------------|-------|
-| Own issues | ✅ | - | - |
-| Ward issues | - | ✅ | ✅ |
-| All issues | - | - | ✅ |
-| Other users' data | ❌ | ❌ | ✅ |
-| System settings | ❌ | ❌ | ✅ |
-| Analytics | ❌ | Limited | ✅ |
-| User management | ❌ | ❌ | ✅ |
+| Own issues | | - | - |
+| Ward issues | - | | |
+| All issues | - | - | |
+| Other users' data | | | |
+| System settings | | | |
+| Analytics | | Limited | |
+| User management | | | |
 
 ### Access Control
 - Role-based access control (RBAC)
