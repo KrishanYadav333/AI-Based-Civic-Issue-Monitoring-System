@@ -10,24 +10,24 @@ Thisguidecoversdeploymententirelyusing**RenderFreeTier**-NOAWS,NOKubernetes,NOpa
 
 ```
 Internet(Users)
-â†“
+Gô
 RenderWebService(BackendAPI)
-â”œâ”€â”€Node.js/ExpressServer
-â”œâ”€â”€AIBackgroundWorker(Python/FastAPI)
-â””â”€â”€LocalDiskStorage
-â†“
+Gö£GöGöNode.js/ExpressServer
+Gö£GöGöAIBackgroundWorker(Python/FastAPI)
+GööGöGöLocalDiskStorage
+Gô
 RenderPostgreSQLDatabase(FreeTier)
-â”œâ”€â”€PostgreSQL14+
-â””â”€â”€PostGIS(geo-spatialqueries)
-â†“
+Gö£GöGöPostgreSQL14+
+GööGöGöPostGIS(geo-spatialqueries)
+Gô
 RenderRedis(FreeTier)
-â””â”€â”€Caching&Sessions
-â†“
+GööGöGöCaching&Sessions
+Gô
 FirebaseFCM(FreeTier)
-â””â”€â”€PushNotifications
-â†“
+GööGöGöPushNotifications
+Gô
 OpenStreetMap/Nominatim(Free)
-â””â”€â”€Maps&ReverseGeocoding
+GööGöGöMaps&ReverseGeocoding
 ```
 
 ---
@@ -35,17 +35,17 @@ OpenStreetMap/Nominatim(Free)
 ##Prerequisites
 
 ###AccountsRequired(AllFREE)
--âœ…Render.comaccount(freetier)
--âœ…GitHubaccount(free)
--âœ…Firebaseaccount(freetier)
--âœ…DockerHubaccount(free)
+-G£àRender.comaccount(freetier)
+-G£àGitHubaccount(free)
+-G£àFirebaseaccount(freetier)
+-G£àDockerHubaccount(free)
 
 ###ToolsRequired(AllOpen-Source/Free)
--âœ…Git
--âœ…Docker(free)
--âœ…Node.js18+
--âœ…Python3.9+
--âœ…PostgreSQLclienttools
+-G£àGit
+-G£àDocker(free)
+-G£àNode.js18+
+-G£àPython3.9+
+-G£àPostgreSQLclienttools
 
 ###Domain(Optional)
 -UseRender'sfreesubdomain:`app-name.onrender.com`
@@ -58,23 +58,23 @@ OpenStreetMap/Nominatim(Free)
 ###RepositoryStructure
 ```
 AI-Based-Civic-Issue-Monitoring-System/
-â”œâ”€â”€backend/
-â”‚â”œâ”€â”€src/
-â”‚â”œâ”€â”€package.json
-â”‚â”œâ”€â”€.env.example
-â”‚â”œâ”€â”€Dockerfile
-â”‚â””â”€â”€render.yaml
-â”œâ”€â”€ai-service/
-â”‚â”œâ”€â”€app.py
-â”‚â”œâ”€â”€requirements.txt
-â”‚â”œâ”€â”€Dockerfile
-â”‚â””â”€â”€render.yaml
-â”œâ”€â”€web/
-â”‚â”œâ”€â”€public/
-â”‚â”œâ”€â”€src/
-â”‚â”œâ”€â”€package.json
-â”‚â””â”€â”€render.yaml
-â””â”€â”€README.md
+Gö£GöGöbackend/
+GöéGö£GöGösrc/
+GöéGö£GöGöpackage.json
+GöéGö£GöGö.env.example
+GöéGö£GöGöDockerfile
+GöéGööGöGörender.yaml
+Gö£GöGöai-service/
+GöéGö£GöGöapp.py
+GöéGö£GöGörequirements.txt
+GöéGö£GöGöDockerfile
+GöéGööGöGörender.yaml
+Gö£GöGöweb/
+GöéGö£GöGöpublic/
+GöéGö£GöGösrc/
+GöéGö£GöGöpackage.json
+GöéGööGöGörender.yaml
+GööGöGöREADME.md
 ```
 
 ###CreateDockerfileforBackend
@@ -336,7 +336,7 @@ gitpushoriginmain
 
 2.**ConnecttoRenderDashboard**
 -Gotohttps://render.com/dashboard
--Click"New+"â†’"WebService"
+-Click"New+"GÆ"WebService"
 -SelectGitHubrepository
 -Pastethiscommandin"BuildCommand":
 ```
@@ -712,11 +712,12 @@ dockerrun-eREDIS_URL=...civic-ai
 
 ##Summary
 
-âœ…**100%FreeDeployment**usingRenderFreeTier
-âœ…**ZeroAWS/GCP/Azure**costs
-âœ…**Open-sourceonly**tools
-âœ…**Simpletoscale**whenneeded
-âœ…**Easytomigrate**topaidtiersifneeded
+G£à**100%FreeDeployment**usingRenderFreeTier
+G£à**ZeroAWS/GCP/Azure**costs
+G£à**Open-sourceonly**tools
+G£à**Simpletoscale**whenneeded
+G£à**Easytomigrate**topaidtiersifneeded
 
 Allservicesarefreeandopen-source.Nohiddencharges.Novendorlock-in!
+
 
