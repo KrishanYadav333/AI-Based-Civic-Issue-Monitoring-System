@@ -1,80 +1,49 @@
-#SystemArchitecture
+# System Architecture
 
-##🏆100%FREESTACKCERTIFIED
+## Overview
 
-Thissystemuses**onlyopen-sourcetools**and**RenderFreeTier**deployment-NOpaidservices.
+The AI-Based Civic Issue Monitoring System is designed to automate the detection, assignment, and resolution of civic issues in Vadodara's 19 wards. The system targets VMC employees only, with no citizen login required.
 
----
+Key components:
+- **Mobile App** (React Native): Used by Field Surveyors to capture issues on-site.
+- **Backend** (Node.js/Express + Render): Handles API requests, geo-fencing, auto-routing, and workflow automation.
+- **AI Service** (YOLOv8 + PyTorch): Processes images to detect and classify civic issues.
+- **Database** (PostgreSQL + PostGIS): Stores user data, ward boundaries, issues, and resolution details.
+- **Dashboards** (React.js + OpenStreetMap): Web interfaces for Ward Engineers and Admins to monitor and resolve issues.
 
-##Overview
+## Roles
+- **Field Surveyor**: Captures issues via mobile app.
+- **Ward Engineer**: Reviews assigned issues, uploads resolution images.
+- **Admin**: Monitors system-wide statistics and heatmaps.
 
-TheAI-BasedCivicIssueMonitoringSystemisdesignedtoautomatethedetection,assignment,andresolutionofcivicissuesinVadodara's19wards.ThesystemtargetsVMCemployeesonly,withnocitizenloginrequired.
+## Data Flow
+1. Field Surveyor captures image and GPS via Mobile App.
+2. Mobile App sends data to Backend.
+3. Backend performs geo-fencing to assign ward.
+4. Backend sends image to AI for issue detection.
+5. Issue is stored in Database with auto-assigned department and priority.
+6. Ward Engineer receives notification and accesses Dashboard.
+7. Engineer uploads resolution image, updating issue status.
+8. Admin views analytics on Dashboard.
 
-Keycomponents:
--**MobileApp**(ReactNative):UsedbyFieldSurveyorstocaptureissueson-site.
--**Backend**(Node.js/Express+Render):HandlesAPIrequests,geo-fencing,auto-routing,andworkflowautomation.
--**AIService**(YOLOv8+PyTorch):Processesimagestodetectandclassifycivicissues.
--**Database**(PostgreSQL+PostGIS):Storesuserdata,wardboundaries,issues,andresolutiondetails.
--**Dashboards**(React.js+OpenStreetMap):WebinterfacesforWardEngineersandAdminstomonitorandresolveissues.
-
-###FreeStackDetails
--**Maps**:OpenStreetMap+Leaflet(NOGoogleMapsAPI)
--**AI**:YOLOv8localinference(NOCloudVisionAPIs)
--**Storage**:LocaldiskonRender(NOAWSS3)
--**Notifications**:FirebaseFCMFreeTier
--**Deployment**:RenderFreeTier(NOKubernetes,NOAWS/GCP/Azure)
-
-##Roles
--**FieldSurveyor**:Capturesissuesviamobileapp.
--**WardEngineer**:Reviewsassignedissues,uploadsresolutionimages.
--**Admin**:Monitorssystem-widestatisticsandheatmaps.
-
-##DataFlow
-1.FieldSurveyorcapturesimageandGPSviaMobileApp.
-2.MobileAppsendsdatatoBackend.
-3.Backendperformsgeo-fencingtoassignward.
-4.BackendsendsimagetoAIforissuedetection.
-5.IssueisstoredinDatabasewithauto-assigneddepartmentandpriority.
-6.WardEngineerreceivesnotificationandaccessesDashboard.
-7.Engineeruploadsresolutionimage,updatingissuestatus.
-8.AdminviewsanalyticsonDashboard.
-
-##ArchitectureDiagram(RenderFreeTier-OpenSource)
+## Architecture Diagram
 
 ```mermaid
-graphTD
-A[FieldSurveyorMobileApp<br/>ReactNative+expo-camera]-->|SubmitIssue:Image+GPS|B[BackendAPIServer<br/>Node.js/ExpressonRender]
-B-->|Geo-fencing<br/>PostGISspatialqueries|C[WardBoundaryService<br/>PostgreSQL+PostGIS]
-C-->|WardID|B
-B-->|ImageAnalysis|D[AIIssueDetection<br/>YOLOv8+PyTorch<br/>LocalInference]
-D-->|IssueType+Confidence|B
-B-->|StoreIssue<br/>Local/uploads|E[PostgreSQLDatabase<br/>RenderFreeTier]
-E-->|AssignIssue|F[WardEngineerDashboard<br/>React+OpenStreetMap]
-F-->|UploadResolutionImage|B
-B-->|UpdateStatus|E
-E-->|FetchStats|G[AdminDashboard<br/>React+LeafletHeatmaps]
-G-->|Analytics|E
-
-H[FirebaseFCMFree]-->|PushNotifications|A
-H-->|PushNotifications|F
-
-I[RedisCache<br/>RenderFree]-->|Session&Cache|B
-
-styleAfill:#90EE90
-styleBfill:#87CEEB
-styleDfill:#FFB6C1
-styleEfill:#DDA0DD
-styleFfill:#F0E68C
-styleGfill:#F0E68C
+graph TD
+    A[Field Surveyor Mobile App<br/>React Native + expo-camera] -->|Submit Issue: Image + GPS| B[Backend API Server<br/>Node.js/Express on Render]
+    B -->|Geo-fencing<br/>PostGIS spatial queries| C[Ward Boundary Service<br/>PostgreSQL+PostGIS]
+    C -->|Ward ID| B
+    B -->|Image Analysis| D[AI Issue Detection<br/>YOLOv8 + PyTorch<br/>Local Inference]
+    D -->|Issue Type + Confidence| B
+    B -->|Store Issue<br/>Local /uploads| E[PostgreSQL Database<br/>Render Free Tier]
+    E -->|Assign Issue| F[Ward Engineer Dashboard<br/>React + OpenStreetMap]
+    F -->|Upload Resolution Image| B
+    B -->|Update Status| E
+    E -->|Fetch Stats| G[Admin Dashboard<br/>React + Leaflet Heatmaps]
+    G -->|Analytics| E
+    
+    H[Firebase FCM Free] -->|Push Notifications| A
+    H -->|Push Notifications| F
+    
+    I[Redis Cache<br/>Render Free] -->|Session & Cache| B
 ```
-
-###FreeStackComponents:
--✅**Frontend**:ReactNative(mobile),React.js(web),OpenStreetMap+Leaflet
--✅**Backend**:Node.js/Express,Multer(localuploads),JWTauth
--✅**Database**:PostgreSQL14+withPostGISextension
--✅**Caching**:Redis(Renderfreetier)
--✅**AI/ML**:YOLOv8,PyTorch,OpenCV(localinference)
--✅**Deployment**:RenderFreeTier,GitHubActionsCI/CD
--✅**Notifications**:FirebaseFCM(freetier)
--❌**NOTUSED**:AWS,GoogleCloud,Azure,Kubernetes,GoogleMapsAPI,S3
-

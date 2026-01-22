@@ -1,345 +1,289 @@
-#AI-BasedCivicIssueMonitoringSystem
+﻿# AI-Based Civic Issue Monitoring System
 
-##100%FREESTACKCERTIFIED
+## Project Overview
 
-**NoPaidAPIs•NoProprietaryServices•NoVendorLock-in**
-**Open-sourceOnly•FreeCloudTier•FullyTransparent**
+The AI-Based Civic Issue Monitoring System is a geo-fencing enabled mobile and web application designed to help Vadodara Municipal Corporation (VMC) proactively identify and resolve civic issues. The system leverages AI-powered image recognition to automatically detect problems such as potholes, garbage accumulation, debris, stray cattle, broken roads, and open manholes across the city's 19 wards.
 
----
+## Problem Statement
 
-##ProjectOverview
+Currently, civic issues in Vadodara are identified mainly through citizen complaints or feedback, leaving many issues undetected. This reactive approach leads to:
+- Delayed problem resolution
+- Inconsistent identification across wards
+- Lack of data-driven prioritization
+- Poor resource allocation
 
-TheAI-BasedCivicIssueMonitoringSystemisageo-fencingenabledmobileandwebapplicationdesignedtohelpVadodaraMunicipalCorporation(VMC)proactivelyidentifyandresolvecivicissues.Thesystemleverages**open-sourceYOLOv8AI**toautomaticallydetectproblemssuchaspotholes,garbageaccumulation,debris,straycattle,brokenroads,andopenmanholesacrossthecity's19wards.
+This system transforms the process into a proactive, data-driven approach by enabling VMC employees to conduct field surveys using mobile applications with automated issue detection.
 
-**Zerodependencyonpaidcloudservices,commercialAIAPIs,orproprietarytools.**
+## Key Features
 
-##ProblemStatement
+### For Field Surveyors
+- Geo-fencing enabled mobile application
+- One-click image capture with automatic GPS tagging
+- Automatic issue type detection using AI/ML
+- Real-time issue submission
+- Offline mode support with sync capability
 
-Currently,civicissuesinVadodaraareidentifiedmainlythroughcitizencomplaintsorfeedback,leavingmanyissuesundetected.Thisreactiveapproachleadsto:
--Delayedproblemresolution
--Inconsistentidentificationacrosswards
--Lackofdata-drivenprioritization
--Poorresourceallocation
+### For Ward Engineers
+- Dashboard to view assigned issues
+- Issue filtering by priority, type, status, location
+- Resolution image upload capability
+- Issue close/completion workflow
+- Performance metrics and assignment history
 
-Thissystemtransformstheprocessintoaproactive,data-drivenapproachbyenablingVMCemployeestoconductfieldsurveysusingmobileapplicationswith**free,open-sourceAI**forautomatedissuedetection.
+### For System Administrators
+- System-wide analytics and statistics
+- Ward-wise issue heatmaps
+- User management (CRUD operations)
+- Issue priority distribution analysis
+- Department-wise resolution tracking
+- System health monitoring
 
-##KeyFeatures
+## System Architecture
 
-###ForFieldSurveyors
--Geo-fencingenabledmobileapplication
--One-clickimagecapturewithautomaticGPStagging
--AutomaticissuetypedetectionusingAI/ML
--Real-timeissuesubmission
--Offlinemodesupportwithsynccapability
+### Components
+1. **Mobile Application** (React Native/Flutter)
+   - Geo-location capture
+   - Image capture and compression
+   - Issue reporting interface
+   - Offline support with SQLite
 
-###ForWardEngineers
--Dashboardtoviewassignedissues
--Issuefilteringbypriority,type,status,location
--Resolutionimageuploadcapability
--Issueclose/completionworkflow
--Performancemetricsandassignmenthistory
+2. **Backend API Server** (Node.js/Python/Java)
+   - RESTful API endpoints
+   - JWT authentication
+   - Geo-fencing logic (using PostGIS)
+   - Workflow orchestration
+   - Image storage management
 
-###ForSystemAdministrators
--System-wideanalyticsandstatistics
--Ward-wiseissueheatmaps
--Usermanagement(CRUDoperations)
--Issueprioritydistributionanalysis
--Department-wiseresolutiontracking
--Systemhealthmonitoring
+3. **AI/ML Service**
+   - Computer vision model for issue classification
+   - Confidence scoring
+   - Multi-class image classification
 
-##SystemArchitecture
+4. **Database** (PostgreSQL with PostGIS)
+   - User and role management
+   - Ward boundary data with spatial indexing
+   - Issue tracking and history
+   - Department mapping
 
-###Components
-1.**MobileApplication**(ReactNative/Flutter)
--Geo-locationcapture
--Imagecaptureandcompression
--Issuereportinginterface
--OfflinesupportwithSQLite
+5. **Web Dashboards** (React/Vue)
+   - Engineer dashboard (issue assignment and resolution)
+   - Admin dashboard (analytics and monitoring)
 
-2.**BackendAPIServer**(Node.js/Python/Java)
--RESTfulAPIendpoints
--JWTauthentication
--Geo-fencinglogic(usingPostGIS)
--Workfloworchestration
--Imagestoragemanagement
+6. **Third-party Services**
+   - Cloud storage (AWS S3/Google Cloud Storage) for images
+   - SMS/Email notifications
+   - Maps API for ward boundaries
 
-3.**AI/MLService**
--Open-sourceYOLOv8model(noCloudVisionAPIs)
--PyTorchframeworkforlocalinference
--OpenCVforimageprocessing
+## Vadodara City Structure
 
-4.**Database**(PostgreSQLwithPostGIS-open-source)
--Userandrolemanagement
--Wardboundarydatawithspatialindexing(PostGIS)
--Issuetrackingandhistory
+- **City Division**: 19 wards
+- **Teams Available**: Water Supply, Roads, Garbage, Cattle Control, Drainage
+- **Geographical Data**: Ward-wise boundaries (GeoJSON polygons)
 
-5.**WebDashboards**(React-open-source)
--Engineerdashboard(issueassignmentandresolution)
--Admindashboard(analyticsandmonitoring)
--MapsusingOpenStreetMap+Leaflet(free,noGoogleMaps)
+## User Roles
 
-6.**Storage&Services**(100%Free)
--**LocalDiskStorage**onRenderinstance
--**FirebaseFCM**(freetier)forpushnotifications
--**Nominatim**(OpenStreetMap)forreversegeocoding
-
-##VadodaraCityStructure
-
--**CityDivision**:19wards
--**TeamsAvailable**:WaterSupply,Roads,Garbage,CattleControl,Drainage
--**GeographicalData**:Ward-wiseboundaries(GeoJSONpolygons)
-
-##UserRoles
-
-|Role|Responsibilities|Access|
+| Role | Responsibilities | Access |
 |------|------------------|--------|
-|**FieldSurveyor**|Captureissuesviamobileapp,submitissuereportswithimagesandGPS|Mobileapp,limitedtoassignedward|
-|**WardEngineer**|Reviewassignedissues,verifyproblems,uploadresolutionimages,closeissues|Engineerdashboard,assignedwardissues|
-|**Admin**|Systemmonitoring,usermanagement,analytics,configuresystemparameters|Admindashboard,system-wideaccess|
+| **Field Surveyor** | Capture issues via mobile app, submit issue reports with images and GPS | Mobile app, limited to assigned ward |
+| **Ward Engineer** | Review assigned issues, verify problems, upload resolution images, close issues | Engineer dashboard, assigned ward issues |
+| **Admin** | System monitoring, user management, analytics, configure system parameters | Admin dashboard, system-wide access |
 
-##IssueTypes
+## Issue Types
 
-Thesystemdetectsandtracksthefollowingcivicissues:
--**Potholes**-Roaddamage
--**GarbageAccumulation**-Trashandwastecollectionproblems
--**Debris**-Scatteredwasteandrubble
--**StrayCattle**-Abandonedorroaminglivestock
--**BrokenRoads**-Damagedroadsurfaces
--**OpenManholes**-Uncoveredutilityaccesspoints
+The system detects and tracks the following civic issues:
+- **Potholes** - Road damage
+- **Garbage Accumulation** - Trash and waste collection problems
+- **Debris** - Scattered waste and rubble
+- **Stray Cattle** - Abandoned or roaming livestock
+- **Broken Roads** - Damaged road surfaces
+- **Open Manholes** - Uncovered utility access points
 
----
+## Priority Levels
 
-##✅100%FREESTACKCERTIFICATION
+Issues are assigned priority based on:
+- **High**: Safety hazards, major infrastructure damage, health risks
+- **Medium**: Maintenance issues, moderate inconvenience
+- **Low**: Minor issues, cosmetic problems
 
-###🎨FrontendStack(Open-Source)
--✅**ReactNative**-Cross-platformmobileframework
--✅**expo-camera**-Open-sourcecameraaccess
--✅**expo-location**-GPS/locationservices
--✅**OpenStreetMap+Leaflet**-Freemaplibrary(NOGoogleMaps)
--✅**SQLite**-Localofflinedatabase
--✅**Axios**-HTTPclient
-
-###🔧BackendStack(Open-Source)
--✅**Node.js/Express**-Serverframework
--✅**PostgreSQL+PostGIS**-Spatialdatabase(free,open-source)
--✅**Redis**-Caching(Renderfreetier)
--✅**JWT**-Authentication(nopaidservices)
--✅**Prisma/Sequelize**-ORM
--✅**Multer**-Fileuploads(localstorage)
-
-###🧠AI/MLStack(Open-Source)
--✅**YOLOv8**-Objectdetectionmodel
--✅**PyTorch**-Deeplearningframework
--✅**OpenCV**-Imageprocessing
--✅**LocalInference**-ProcessonRenderworker(NOcloudAIAPIs)
-
-###🚀Deployment&DevOps(Free)
--✅**RenderFreeTier**-Backendhosting(NOTAWS/Kubernetes)
--✅**GitHubActions**-CI/CDpipeline(free)
--✅**Docker**-Containerization(open-source)
--✅**PostgreSQL(Render)**-Database(freetier)
--✅**Redis(Render)**-Cache(freetier)
-
-###🔔Notifications&Services(Free)
--✅**FirebaseFCM**-Pushnotifications(freetier)
--✅**Nominatim**-Reversegeocoding(OpenStreetMap,free)
--✅**LocalStorage**-ImagestorageonRenderdisk
-
----
-
-##❌STRICTLYNOTUSED(Paid/Proprietary)
-
-❌GoogleMapsAPI
-❌AWS/Azure/GCPpaidservices
-❌AWSS3(usinglocalstorageinstead)
-❌CloudVisionAPIs(usingopen-sourceYOLOv8)
-❌Mapboxorpaidmapservices
-❌SMSgateways(usingFirebaseFCMinstead)
-❌Kubernetes(usingRenderFreeTier)
-❌ProprietaryAImodels
-❌Cloudinaryorpaidimagehosting
-❌Paidanalyticsservices
-
-##PriorityLevels
-
-Issuesareassignedprioritybasedon:
--**High**:Safetyhazards,majorinfrastructuredamage,healthrisks
--**Medium**:Maintenanceissues,moderateinconvenience
--**Low**:Minorissues,cosmeticproblems
-
-##DataFlowDiagram
+## Data Flow Diagram
 
 ```
-FieldSurveyorMobileApp
-↓
-├─→CaptureImage+GPSLocation
-├─→SubmittoBackendAPI
-↓
-BackendAPIServer
-├─→Geo-fencing(IdentifyWard)
-├─→SendImagetoAIService
-├─→ReceiveClassification+ConfidenceScore
-├─→AssigntoDepartmentbasedonIssueType
-├─→CalculatePriority
-├─→StoreinDatabase
-↓
-Database(PostgreSQL+PostGIS)
-├─→StoreIssuewithallmetadata
-├─→Triggernotificationtoassignedengineer
-↓
-WardEngineerDashboard
-├─→Viewassignedissues(notifications)
-├─→Reviewissuedetailsandimages
-├─→Planresolution
-├─→Uploadresolutionimages
-├─→Closeissue
-↓
-AdminDashboard
-├─→Viewsystem-widestatistics
-├─→Monitorresolutionrates
-├─→Viewheatmaps
-└─→Analyzetrendsbywardanddepartment
+Field Surveyor Mobile App
+    ↓
+    ├─→ Capture Image + GPS Location
+    ├─→ Submit to Backend API
+    ↓
+Backend API Server
+    ├─→ Geo-fencing (Identify Ward)
+    ├─→ Send Image to AI Service
+    ├─→ Receive Classification + Confidence Score
+    ├─→ Assign to Department based on Issue Type
+    ├─→ Calculate Priority
+    ├─→ Store in Database
+    ↓
+Database (PostgreSQL + PostGIS)
+    ├─→ Store Issue with all metadata
+    ├─→ Trigger notification to assigned engineer
+    ↓
+Ward Engineer Dashboard
+    ├─→ View assigned issues (notifications)
+    ├─→ Review issue details and images
+    ├─→ Plan resolution
+    ├─→ Upload resolution images
+    ├─→ Close issue
+    ↓
+Admin Dashboard
+    ├─→ View system-wide statistics
+    ├─→ Monitor resolution rates
+    ├─→ View heatmaps
+    └─→ Analyze trends by ward and department
 ```
 
-##TechnicalStack
+## 100% FREE STACK CERTIFICATION
 
-###Frontend
--**Mobile**:ReactNative/Flutter
--**Web**:React.js/Vue.js
--**StateManagement**:Redux/Vuex
--**Maps**:GoogleMaps/Mapbox
--**Styling**:TailwindCSS/MaterialUI
+### Frontend Stack (Open-Source)
+- **React Native** - Cross-platform mobile framework
+- **expo-camera** - Open-source camera access
+- **expo-location** - GPS/location services
+- **OpenStreetMap + Leaflet** - Free map library (NO Google Maps)
+- **SQLite** - Local offline database
+- **Axios** - HTTP client
 
-###Backend
--**Framework**:Node.js+Express/Django/SpringBoot
--**Language**:JavaScript/TypeScript/Python/Java
--**API**:RESTfularchitecturewithJSON
--**Authentication**:JWTtokens
+### Backend Stack (Open-Source)
+- **Node.js/Express** - Server framework
+- **PostgreSQL + PostGIS** - Spatial database (free, open-source)
+- **Redis** - Caching (Render free tier)
+- **JWT** - Authentication (no paid services)
+- **Prisma/Sequelize** - ORM
+- **Multer** - File uploads (local storage)
 
-###Database
--**Primary**:PostgreSQL(relationaldata+spatialqueries)
--**Caching**:Redis(sessionmanagement,notifications)
--**SpatialData**:PostGISextensionforgeo-fencing
+### AI/ML Stack (Open-Source)
+- **YOLOv8** - Object detection model
+- **PyTorch** - Deep learning framework
+- **OpenCV** - Image processing
+- **Local Inference** - Process on Render worker (NO cloud AI APIs)
 
-###AI/ML
--**Framework**:TensorFlow/PyTorch/OpenCV
--**Model**:Pre-trainedCNNforimageclassification
--**Deployment**:DockercontainerswithGPUsupport
+### Deployment & DevOps (Free)
+- **Render Free Tier** - Backend hosting (NOT AWS/Kubernetes)
+- **GitHub Actions** - CI/CD pipeline (free)
+- **Docker** - Containerization (open-source)
+- **PostgreSQL (Render)** - Database (free tier)
+- **Redis (Render)** - Cache (free tier)
 
-###Infrastructure
--**Cloud**:AWS/GoogleCloud/Azure
--**Containerization**:Docker
--**Orchestration**:Kubernetes
--**CI/CD**:GitHubActions/Jenkins
--**Storage**:S3/CloudStorageforimages
+### Notifications & Services (Free)
+- **Firebase FCM** - Push notifications (free tier)
+- **Nominatim** - Reverse geocoding (OpenStreetMap, free)
+- **Local Storage** - Image storage on Render disk
+- **Orchestration**: Kubernetes
+- **CI/CD**: GitHub Actions / Jenkins
+- **Storage**: S3 / Cloud Storage for images
 
-##SecurityConsiderations
+## Security Considerations
 
-1.**Authentication**:JWT-based,passwordhashingwithbcrypt
-2.**Authorization**:Role-basedaccesscontrol(RBAC)
-3.**DataEncryption**:HTTPS/TLSfortransit,encryptedstorageforsensitivedata
-4.**RateLimiting**:APIratelimitingtopreventabuse
-5.**InputValidation**:Server-sidevalidationofallinputs
-6.**ImageSecurity**:Virusscanning,sizelimits,formatvalidation
-7.**DatabaseSecurity**:SQLinjectionprevention,parameterizedqueries
-8.**AuditLogging**:Trackalluseractionsforaccountability
+1. **Authentication**: JWT-based, password hashing with bcrypt
+2. **Authorization**: Role-based access control (RBAC)
+3. **Data Encryption**: HTTPS/TLS for transit, encrypted storage for sensitive data
+4. **Rate Limiting**: API rate limiting to prevent abuse
+5. **Input Validation**: Server-side validation of all inputs
+6. **Image Security**: Virus scanning, size limits, format validation
+7. **Database Security**: SQL injection prevention, parameterized queries
+8. **Audit Logging**: Track all user actions for accountability
 
-##PerformanceRequirements
+## Performance Requirements
 
--**APIResponseTime**:<500msforstandardqueries
--**ImageProcessing**:<5secondsforAIclassification
--**DatabaseQueries**:<100ms(optimizedwithindexes)
--**MobileApp**:Supportofflinemodewithsynconconnectivity
--**Scalability**:Supportconcurrentaccessby100+VMCemployees
+- **API Response Time**: < 500ms for standard queries
+- **Image Processing**: < 5 seconds for AI classification
+- **Database Queries**: < 100ms (optimized with indexes)
+- **Mobile App**: Support offline mode with sync on connectivity
+- **Scalability**: Support concurrent access by 100+ VMC employees
 
-##QualityAssurance
+## Quality Assurance
 
--**UnitTesting**:80%+codecoverage
--**IntegrationTesting**:AllAPIendpointstested
--**End-to-EndTesting**:Completeworkflowtesting
--**PerformanceTesting**:Loadtestingwithsimulatedconcurrentusers
--**SecurityTesting**:Penetrationtesting,vulnerabilityscanning
+- **Unit Testing**: 80%+ code coverage
+- **Integration Testing**: All API endpoints tested
+- **End-to-End Testing**: Complete workflow testing
+- **Performance Testing**: Load testing with simulated concurrent users
+- **Security Testing**: Penetration testing, vulnerability scanning
 
-##GettingStarted
+## Getting Started
 
-###Prerequisites
--Node.js16+/Python3.8+/Java11+
--PostgreSQL12+
--Git
--Docker&DockerCompose(optional,forcontainerizedsetup)
+### Prerequisites
+- Node.js 16+ / Python 3.8+ / Java 11+
+- PostgreSQL 12+
+- Git
+- Docker & Docker Compose (optional, for containerized setup)
 
-###InstallationSteps
-1.Clonerepository
-2.Setupenvironmentvariables
-3.Installdependencies
-4.Configuredatabase
-5.Initializedatabaseschema
-6.Startbackendserver
-7.Buildandrunmobile/webapps
+### Installation Steps
+1. Clone repository
+2. Set up environment variables
+3. Install dependencies
+4. Configure database
+5. Initialize database schema
+6. Start backend server
+7. Build and run mobile/web apps
 
-See[IMPLEMENTATION.md](./plans/IMPLEMENTATION.md)fordetailedsetupinstructions.
+See [IMPLEMENTATION.md](./plans/IMPLEMENTATION.md) for detailed setup instructions.
 
-##ProjectStructure
+## Project Structure
 
 ```
 AI-Based-Civic-Issue-Monitoring-System/
-├──backend/#BackendAPIserver
-│├──src/
-│├──tests/
-│└──config/
-├──mobile/#Mobileapplication(ReactNative/Flutter)
-│├──src/
-│├──assets/
-│└──tests/
-├──web/#Webdashboards
-│├──src/
-│├──public/
-│└──tests/
-├──ai-service/#AI/MLserviceforimageclassification
-│├──models/
-│├──src/
-│└──tests/
-├──database/#Databaseschemasandmigrations
-│├──migrations/
-│└──seeds/
-├──plans/#Projectdocumentation
-│├──README.md(thisfile)
-│├──REQUIREMENTS.md
-│├──IMPLEMENTATION.md
-│├──USER_WORKFLOWS.md
-│├──api_list.md
-│├──architecture.md
-│└──database_schema.md
-├──docker-compose.yml#Containerorchestration
-└──.env.example#Environmentvariablestemplate
+├── backend/                 # Backend API server
+│   ├── src/
+│   ├── tests/
+│   └── config/
+├── mobile/                  # Mobile application (React Native/Flutter)
+│   ├── src/
+│   ├── assets/
+│   └── tests/
+├── web/                     # Web dashboards
+│   ├── src/
+│   ├── public/
+│   └── tests/
+├── ai-service/              # AI/ML service for image classification
+│   ├── models/
+│   ├── src/
+│   └── tests/
+├── database/                # Database schemas and migrations
+│   ├── migrations/
+│   └── seeds/
+├── plans/                   # Project documentation
+│   ├── README.md (this file)
+│   ├── REQUIREMENTS.md
+│   ├── IMPLEMENTATION.md
+│   ├── USER_WORKFLOWS.md
+│   ├── api_list.md
+│   ├── architecture.md
+│   └── database_schema.md
+├── docker-compose.yml       # Container orchestration
+└── .env.example             # Environment variables template
 ```
 
-##Contributing
+## Contributing
 
-1.Createfeaturebranchfrom`main`
-2.Makechangeswithmeaningfulcommits
-3.Pushtoorigin
-4.Createpullrequestwithdescription
-5.Codereviewandmergeafterapproval
+1. Create feature branch from `main`
+2. Make changes with meaningful commits
+3. Push to origin
+4. Create pull request with description
+5. Code review and merge after approval
 
-##Deployment
+## Deployment
 
-See[DEPLOYMENT.md](./plans/DEPLOYMENT.md)forproductiondeploymentinstructions.
+See [DEPLOYMENT.md](./plans/DEPLOYMENT.md) for production deployment instructions.
 
-##Contact&Support
+## Contact & Support
 
-Forproject-relatedqueriesorissues,contactthedevelopmentteam.
+For project-related queries or issues, contact the development team.
 
-##License
+## License
 
-[Specifyappropriatelicense]
+[Specify appropriate license]
 
-##Changelog
+## Changelog
 
-###Version1.0(InitialRelease)
--Mobileapplicationforfieldsurveyors
--BackendAPIserverwithgeo-fencing
--AI-basedissueclassification
--EngineerandAdmindashboards
--DatabaseschemawithPostGISintegration
-
+### Version 1.0 (Initial Release)
+- Mobile application for field surveyors
+- Backend API server with geo-fencing
+- AI-based issue classification
+- Engineer and Admin dashboards
+- Database schema with PostGIS integration
