@@ -14,8 +14,8 @@ const STATUS_TRANSITIONS = {
     [ISSUE_STATUS.ASSIGNED]: [ISSUE_STATUS.IN_PROGRESS, ISSUE_STATUS.PENDING],
     [ISSUE_STATUS.IN_PROGRESS]: [ISSUE_STATUS.RESOLVED, ISSUE_STATUS.ASSIGNED],
     [ISSUE_STATUS.RESOLVED]: [ISSUE_STATUS.CLOSED, ISSUE_STATUS.IN_PROGRESS],
-    [ISSUE_STATUS.CLOSED]: [],
-    [ISSUE_STATUS.REJECTED]: []
+    [ISSUE_STATUS.CLOSED]: [ISSUE_STATUS.IN_PROGRESS], // Allow reopening
+    [ISSUE_STATUS.REJECTED]: [ISSUE_STATUS.PENDING] // Allow resubmission
 };
 
 /**
@@ -366,13 +366,147 @@ async function getSLABreachCandidates() {
     }
 }
 
+/**
+ * Accept issue (engineer accepts assignment)
+ * @param {string} issueId - Issue UUID
+ * @param {string} engineerId - Engineer UUID
+ * @returns {Promise<Object>} Updated issue
+ */
+async function acceptIssue(issueId, engineerId) {
+    try {
+        const issue = await db.findOne('issues', { id: issueId });
+        
+        if (!issue) {
+            throw new Error(ERROR_MESSAGES.ISSUE_NOT_FOUND);
+        }
+        
+        // Verify engineer is assigned
+        if (issue.assigned_to !== engineerId) {
+            throw new Error('Issue is not assigned to this engineer');
+        }
+        
+        // Update to in_progress
+        return await updateIssueStatus(
+            issueId,
+            ISSUE_STATUS.IN_PROGRESS,
+            engineerId,
+            'Engineer accepted and started working on issue'
+        );
+        
+    } catch (error) {
+        logger.error('Error accepting issue:', error);
+        throw error;
+    }
+}
+
+/**
+ * Reopen closed issue
+ * @param {string} issueId - Issue UUID
+ * @param {string} reopenedBy - User ID reopening the issue
+ * @param {string} reason - Reason for reopening
+ * @returns {Promise<Object>} Updated issue
+ */
+async function reopenIssue(issueId, reopenedBy, reason) {
+    try {
+        if (!reason) {
+            throw new Error('Reason for reopening is required');
+        }
+        
+        const issue = await db.findOne('issues', { id: issueId });
+        
+        if (!issue) {
+            throw new Error(ERROR_MESSAGES.ISSUE_NOT_FOUND);
+        }
+        
+        if (issue.status !== ISSUE_STATUS.CLOSED && issue.status !== ISSUE_STATUS.REJECTED) {
+            throw new Error('Only closed or rejected issues can be reopened');
+        }
+        
+        const newStatus = issue.status === ISSUE_STATUS.CLOSED 
+            ? ISSUE_STATUS.IN_PROGRESS 
+            : ISSUE_STATUS.PENDING;
+        
+        return await updateIssueStatus(
+            issueId,
+            newStatus,
+            reopenedBy,
+            `Issue reopened: ${reason}`
+        );
+        
+    } catch (error) {
+        logger.error('Error reopening issue:', error);
+        throw error;
+    }
+}
+
+/**
+ * Auto-assign issue to engineer with load balancing
+ * @param {string} issueId - Issue UUID
+ * @param {string} wardId - Ward UUID
+ * @param {string} assignedBy - User ID assigning the issue
+ * @returns {Promise<Object>} Updated issue
+ */
+async function autoAssignIssue(issueId, wardId, assignedBy) {
+    try {
+        // Get all engineers for this ward
+        const engineers = await db.query(
+            `SELECT u.id, u.username,
+                    COUNT(i.id) as current_load
+             FROM users u
+             LEFT JOIN issues i ON i.assigned_to = u.id 
+                  AND i.status NOT IN ($1, $2, $3)
+             WHERE u.role = $4 
+                  AND (u.ward_id = $5 OR u.ward_id IS NULL)
+             GROUP BY u.id, u.username
+             ORDER BY current_load ASC, RANDOM()
+             LIMIT 1`,
+            [ISSUE_STATUS.RESOLVED, ISSUE_STATUS.CLOSED, ISSUE_STATUS.REJECTED, USER_ROLES.ENGINEER, wardId]
+        );
+        
+        if (engineers.rows.length === 0) {
+            // No ward-specific engineer, get any available engineer
+            const anyEngineer = await db.query(
+                `SELECT u.id, u.username,
+                        COUNT(i.id) as current_load
+                 FROM users u
+                 LEFT JOIN issues i ON i.assigned_to = u.id 
+                      AND i.status NOT IN ($1, $2, $3)
+                 WHERE u.role = $4
+                 GROUP BY u.id, u.username
+                 ORDER BY current_load ASC, RANDOM()
+                 LIMIT 1`,
+                [ISSUE_STATUS.RESOLVED, ISSUE_STATUS.CLOSED, ISSUE_STATUS.REJECTED, USER_ROLES.ENGINEER]
+            );
+            
+            if (anyEngineer.rows.length === 0) {
+                throw new Error('No engineers available for assignment');
+            }
+            
+            const engineer = anyEngineer.rows[0];
+            logger.info(`Auto-assigning to engineer ${engineer.username} (load: ${engineer.current_load})`);
+            return await assignIssue(issueId, engineer.id, assignedBy);
+        }
+        
+        const engineer = engineers.rows[0];
+        logger.info(`Auto-assigning to ward engineer ${engineer.username} (load: ${engineer.current_load})`);
+        return await assignIssue(issueId, engineer.id, assignedBy);
+        
+    } catch (error) {
+        logger.error('Error auto-assigning issue:', error);
+        throw error;
+    }
+}
+
 module.exports = {
     validateStatusTransition,
     updateIssueStatus,
     assignIssue,
+    autoAssignIssue,
+    acceptIssue,
     rejectIssue,
     resolveIssue,
     closeIssue,
+    reopenIssue,
     getIssueHistory,
     getEngineerIssues,
     getSLABreachCandidates,
