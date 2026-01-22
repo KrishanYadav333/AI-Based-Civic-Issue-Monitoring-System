@@ -109,56 +109,56 @@ Thesystemdetectsandtracksthefollowingcivicissues:
 
 ---
 
-##✅100%FREESTACKCERTIFICATION
+##100%FREESTACKCERTIFICATION
 
-###🎨FrontendStack(Open-Source)
--✅**ReactNative**-Cross-platformmobileframework
--✅**expo-camera**-Open-sourcecameraaccess
--✅**expo-location**-GPS/locationservices
--✅**OpenStreetMap+Leaflet**-Freemaplibrary(NOGoogleMaps)
--✅**SQLite**-Localofflinedatabase
--✅**Axios**-HTTPclient
+###FrontendStack(Open-Source)
+-**ReactNative**-Cross-platformmobileframework
+-**expo-camera**-Open-sourcecameraaccess
+-**expo-location**-GPS/locationservices
+-**OpenStreetMap+Leaflet**-Freemaplibrary(NOGoogleMaps)
+-**SQLite**-Localofflinedatabase
+-**Axios**-HTTPclient
 
-###🔧BackendStack(Open-Source)
--✅**Node.js/Express**-Serverframework
--✅**PostgreSQL+PostGIS**-Spatialdatabase(free,open-source)
--✅**Redis**-Caching(Renderfreetier)
--✅**JWT**-Authentication(nopaidservices)
--✅**Prisma/Sequelize**-ORM
--✅**Multer**-Fileuploads(localstorage)
+###BackendStack(Open-Source)
+-**Node.js/Express**-Serverframework
+-**PostgreSQL+PostGIS**-Spatialdatabase(free,open-source)
+-**Redis**-Caching(Renderfreetier)
+-**JWT**-Authentication(nopaidservices)
+-**Prisma/Sequelize**-ORM
+-**Multer**-Fileuploads(localstorage)
 
-###🧠AI/MLStack(Open-Source)
--✅**YOLOv8**-Objectdetectionmodel
--✅**PyTorch**-Deeplearningframework
--✅**OpenCV**-Imageprocessing
--✅**LocalInference**-ProcessonRenderworker(NOcloudAIAPIs)
+###AI/MLStack(Open-Source)
+-**YOLOv8**-Objectdetectionmodel
+-**PyTorch**-Deeplearningframework
+-**OpenCV**-Imageprocessing
+-**LocalInference**-ProcessonRenderworker(NOcloudAIAPIs)
 
-###🚀Deployment&DevOps(Free)
--✅**RenderFreeTier**-Backendhosting(NOTAWS/Kubernetes)
--✅**GitHubActions**-CI/CDpipeline(free)
--✅**Docker**-Containerization(open-source)
--✅**PostgreSQL(Render)**-Database(freetier)
--✅**Redis(Render)**-Cache(freetier)
+###Deployment&DevOps(Free)
+-**RenderFreeTier**-Backendhosting(NOTAWS/Kubernetes)
+-**GitHubActions**-CI/CDpipeline(free)
+-**Docker**-Containerization(open-source)
+-**PostgreSQL(Render)**-Database(freetier)
+-**Redis(Render)**-Cache(freetier)
 
-###🔔Notifications&Services(Free)
--✅**FirebaseFCM**-Pushnotifications(freetier)
--✅**Nominatim**-Reversegeocoding(OpenStreetMap,free)
--✅**LocalStorage**-ImagestorageonRenderdisk
+###Notifications&Services(Free)
+-**FirebaseFCM**-Pushnotifications(freetier)
+-**Nominatim**-Reversegeocoding(OpenStreetMap,free)
+-**LocalStorage**-ImagestorageonRenderdisk
 
 ---
 
-##❌STRICTLYNOTUSED(Paid/Proprietary)
+##STRICTLYNOTUSED(Paid/Proprietary)
 
-❌GoogleMapsAPI
-❌AWS/Azure/GCPpaidservices
-❌AWSS3(usinglocalstorageinstead)
-❌CloudVisionAPIs(usingopen-sourceYOLOv8)
-❌Mapboxorpaidmapservices
-❌SMSgateways(usingFirebaseFCMinstead)
-❌Kubernetes(usingRenderFreeTier)
-❌ProprietaryAImodels
-❌Cloudinaryorpaidimagehosting
-❌Paidanalyticsservices
+GoogleMapsAPI
+AWS/Azure/GCPpaidservices
+AWSS3(usinglocalstorageinstead)
+CloudVisionAPIs(usingopen-sourceYOLOv8)
+Mapboxorpaidmapservices
+SMSgateways(usingFirebaseFCMinstead)
+Kubernetes(usingRenderFreeTier)
+ProprietaryAImodels
+Cloudinaryorpaidimagehosting
+Paidanalyticsservices
 
 ##PriorityLevels
 
