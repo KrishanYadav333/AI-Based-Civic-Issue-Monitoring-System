@@ -1,6 +1,6 @@
-﻿#DeploymentGuide-RenderFreeTier(100%FreeStack)
+#DeploymentGuide-RenderFreeTier(100%FreeStack)
 
-##🏆100%FREESTACKDEPLOYMENT
+##100%FREESTACKDEPLOYMENT
 
 Thisguidecoversdeploymententirelyusing**RenderFreeTier**-NOAWS,NOKubernetes,NOpaidinfrastructure.
 
