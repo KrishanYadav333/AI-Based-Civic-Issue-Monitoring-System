@@ -339,11 +339,40 @@ function validateRequiredFields(data, requiredFields) {
   return { valid: true };
 }
 
+/**
+ * Validate password strength
+ */
+function validatePassword(password) {
+  if (!password || typeof password !== 'string') {
+    return { valid: false, error: 'Password is required' };
+  }
+
+  if (password.length < 8) {
+    return { valid: false, error: 'Password must be at least 8 characters long' };
+  }
+
+  if (password.length > 128) {
+    return { valid: false, error: 'Password must be less than 128 characters' };
+  }
+
+  // Check for at least one letter and one number
+  if (!/[a-zA-Z]/.test(password)) {
+    return { valid: false, error: 'Password must contain at least one letter' };
+  }
+
+  if (!/[0-9]/.test(password)) {
+    return { valid: false, error: 'Password must contain at least one number' };
+  }
+
+  return { valid: true };
+}
+
 module.exports = {
   validateCoordinates,
   validateEmail,
   validatePhone,
   validateUsername,
+  validatePassword,
   validateUUID,
   validateIssueType,
   validatePriority,
