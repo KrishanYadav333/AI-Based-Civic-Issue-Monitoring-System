@@ -7,24 +7,24 @@ This project is built entirely using open-source and free services with no paid 
 ### Free Stack Constraints & Certifications
 
 **ALLOWED:**
-- ✅ Open-source frameworks (React Native, Express, PyTorch, etc.)
-- ✅ Free cloud tiers (Render, Firebase)
-- ✅ PostgreSQL + PostGIS (open-source)
-- ✅ Local AI inference (YOLOv8)
-- ✅ Local file storage
-- ✅ GitHub Actions (free)
-- ✅ OpenStreetMap (free maps)
+- Open-source frameworks (React Native, Express, PyTorch, etc.)
+- Free cloud tiers (Render, Firebase)
+- PostgreSQL + PostGIS (open-source)
+- Local AI inference (YOLOv8)
+- Local file storage
+- GitHub Actions (free)
+- OpenStreetMap (free maps)
 
 **NOT ALLOWED:**
-- ❌ Google Maps API
-- ❌ AWS/GCP/Azure paid services
-- ❌ Cloud Vision APIs
-- ❌ AWS S3 or paid storage
-- ❌ Paid ML services
-- ❌ Kubernetes (using Render instead)
-- ❌ SMS gateways
-- ❌ Mapbox or other paid maps
-- ❌ Proprietary models
+- Google Maps API
+- AWS/GCP/Azure paid services
+- Cloud Vision APIs
+- AWS S3 or paid storage
+- Paid ML services
+- Kubernetes (using Render instead)
+- SMS gateways
+- Mapbox or other paid maps
+- Proprietary models
 
 ---
 
