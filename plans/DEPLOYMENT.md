@@ -1,47 +1,16 @@
-# Deployment Guide
+# ⚠️ DEPRECATED - See DEPLOYMENT_RENDER.md
 
-## Overview
+This file contains the original AWS/Kubernetes deployment guide.
 
-This guide covers the production deployment of the AI-Based Civic Issue Monitoring System. The system is designed to be deployed on cloud infrastructure with high availability, scalability, and security.
+**For the current 100% Free Stack deployment, please refer to: [DEPLOYMENT_RENDER.md](DEPLOYMENT_RENDER.md)**
 
-## Deployment Architecture
+---
 
-### Production Environment
+# Deployment Guide (ARCHIVED - AWS/Kubernetes)
 
-```
-Internet
-    ↓
-Load Balancer (AWS ALB / NGINX)
-    ↓
-API Gateway / Reverse Proxy
-    ↓
-Backend Services (Kubernetes Pods)
-    ├── API Server (Node.js/Express)
-    ├── AI Service (Python/FastAPI)
-    └── Background Workers (Redis Queue)
-    ↓
-Database Layer
-    ├── PostgreSQL (Primary)
-    ├── Redis Cache
-    └── PostgreSQL (Read Replica)
-    ↓
-Storage Layer
-    ├── AWS S3 (Images)
-    ├── CloudFront CDN (Static Assets)
-    └── EFS/NFS (Shared Files)
-```
+This guide is provided for reference only. The project now uses **Render Free Tier for deployment** instead of AWS/Kubernetes.
 
-### Infrastructure Components
-
-- **Cloud Provider**: AWS / Google Cloud / Azure
-- **Container Orchestration**: Kubernetes (EKS/GKE/AKS)
-- **Database**: Amazon RDS PostgreSQL / Google Cloud SQL
-- **Cache**: Amazon ElastiCache Redis / Google Memorystore
-- **Storage**: Amazon S3 / Google Cloud Storage
-- **CDN**: Amazon CloudFront / Google Cloud CDN
-- **Monitoring**: AWS CloudWatch / Google Cloud Monitoring
-- **Logging**: AWS CloudWatch Logs / Google Cloud Logging
-- **Security**: AWS WAF / Google Cloud Armor
+See `DEPLOYMENT_RENDER.md` for the current deployment instructions.
 
 ---
 

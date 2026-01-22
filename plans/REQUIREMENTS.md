@@ -1,5 +1,33 @@
 # Project Requirements
 
+## 🏆 100% FREE STACK CERTIFICATION
+
+This project is built entirely using open-source and free services with no paid dependencies.
+
+### Free Stack Constraints & Certifications
+
+**ALLOWED:**
+- ✅ Open-source frameworks (React Native, Express, PyTorch, etc.)
+- ✅ Free cloud tiers (Render, Firebase)
+- ✅ PostgreSQL + PostGIS (open-source)
+- ✅ Local AI inference (YOLOv8)
+- ✅ Local file storage
+- ✅ GitHub Actions (free)
+- ✅ OpenStreetMap (free maps)
+
+**NOT ALLOWED:**
+- ❌ Google Maps API
+- ❌ AWS/GCP/Azure paid services
+- ❌ Cloud Vision APIs
+- ❌ AWS S3 or paid storage
+- ❌ Paid ML services
+- ❌ Kubernetes (using Render instead)
+- ❌ SMS gateways
+- ❌ Mapbox or other paid maps
+- ❌ Proprietary models
+
+---
+
 ## Functional Requirements
 
 ### Authentication & Authorization
@@ -90,36 +118,35 @@
 
 ---
 
-## Non-Functional Requirements
+## Non-Functional Requirements (With Free-Tier Constraints)
 
-### Performance
-- **NFR1.1** API endpoints shall respond within 500ms (95th percentile)
-- **NFR1.2** Image processing/classification shall complete within 5 seconds
-- **NFR1.3** Database queries shall execute within 100ms
-- **NFR1.4** Mobile app shall load in < 3 seconds on 4G network
-- **NFR1.5** Web dashboards shall load in < 2 seconds
-- **NFR1.6** System shall support 100+ concurrent users
-- **NFR1.7** System shall handle 1000+ daily issue submissions
+### Performance (Free Tier Optimized)
+- **NFR1.1** API endpoints shall respond within 1-2 seconds (free tier acceptable)
+- **NFR1.2** Image processing/classification shall complete within 10 seconds (local inference)
+- **NFR1.3** Database queries shall execute within 200ms (Render free tier)
+- **NFR1.4** Mobile app shall load in < 5 seconds on 4G network
+- **NFR1.5** Web dashboards shall load in < 3 seconds
+- **NFR1.6** System shall support 10-50 concurrent users (Render free limits)
+- **NFR1.7** System shall handle 100-200 daily issue submissions initially
 
-### Scalability
-- **NFR2.1** Backend shall be horizontally scalable using load balancing
-- **NFR2.2** Database shall support sharding for future growth
-- **NFR2.3** File storage shall be cloud-based (AWS S3/Google Cloud Storage)
-- **NFR2.4** System architecture shall support microservices expansion
+### Scalability (Free-Tier Friendly)
+- **NFR2.1** Backend deployable on Render Free Tier initially
+- **NFR2.2** Scalable to paid Render tiers when needed (no vendor lock-in)
+- **NFR2.3** Local disk storage with automated cleanup
+- **NFR2.4** Simple architecture (no microservices initially)
 
-### Availability & Reliability
-- **NFR3.1** System shall have 99.5% uptime SLA
-- **NFR3.2** Database shall have automated backup every 24 hours
-- **NFR3.3** Database shall support point-in-time recovery
-- **NFR3.4** System shall have failover mechanisms for critical components
-- **NFR3.5** Mobile app shall work in offline mode with automatic sync
+### Availability & Reliability (Free Tier)
+- **NFR3.1** System shall have best-effort availability (free tier)
+- **NFR3.2** Database backups encouraged (manual or scheduled)
+- **NFR3.3** Mobile app shall work in offline mode with automatic sync
+- **NFR3.4** Data persistence ensured despite server restarts
 
 ### Security
-- **NFR4.1** All data transmission shall use HTTPS/TLS 1.2+
+- **NFR4.1** All data transmission shall use HTTPS/TLS 1.2+ (Render provides)
 - **NFR4.2** Passwords shall be hashed using bcrypt with salt
-- **NFR4.3** Sensitive data (PII) shall be encrypted at rest
-- **NFR4.4** System shall implement SQL injection prevention (parameterized queries)
-- **NFR4.5** System shall implement CSRF token protection
+- **NFR4.3** JWT tokens for stateless authentication
+- **NFR4.4** SQL injection prevention via parameterized queries (Prisma ORM)
+- **NFR4.5** CORS configured for allowed origins only
 - **NFR4.6** Image uploads shall be scanned for malware
 - **NFR4.7** API requests shall be rate-limited (100 req/minute per user)
 - **NFR4.8** System shall validate and sanitize all user inputs

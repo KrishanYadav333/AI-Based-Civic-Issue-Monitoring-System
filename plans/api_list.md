@@ -128,7 +128,7 @@ description: "Large pothole on main street"
     "status": "pending",
     "priority": "high",
     "confidence_score": 0.92,
-    "image_url": "https://s3.amazonaws.com/civic-issues/5421.jpg",
+    "image_url": "https://your-render-app.onrender.com/uploads/issues/5421.jpg",
     "surveyor_id": "S001",
     "created_at": "2026-01-13T10:30:00Z"
   }
@@ -166,7 +166,7 @@ GET /issues/5421
     "status": "assigned",
     "priority": "high",
     "confidence_score": 0.92,
-    "image_url": "https://s3.amazonaws.com/civic-issues/5421.jpg",
+    "image_url": "https://your-render-app.onrender.com/uploads/issues/5421.jpg",
     "resolution_image_urls": [],
     "surveyor_id": "S001",
     "surveyor_name": "Raj Kumar",
@@ -273,8 +273,8 @@ notes: "Pothole filled and compacted"
     "id": 5421,
     "status": "resolved",
     "resolution_image_urls": [
-      "https://s3.amazonaws.com/civic-issues/5421_res_1.jpg",
-      "https://s3.amazonaws.com/civic-issues/5421_res_2.jpg"
+      "https://your-render-app.onrender.com/uploads/resolutions/5421_res_1.jpg",
+      "https://your-render-app.onrender.com/uploads/resolutions/5421_res_2.jpg"
     ],
     "resolved_at": "2026-01-15T14:30:00Z",
     "resolution_time_hours": 52
@@ -737,7 +737,7 @@ Generate a system report.
     "id": "RPT001",
     "type": "monthly",
     "format": "pdf",
-    "download_url": "https://s3.amazonaws.com/reports/monthly_jan_2026.pdf",
+    "download_url": "https://your-render-app.onrender.com/uploads/reports/monthly_jan_2026.pdf",
     "generated_at": "2026-01-13T15:30:00Z",
     "expires_in": 604800
   }

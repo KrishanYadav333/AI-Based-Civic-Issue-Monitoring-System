@@ -548,8 +548,8 @@ System Administrators oversee the entire civic issue monitoring system, manage u
       - Notification frequency
       
       Integration Settings
-      - Google Maps API key
-      - AWS S3 configuration
+      - OpenStreetMap configuration (free, no API key)
+      - Local storage configuration (Render disk)
       - AI Service endpoint
       ```
 

@@ -1,8 +1,17 @@
-# AI-Based Civic Issue Monitoring System
+# 🎯 AI-Based Civic Issue Monitoring System
+
+## 🏆 100% FREE STACK CERTIFIED ✅
+
+**No Paid APIs • No Proprietary Services • No Vendor Lock-in**  
+**Open-source Only • Free Cloud Tier • Fully Transparent**
+
+---
 
 ## Project Overview
 
-The AI-Based Civic Issue Monitoring System is a geo-fencing enabled mobile and web application designed to help Vadodara Municipal Corporation (VMC) proactively identify and resolve civic issues. The system leverages AI-powered image recognition to automatically detect problems such as potholes, garbage accumulation, debris, stray cattle, broken roads, and open manholes across the city's 19 wards.
+The AI-Based Civic Issue Monitoring System is a geo-fencing enabled mobile and web application designed to help Vadodara Municipal Corporation (VMC) proactively identify and resolve civic issues. The system leverages **open-source YOLOv8 AI** to automatically detect problems such as potholes, garbage accumulation, debris, stray cattle, broken roads, and open manholes across the city's 19 wards.
+
+**Zero dependency on paid cloud services, commercial AI APIs, or proprietary tools.**
 
 ## Problem Statement
 
@@ -12,7 +21,7 @@ Currently, civic issues in Vadodara are identified mainly through citizen compla
 - Lack of data-driven prioritization
 - Poor resource allocation
 
-This system transforms the process into a proactive, data-driven approach by enabling VMC employees to conduct field surveys using mobile applications with automated issue detection.
+This system transforms the process into a proactive, data-driven approach by enabling VMC employees to conduct field surveys using mobile applications with **free, open-source AI** for automated issue detection.
 
 ## Key Features
 
@@ -55,24 +64,24 @@ This system transforms the process into a proactive, data-driven approach by ena
    - Image storage management
 
 3. **AI/ML Service**
-   - Computer vision model for issue classification
-   - Confidence scoring
-   - Multi-class image classification
+   - Open-source YOLOv8 model (no Cloud Vision APIs)
+   - PyTorch framework for local inference
+   - OpenCV for image processing
 
-4. **Database** (PostgreSQL with PostGIS)
+4. **Database** (PostgreSQL with PostGIS - open-source)
    - User and role management
-   - Ward boundary data with spatial indexing
+   - Ward boundary data with spatial indexing (PostGIS)
    - Issue tracking and history
-   - Department mapping
 
-5. **Web Dashboards** (React/Vue)
+5. **Web Dashboards** (React - open-source)
    - Engineer dashboard (issue assignment and resolution)
    - Admin dashboard (analytics and monitoring)
+   - Maps using OpenStreetMap + Leaflet (free, no Google Maps)
 
-6. **Third-party Services**
-   - Cloud storage (AWS S3/Google Cloud Storage) for images
-   - SMS/Email notifications
-   - Maps API for ward boundaries
+6. **Storage & Services** (100% Free)
+   - **Local Disk Storage** on Render instance
+   - **Firebase FCM** (free tier) for push notifications
+   - **Nominatim** (OpenStreetMap) for reverse geocoding
 
 ## Vadodara City Structure
 
@@ -97,6 +106,59 @@ The system detects and tracks the following civic issues:
 - **Stray Cattle** - Abandoned or roaming livestock
 - **Broken Roads** - Damaged road surfaces
 - **Open Manholes** - Uncovered utility access points
+
+---
+
+## ✅ 100% FREE STACK CERTIFICATION
+
+### 🎨 Frontend Stack (Open-Source)
+- ✅ **React Native** - Cross-platform mobile framework
+- ✅ **expo-camera** - Open-source camera access
+- ✅ **expo-location** - GPS/location services
+- ✅ **OpenStreetMap + Leaflet** - Free map library (NO Google Maps)
+- ✅ **SQLite** - Local offline database
+- ✅ **Axios** - HTTP client
+
+### 🔧 Backend Stack (Open-Source)
+- ✅ **Node.js/Express** - Server framework
+- ✅ **PostgreSQL + PostGIS** - Spatial database (free, open-source)
+- ✅ **Redis** - Caching (Render free tier)
+- ✅ **JWT** - Authentication (no paid services)
+- ✅ **Prisma/Sequelize** - ORM
+- ✅ **Multer** - File uploads (local storage)
+
+### 🧠 AI/ML Stack (Open-Source)
+- ✅ **YOLOv8** - Object detection model
+- ✅ **PyTorch** - Deep learning framework
+- ✅ **OpenCV** - Image processing
+- ✅ **Local Inference** - Process on Render worker (NO cloud AI APIs)
+
+### 🚀 Deployment & DevOps (Free)
+- ✅ **Render Free Tier** - Backend hosting (NOT AWS/Kubernetes)
+- ✅ **GitHub Actions** - CI/CD pipeline (free)
+- ✅ **Docker** - Containerization (open-source)
+- ✅ **PostgreSQL (Render)** - Database (free tier)
+- ✅ **Redis (Render)** - Cache (free tier)
+
+### 🔔 Notifications & Services (Free)
+- ✅ **Firebase FCM** - Push notifications (free tier)
+- ✅ **Nominatim** - Reverse geocoding (OpenStreetMap, free)
+- ✅ **Local Storage** - Image storage on Render disk
+
+---
+
+## ❌ STRICTLY NOT USED (Paid/Proprietary)
+
+❌ Google Maps API  
+❌ AWS/Azure/GCP paid services  
+❌ AWS S3 (using local storage instead)  
+❌ Cloud Vision APIs (using open-source YOLOv8)  
+❌ Mapbox or paid map services  
+❌ SMS gateways (using Firebase FCM instead)  
+❌ Kubernetes (using Render Free Tier)  
+❌ Proprietary AI models  
+❌ Cloudinary or paid image hosting  
+❌ Paid analytics services
 
 ## Priority Levels
 
