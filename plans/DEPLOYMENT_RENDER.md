@@ -1,251 +1,251 @@
-#DeploymentGuide-RenderFreeTier(100%FreeStack)
+# Deployment Guide - Render Free Tier (100% Free Stack)
 
-##100%FREESTACKDEPLOYMENT
+## 100% FREE STACK DEPLOYMENT
 
-Thisguidecoversdeploymententirelyusing**RenderFreeTier**-NOAWS,NOKubernetes,NOpaidinfrastructure.
+This guide covers deployment entirely using **Render Free Tier** - NO AWS, NO Kubernetes, NO paid infrastructure.
 
 ---
 
-##ArchitectureOverview(RenderFreeTier)
+## Architecture Overview (Render Free Tier)
 
 ```
-Internet(Users)
-Gô
-RenderWebService(BackendAPI)
-Gö£GöGöNode.js/ExpressServer
-Gö£GöGöAIBackgroundWorker(Python/FastAPI)
-GööGöGöLocalDiskStorage
-Gô
-RenderPostgreSQLDatabase(FreeTier)
-Gö£GöGöPostgreSQL14+
-GööGöGöPostGIS(geo-spatialqueries)
-Gô
-RenderRedis(FreeTier)
-GööGöGöCaching&Sessions
-Gô
-FirebaseFCM(FreeTier)
-GööGöGöPushNotifications
-Gô
-OpenStreetMap/Nominatim(Free)
-GööGöGöMaps&ReverseGeocoding
+Internet (Users)
+    â†“
+Render Web Service (Backend API)
+    â”œâ”€â”€ Node.js/Express Server
+    â”œâ”€â”€ AI Background Worker (Python/FastAPI)
+    â””â”€â”€ Local Disk Storage
+    â†“
+Render PostgreSQL Database (Free Tier)
+    â”œâ”€â”€ PostgreSQL 14+
+    â””â”€â”€ PostGIS (geo-spatial queries)
+    â†“
+Render Redis (Free Tier)
+    â””â”€â”€ Caching & Sessions
+    â†“
+Firebase FCM (Free Tier)
+    â””â”€â”€ Push Notifications
+    â†“
+OpenStreetMap / Nominatim (Free)
+    â””â”€â”€ Maps & Reverse Geocoding
 ```
 
 ---
 
-##Prerequisites
+## Prerequisites
 
-###AccountsRequired(AllFREE)
--G£àRender.comaccount(freetier)
--G£àGitHubaccount(free)
--G£àFirebaseaccount(freetier)
--G£àDockerHubaccount(free)
+### Accounts Required (All FREE)
+- Render.com account (free tier)
+- GitHub account (free)
+- Firebase account (free tier)
+- Docker Hub account (free)
 
-###ToolsRequired(AllOpen-Source/Free)
--G£àGit
--G£àDocker(free)
--G£àNode.js18+
--G£àPython3.9+
--G£àPostgreSQLclienttools
+### Tools Required (All Open-Source/Free)
+- Git
+- Docker (free)
+- Node.js 18+
+- Python 3.9+
+- PostgreSQL client tools
 
-###Domain(Optional)
--UseRender'sfreesubdomain:`app-name.onrender.com`
--ORconnectcustomdomain(freeDNS)
+### Domain (Optional)
+- Use Render's free subdomain: `app-name.onrender.com`
+- OR connect custom domain (free DNS)
 
 ---
 
-##Step1:PrepareGitHubRepository
+## Step 1: Prepare GitHub Repository
 
-###RepositoryStructure
+### Repository Structure
 ```
 AI-Based-Civic-Issue-Monitoring-System/
-Gö£GöGöbackend/
-GöéGö£GöGösrc/
-GöéGö£GöGöpackage.json
-GöéGö£GöGö.env.example
-GöéGö£GöGöDockerfile
-GöéGööGöGörender.yaml
-Gö£GöGöai-service/
-GöéGö£GöGöapp.py
-GöéGö£GöGörequirements.txt
-GöéGö£GöGöDockerfile
-GöéGööGöGörender.yaml
-Gö£GöGöweb/
-GöéGö£GöGöpublic/
-GöéGö£GöGösrc/
-GöéGö£GöGöpackage.json
-GöéGööGöGörender.yaml
-GööGöGöREADME.md
+â”œâ”€â”€ backend/
+â”‚   â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ package.json
+â”‚   â”œâ”€â”€ .env.example
+â”‚   â”œâ”€â”€ Dockerfile
+â”‚   â””â”€â”€ render.yaml
+â”œâ”€â”€ ai-service/
+â”‚   â”œâ”€â”€ app.py
+â”‚   â”œâ”€â”€ requirements.txt
+â”‚   â”œâ”€â”€ Dockerfile
+â”‚   â””â”€â”€ render.yaml
+â”œâ”€â”€ web/
+â”‚   â”œâ”€â”€ public/
+â”‚   â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ package.json
+â”‚   â””â”€â”€ render.yaml
+â””â”€â”€ README.md
 ```
 
-###CreateDockerfileforBackend
+### Create Dockerfile for Backend
 
-**File:`backend/Dockerfile`**
+**File: `backend/Dockerfile`**
 ```dockerfile
-FROMnode:18-alpine
+FROM node:18-alpine
 
-WORKDIR/app
+WORKDIR /app
 
-#Copypackagefiles
-COPYpackage*.json./
+# Copy package files
+COPY package*.json ./
 
-#Installdependencies
-RUNnpmci--only=production
+# Install dependencies
+RUN npm ci --only=production
 
-#Copyapplicationcode
-COPYsrc./src
-COPYconfig./config
+# Copy application code
+COPY src ./src
+COPY config ./config
 
-#Createtempdirectoryforimagestorage
-RUNmkdir-p/app/uploads
+# Create temp directory for image storage
+RUN mkdir -p /app/uploads
 
-#Exposeport
-EXPOSE3000
+# Expose port
+EXPOSE 3000
 
-#Startapplication
-CMD["node","src/app.js"]
+# Start application
+CMD ["node", "src/app.js"]
 ```
 
-###CreateDockerfileforAIService
+### Create Dockerfile for AI Service
 
-**File:`ai-service/Dockerfile`**
+**File: `ai-service/Dockerfile`**
 ```dockerfile
-FROMpython:3.9-slim
+FROM python:3.9-slim
 
-WORKDIR/app
+WORKDIR /app
 
-#Installsystemdependencies
-RUNapt-getupdate&&apt-getinstall-y\
-libsm6libxext6libxrender-dev\
-&&rm-rf/var/lib/apt/lists/*
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libsm6 libxext6 libxrender-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-#Copyrequirements
-COPYrequirements.txt./
+# Copy requirements
+COPY requirements.txt ./
 
-#InstallPythondependencies
-RUNpipinstall--no-cache-dir-rrequirements.txt
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-#DownloadYOLOv8model(doneduringbuild)
-RUNpython-c"fromultralyticsimportYOLO;YOLO('yolov8n.pt')"
+# Download YOLOv8 model (done during build)
+RUN python -c "from ultralytics import YOLO; YOLO('yolov8n.pt')"
 
-#Copyappcode
-COPYapp.py.
+# Copy app code
+COPY app.py .
 
-#Exposeport
-EXPOSE5000
+# Expose port
+EXPOSE 5000
 
-#Startapplication
-CMD["python","app.py"]
+# Start application
+CMD ["python", "app.py"]
 ```
 
-###Createrender.yaml
+### Create render.yaml
 
-**File:`render.yaml`**(inrootdirectory)
+**File: `render.yaml`** (in root directory)
 ```yaml
 services:
-#BackendAPI
--type:web
-name:civic-issues-api
-env:node
-plan:free
-buildCommand:cdbackend&&npmci
-startCommand:cdbackend&&npmstart
-envVars:
--key:NODE_ENV
-value:production
--key:DATABASE_URL
-fromDatabase:
-name:civic-issues-db
-property:connectionString
--key:REDIS_URL
-fromService:
-name:civic-issues-redis
-type:pserv
-property:connectionString
--key:JWT_SECRET
-sync:false
+  # Backend API
+  - type: web
+    name: civic-issues-api
+    env: node
+    plan: free
+    buildCommand: cd backend && npm ci
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: civic-issues-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: civic-issues-redis
+          type: pserv
+          property: connectionString
+      - key: JWT_SECRET
+        sync: false
 
-#PostgreSQLDatabase(Free)
--type:pserv
-name:civic-issues-db
-plan:free
-ipAllowList:[]
-postgreSQLVersion:"14"
+  # PostgreSQL Database (Free)
+  - type: pserv
+    name: civic-issues-db
+    plan: free
+    ipAllowList: []
+    postgreSQLVersion: "14"
 
-#RedisCache(Free)
--type:pserv
-name:civic-issues-redis
-plan:free
-ipAllowList:[]
-redisVersion:"7"
+  # Redis Cache (Free)
+  - type: pserv
+    name: civic-issues-redis
+    plan: free
+    ipAllowList: []
+    redisVersion: "7"
 
-#AIService(BackgroundWorker)
--type:background_worker
-name:civic-issues-ai
-env:docker
-plan:free
-dockerfilePath:ai-service/Dockerfile
-envVars:
--key:REDIS_URL
-fromService:
-name:civic-issues-redis
-type:pserv
-property:connectionString
+  # AI Service (Background Worker)
+  - type: background_worker
+    name: civic-issues-ai
+    env: docker
+    plan: free
+    dockerfilePath: ai-service/Dockerfile
+    envVars:
+      - key: REDIS_URL
+        fromService:
+          name: civic-issues-redis
+          type: pserv
+          property: connectionString
 
-#WebDashboard(StaticSite)
--type:static_site
-name:civic-issues-dashboard
-plan:free
-buildCommand:cdweb&&npmrunbuild
-staticPublishPath:web/build
-envVars:
--key:REACT_APP_API_URL
-value:https://civic-issues-api.onrender.com
+  # Web Dashboard (Static Site)
+  - type: static_site
+    name: civic-issues-dashboard
+    plan: free
+    buildCommand: cd web && npm run build
+    staticPublishPath: web/build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://civic-issues-api.onrender.com
 ```
 
 ---
 
-##Step2:EnvironmentConfiguration
+## Step 2: Environment Configuration
 
-###BackendEnvironmentVariables
+### Backend Environment Variables
 
-**File:`backend/.env`**
+**File: `backend/.env`**
 ```bash
-#Application
+# Application
 NODE_ENV=production
 PORT=3000
 API_BASE_URL=https://civic-issues-api.onrender.com
 
-#Database(ProvidedbyRender)
+# Database (Provided by Render)
 DATABASE_URL=postgresql://user:password@dpg-xxx.postgresql.render.com:5432/civic_issues
 DB_POOL_SIZE=5
 DB_POOL_IDLE_TIMEOUT=30000
 
-#Redis(ProvidedbyRender)
+# Redis (Provided by Render)
 REDIS_URL=redis://:password@redis-xxxx.render.com:6379
 
-#JWT
+# JWT
 JWT_SECRET=your_jwt_secret_here
 JWT_EXPIRY=24h
 
-#AIService
+# AI Service
 AI_SERVICE_URL=http://civic-issues-ai.onrender.com:5000
 
-#Storage(LocalDisk)
+# Storage (Local Disk)
 STORAGE_PATH=/app/uploads
 MAX_FILE_SIZE=5242880
 
-#FirebaseFCM
+# Firebase FCM
 FIREBASE_PROJECT_ID=your-firebase-project
 FIREBASE_PRIVATE_KEY=your_firebase_private_key
 FIREBASE_CLIENT_EMAIL=your_firebase_email
 
-#Logging
+# Logging
 LOG_LEVEL=info
 ```
 
-###AIServiceEnvironmentVariables
+### AI Service Environment Variables
 
-**File:`ai-service/.env`**
+**File: `ai-service/.env`**
 ```bash
 REDIS_URL=redis://:password@redis-xxxx.render.com:6379
 MODEL_PATH=/app/models/yolov8n.pt
@@ -255,469 +255,467 @@ PORT=5000
 
 ---
 
-##Step3:DatabaseSetup
+## Step 3: Database Setup
 
-###InitializePostgreSQLwithPostGIS
+### Initialize PostgreSQL with PostGIS
 
-Createinitializationscript:**`database/init.sql`**
+Create initialization script: **`database/init.sql`**
 
 ```sql
---EnablePostGIS
-CREATEEXTENSIONIFNOTEXISTSpostgis;
-CREATEEXTENSIONIFNOTEXISTSpostgis_topology;
+-- Enable PostGIS
+CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS postgis_topology;
 
---Createuserstable
-CREATETABLEIFNOTEXISTSusers(
-idUUIDPRIMARYKEYDEFAULTgen_random_uuid(),
-emailVARCHAR(255)UNIQUENOTNULL,
-password_hashVARCHAR(255)NOTNULL,
-roleVARCHAR(50)NOTNULL,
-ward_idINTEGER,
-created_atTIMESTAMPDEFAULTCURRENT_TIMESTAMP
+-- Create users table
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    ward_id INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
---Createwardstable
-CREATETABLEIFNOTEXISTSwards(
-idSERIALPRIMARYKEY,
-nameVARCHAR(100)NOTNULL,
-geometryGEOMETRY(POLYGON,4326),
-populationINTEGER
+-- Create wards table
+CREATE TABLE IF NOT EXISTS wards (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    geometry GEOMETRY(POLYGON, 4326),
+    population INTEGER
 );
 
---Createissuestable
-CREATETABLEIFNOTEXISTSissues(
-idUUIDPRIMARYKEYDEFAULTgen_random_uuid(),
-issue_typeVARCHAR(50)NOTNULL,
-locationGEOGRAPHY(POINT,4326)NOTNULL,
-ward_idINTEGERREFERENCESwards(id),
-statusVARCHAR(50)DEFAULT'OPEN',
-priorityVARCHAR(50),
-confidence_scoreFLOAT,
-image_urlVARCHAR(500),
-descriptionTEXT,
-assigned_toUUIDREFERENCESusers(id),
-created_byUUIDREFERENCESusers(id),
-created_atTIMESTAMPDEFAULTCURRENT_TIMESTAMP,
-resolved_atTIMESTAMP
+-- Create issues table
+CREATE TABLE IF NOT EXISTS issues (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    issue_type VARCHAR(50) NOT NULL,
+    location GEOGRAPHY(POINT, 4326) NOT NULL,
+    ward_id INTEGER REFERENCES wards(id),
+    status VARCHAR(50) DEFAULT 'OPEN',
+    priority VARCHAR(50),
+    confidence_score FLOAT,
+    image_url VARCHAR(500),
+    description TEXT,
+    assigned_to UUID REFERENCES users(id),
+    created_by UUID REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    resolved_at TIMESTAMP
 );
 
---Createspatialindexes
-CREATEINDEXidx_issues_locationONissuesUSINGGIST(location);
-CREATEINDEXidx_wards_geometryONwardsUSINGGIST(geometry);
+-- Create spatial indexes
+CREATE INDEX idx_issues_location ON issues USING GIST(location);
+CREATE INDEX idx_wards_geometry ON wards USING GIST(geometry);
 
---Createindexesforperformance
-CREATEINDEXidx_issues_statusONissues(status);
-CREATEINDEXidx_issues_ward_idONissues(ward_id);
-CREATEINDEXidx_issues_created_atONissues(created_atDESC);
+-- Create indexes for performance
+CREATE INDEX idx_issues_status ON issues(status);
+CREATE INDEX idx_issues_ward_id ON issues(ward_id);
+CREATE INDEX idx_issues_created_at ON issues(created_at DESC);
 ```
 
-###RunMigrationsonRender
+### Run Migrations on Render
 
-AftercreatingthedatabaseserviceonRender:
+After creating the database service on Render:
 
-1.GetPostgreSQLconnectionstringfromRenderdashboard
-2.Connecttodatabase:
+1. Get PostgreSQL connection string from Render dashboard
+2. Connect to database:
 ```bash
-psql"postgresql://user:password@dpg-xxx.postgresql.render.com:5432/civic_issues"<database/init.sql
+psql "postgresql://user:password@dpg-xxx.postgresql.render.com:5432/civic_issues" < database/init.sql
 ```
 
 ---
 
-##Step4:DeployonRender
+## Step 4: Deploy on Render
 
-###Method1:Usingrender.yaml(Recommended)
+### Method 1: Using render.yaml (Recommended)
 
-1.**PushtoGitHub**
+1. **Push to GitHub**
 ```bash
-gitadd.
-gitcommit-m"AddRenderdeploymentconfiguration"
-gitpushoriginmain
+git add .
+git commit -m "Add Render deployment configuration"
+git push origin main
 ```
 
-2.**ConnecttoRenderDashboard**
--Gotohttps://render.com/dashboard
--Click"New+"GÆ"WebService"
--SelectGitHubrepository
--Pastethiscommandin"BuildCommand":
-```
-npminstall-grender-cli&&renderdeploy
-```
+2. **Connect to Render Dashboard**
+- Go to https://render.com/dashboard
+- Click "New +" â†’ "Web Service"
+- Select GitHub repository
+- Paste this command in "Build Command":
+  ```
+  npm install -g render-cli && render deploy
+  ```
 
-3.**ConfigureServices**
--BackendWebService
--PostgreSQLDatabase
--RedisCache
--AIService(BackgroundWorker)
--WebDashboard(StaticSite)
+3. **Configure Services**
+- Backend Web Service
+- PostgreSQL Database
+- Redis Cache
+- AI Service (Background Worker)
+- Web Dashboard (Static Site)
 
-###Method2:DeployviaRenderCLI
+### Method 2: Deploy via Render CLI
 
 ```bash
-#InstallRenderCLI
-npminstall-grender-cli
+# Install Render CLI
+npm install -g render-cli
 
-#LogintoRender
-renderlogin
+# Login to Render
+render login
 
-#Deploy
-renderdeploy
+# Deploy
+render deploy
 ```
 
 ---
 
-##Step5:ConfigureServicesonRender
+## Step 5: Configure Services on Render
 
-###BackendAPISetup
+### Backend API Setup
 
-1.**CreateWebService**
--Name:`civic-issues-api`
--Environment:Node
--BuildCommand:`npmci&&npmrunbuild`
--StartCommand:`npmstart`
--Plan:Free
+1. **Create Web Service**
+   - Name: `civic-issues-api`
+   - Environment: Node
+   - Build Command: `npm ci && npm run build`
+   - Start Command: `npm start`
+   - Plan: Free
 
-2.**ConnectDatabase&Redis**
--AddenvironmentvariablesfromRenderservices
+2. **Connect Database & Redis**
+   - Add environment variables from Render services
 
-3.**ConfigureHealthCheck**
--URL:`/health`
--Expectedstatus:200
+3. **Configure Health Check**
+   - URL: `/health`
+   - Expected status: 200
 
-###AIServiceSetup
+### AI Service Setup
 
-1.**CreateBackgroundWorker**
--Name:`civic-issues-ai`
--Environment:Docker
--DockerfilePath:`ai-service/Dockerfile`
--Plan:Free
+1. **Create Background Worker**
+   - Name: `civic-issues-ai`
+   - Environment: Docker
+   - Dockerfile Path: `ai-service/Dockerfile`
+   - Plan: Free
 
-2.**ConnectRedis**
--Add`REDIS_URL`environmentvariable
+2. **Connect Redis**
+   - Add `REDIS_URL` environment variable
 
-###WebDashboardSetup
+### Web Dashboard Setup
 
-1.**CreateStaticSite**
--Name:`civic-issues-dashboard`
--BuildCommand:`npmrunbuild`
--PublishDirectory:`build`
--Plan:Free
+1. **Create Static Site**
+   - Name: `civic-issues-dashboard`
+   - Build Command: `npm run build`
+   - Publish Directory: `build`
+   - Plan: Free
 
-2.**SetAPIEndpoint**
--Environmentvariable:`REACT_APP_API_URL=https://civic-issues-api.onrender.com`
+2. **Set API Endpoint**
+   - Environment variable: `REACT_APP_API_URL=https://civic-issues-api.onrender.com`
 
-###PostgreSQLDatabaseSetup
+### PostgreSQL Database Setup
 
-1.**CreatePostgreSQLService**
--Plan:Free(512MB)
--PostgreSQLVersion:14
--Copyconnectionstringto`DATABASE_URL`
+1. **Create PostgreSQL Service**
+   - Plan: Free (512MB)
+   - PostgreSQL Version: 14
+   - Copy connection string to `DATABASE_URL`
 
-2.**RunInitializationScript**
+2. **Run Initialization Script**
 ```bash
-#Afterdatabaseiscreated
-psql"postgresql://..."<database/init.sql
+# After database is created
+psql "postgresql://..." < database/init.sql
 ```
 
-###RedisCacheSetup
+### Redis Cache Setup
 
-1.**CreateRedisService**
--Plan:Free(256MB)
--Copyconnectionstringto`REDIS_URL`
+1. **Create Redis Service**
+   - Plan: Free (256MB)
+   - Copy connection string to `REDIS_URL`
 
 ---
 
-##Step6:LocalImageStorageSetup
+## Step 6: Local Image Storage Setup
 
-Sincewe'reNOTusingAWSS3,weuselocaldiskstorageonRender.
+Since we're NOT using AWS S3, we use local disk storage on Render.
 
-###BackendUploadHandler
+### Backend Upload Handler
 
-**File:`backend/src/routes/upload.js`**
+**File: `backend/src/routes/upload.js`**
 ```javascript
-constmulter=require('multer');
-constpath=require('path');
-constfs=require('fs');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
-//Configurestorage
-conststorage=multer.diskStorage({
-destination:function(req,file,cb){
-constuploadDir=process.env.STORAGE_PATH||'/app/uploads';
-if(!fs.existsSync(uploadDir)){
-fs.mkdirSync(uploadDir,{recursive:true});
-}
-cb(null,uploadDir);
-},
-filename:function(req,file,cb){
-cb(null,Date.now()+'-'+file.originalname);
-}
+// Configure storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = process.env.STORAGE_PATH || '/app/uploads';
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
 });
 
-constupload=multer({storage:storage,limits:{fileSize:5*1024*1024}});
+const upload = multer({ storage: storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
-router.post('/upload',upload.single('image'),(req,res)=>{
-res.json({
-success:true,
-filename:req.file.filename,
-path:`/uploads/${req.file.filename}`
-});
+router.post('/upload', upload.single('image'), (req, res) => {
+  res.json({ 
+    success: true, 
+    filename: req.file.filename,
+    path: `/uploads/${req.file.filename}`
+  });
 });
 
-module.exports=router;
+module.exports = router;
 ```
 
-###CleanupOldFiles
+### Cleanup Old Files
 
-Createascheduledjobtocleanupoldimages:
+Create a scheduled job to cleanup old images:
 
-**File:`backend/src/jobs/cleanup.js`**
+**File: `backend/src/jobs/cleanup.js`**
 ```javascript
-constfs=require('fs');
-constpath=require('path');
+const fs = require('fs');
+const path = require('path');
 
-asyncfunctioncleanupOldFiles(){
-constuploadDir=process.env.STORAGE_PATH||'/app/uploads';
-constmaxAge=30*24*60*60*1000;//30days
-
-fs.readdirSync(uploadDir).forEach(file=>{
-constfilepath=path.join(uploadDir,file);
-conststat=fs.statSync(filepath);
-
-if(Date.now()-stat.mtimeMs>maxAge){
-fs.unlinkSync(filepath);
-console.log(`Deletedoldfile:${file}`);
+async function cleanupOldFiles() {
+  const uploadDir = process.env.STORAGE_PATH || '/app/uploads';
+  const maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
+  
+  fs.readdirSync(uploadDir).forEach(file => {
+    const filepath = path.join(uploadDir, file);
+    const stat = fs.statSync(filepath);
+    
+    if (Date.now() - stat.mtimeMs > maxAge) {
+      fs.unlinkSync(filepath);
+      console.log(`Deleted old file: ${file}`);
+    }
+  });
 }
-});
-}
 
-//Rundaily
-setInterval(cleanupOldFiles,24*60*60*1000);
+// Run daily
+setInterval(cleanupOldFiles, 24 * 60 * 60 * 1000);
 
-module.exports={cleanupOldFiles};
+module.exports = { cleanupOldFiles };
 ```
 
 ---
 
-##Step7:GitHubActionsCI/CD
+## Step 7: GitHub Actions CI/CD
 
-Createautomateddeploymentpipeline.
+Create automated deployment pipeline.
 
-**File:`.github/workflows/deploy.yml`**
+**File: `.github/workflows/deploy.yml`**
 ```yaml
-name:DeploytoRender
+name: Deploy to Render
 
 on:
-push:
-branches:[main]
+  push:
+    branches: [main]
 
 jobs:
-deploy:
-runs-on:ubuntu-latest
-
-steps:
--uses:actions/checkout@v3
-
--name:RunTests
-run:|
-cdbackend
-npmci
-npmtest
-
--name:NotifyRenderDeploy
-run:|
-curlhttps://api.render.com/deploy/srv-${{secrets.RENDER_SERVICE_ID}}?key=${{secrets.RENDER_API_KEY}}
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Run Tests
+        run: |
+          cd backend
+          npm ci
+          npm test
+      
+      - name: Notify Render Deploy
+        run: |
+          curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
 ```
 
 ---
 
-##Step8:SecurityConfiguration
+## Step 8: Security Configuration
 
-###CORSSetup
+### CORS Setup
 ```javascript
-//backend/src/middleware/cors.js
-constcors=require('cors');
+// backend/src/middleware/cors.js
+const cors = require('cors');
 
-constcorsOptions={
-origin:[
-'https://civic-issues-dashboard.onrender.com',
-'http://localhost:3000'
-],
-credentials:true
+const corsOptions = {
+  origin: [
+    'https://civic-issues-dashboard.onrender.com',
+    'http://localhost:3000'
+  ],
+  credentials: true
 };
 
-module.exports=cors(corsOptions);
+module.exports = cors(corsOptions);
 ```
 
-###RateLimiting
+### Rate Limiting
 ```javascript
-//backend/src/middleware/rateLimit.js
-constrateLimit=require('express-rate-limit');
+// backend/src/middleware/rateLimit.js
+const rateLimit = require('express-rate-limit');
 
-constlimiter=rateLimit({
-windowMs:15*60*1000,//15minutes
-max:100//limiteachIPto100requestsperwindowMs
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
 });
 
-module.exports=limiter;
+module.exports = limiter;
 ```
 
-###JWTValidation
+### JWT Validation
 ```javascript
-//backend/src/middleware/auth.js
-constjwt=require('jsonwebtoken');
+// backend/src/middleware/auth.js
+const jwt = require('jsonwebtoken');
 
-functionvalidateJWT(req,res,next){
-consttoken=req.headers.authorization?.split('')[1];
-if(!token)returnres.status(401).json({error:'Unauthorized'});
-
-try{
-constdecoded=jwt.verify(token,process.env.JWT_SECRET);
-req.user=decoded;
-next();
-}catch(err){
-res.status(403).json({error:'Invalidtoken'});
+function validateJWT(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+  
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    res.status(403).json({ error: 'Invalid token' });
+  }
 }
-}
 
-module.exports=validateJWT;
+module.exports = validateJWT;
 ```
 
 ---
 
-##Step9:Monitoring&Logging
+## Step 9: Monitoring & Logging
 
-###ApplicationLogging
+### Application Logging
 
-**File:`backend/src/config/logger.js`**
+**File: `backend/src/config/logger.js`**
 ```javascript
-constwinston=require('winston');
+const winston = require('winston');
 
-constlogger=winston.createLogger({
-level:process.env.LOG_LEVEL||'info',
-format:winston.format.json(),
-transports:[
-newwinston.transports.Console(),
-newwinston.transports.File({filename:'/app/logs/app.log'})
-]
+const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: winston.format.json(),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: '/app/logs/app.log' })
+  ]
 });
 
-module.exports=logger;
+module.exports = logger;
 ```
 
-###HealthCheckEndpoint
+### Health Check Endpoint
 
 ```javascript
-//backend/src/routes/health.js
-router.get('/health',(req,res)=>{
-res.json({
-status:'OK',
-timestamp:newDate(),
-environment:process.env.NODE_ENV
-});
+// backend/src/routes/health.js
+router.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date(),
+    environment: process.env.NODE_ENV
+  });
 });
 ```
 
-###DatabaseConnectionCheck
+### Database Connection Check
 
 ```javascript
-router.get('/health/db',async(req,res)=>{
-try{
-constresult=awaitdb.query('SELECTNOW()');
-res.json({status:'OK',database:'Connected'});
-}catch(err){
-res.status(503).json({status:'ERROR',database:'Disconnected'});
-}
+router.get('/health/db', async (req, res) => {
+  try {
+    const result = await db.query('SELECT NOW()');
+    res.json({ status: 'OK', database: 'Connected' });
+  } catch (err) {
+    res.status(503).json({ status: 'ERROR', database: 'Disconnected' });
+  }
 });
 ```
 
 ---
 
-##Step10:Post-Deployment
+## Step 10: Post-Deployment
 
-###VerifyDeployment
+### Verify Deployment
 ```bash
-#CheckAPIendpoint
-curlhttps://civic-issues-api.onrender.com/health
+# Check API endpoint
+curl https://civic-issues-api.onrender.com/health
 
-#Checkdatabase
-curlhttps://civic-issues-api.onrender.com/health/db
+# Check database
+curl https://civic-issues-api.onrender.com/health/db
 
-#TestAIservice
-curl-XPOSThttps://civic-issues-ai.onrender.com/predict-F"image=@test.jpg"
+# Test AI service
+curl -X POST https://civic-issues-ai.onrender.com/predict -F "image=@test.jpg"
 ```
 
-###BackupDatabase
+### Backup Database
 
-CreatemonthlybackupsonRender:
+Create monthly backups on Render:
 
 ```bash
-#Manualbackup
-pg_dump"postgresql://user:pass@host/db">backup-$(date+%Y%m%d).sql
+# Manual backup
+pg_dump "postgresql://user:pass@host/db" > backup-$(date +%Y%m%d).sql
 
-#StoreinGitHub(encrypted)
-git-cryptadd-gpg-useryour-email@example.com
-gitaddbackups/
-gitcommit-m"Adddatabasebackup"
-gitpush
+# Store in GitHub (encrypted)
+git-crypt add-gpg-user your-email@example.com
+git add backups/
+git commit -m "Add database backup"
+git push
 ```
 
 ---
 
-##CostBreakdown(100%FREE)
+## Cost Breakdown (100% FREE)
 
-|Service|FreeTier|Cost|
+| Service | Free Tier | Cost |
 |---------|-----------|------|
-|RenderWebService|2vCPU,512MBRAM,auto-suspend|FREE|
-|PostgreSQL(Render)|512MBstorage,1concurrentconnection|FREE|
-|Redis(Render)|256MBstorage|FREE|
-|BackgroundWorker(Render)|512MBRAM|FREE|
-|StaticSite(Render)|Unlimitedbandwidth|FREE|
-|GitHubActions|2000minutes/month|FREE|
-|FirebaseFCM|Freetier|FREE|
-|OpenStreetMap|Unlimitedqueries|FREE|
-|**TOTAL**||**$0/month**|
+| Render Web Service | 2 vCPU, 512MB RAM, auto-suspend | FREE |
+| PostgreSQL (Render) | 512MB storage, 1 concurrent connection | FREE |
+| Redis (Render) | 256MB storage | FREE |
+| Background Worker (Render) | 512MB RAM | FREE |
+| Static Site (Render) | Unlimited bandwidth | FREE |
+| GitHub Actions | 2000 minutes/month | FREE |
+| Firebase FCM | Free tier | FREE |
+| OpenStreetMap | Unlimited queries | FREE |
+| **TOTAL** | | **$0/month** |
 
 ---
 
-##Troubleshooting
+## Troubleshooting
 
-###ServiceWon'tStart
+### Service Won't Start
 ```bash
-#Checklogs
-renderlogscivic-issues-api
+# Check logs
+render logs civic-issues-api
 
-#Checkenvironmentvariables
-renderenvcivic-issues-api
+# Check environment variables
+render env civic-issues-api
 ```
 
-###DatabaseConnectionIssues
+### Database Connection Issues
 ```bash
-#Verifyconnectionstring
-psql"postgresql://..."
+# Verify connection string
+psql "postgresql://..."
 
-#Checkdatabasesize
-SELECTpg_size_pretty(pg_database_size('civic_issues'));
+# Check database size
+SELECT pg_size_pretty(pg_database_size('civic_issues'));
 ```
 
-###AIServiceNotRunning
+### AI Service Not Running
 ```bash
-#Checkworkerlogs
-renderlogscivic-issues-ai
+# Check worker logs
+render logs civic-issues-ai
 
-#Testlocally
-dockerbuild-tcivic-aiai-service/
-dockerrun-eREDIS_URL=...civic-ai
+# Test locally
+docker build -t civic-ai ai-service/
+docker run -e REDIS_URL=... civic-ai
 ```
 
 ---
 
-##Summary
+## Summary
 
-G£à**100%FreeDeployment**usingRenderFreeTier
-G£à**ZeroAWS/GCP/Azure**costs
-G£à**Open-sourceonly**tools
-G£à**Simpletoscale**whenneeded
-G£à**Easytomigrate**topaidtiersifneeded
+- **100% Free Deployment** using Render Free Tier  
+- **Zero AWS/GCP/Azure** costs  
+- **Open-source only** tools  
+- **Simple to scale** when needed  
+- **Easy to migrate** to paid tiers if needed
 
-Allservicesarefreeandopen-source.Nohiddencharges.Novendorlock-in!
-
-
+All services are free and open-source. No hidden charges. No vendor lock-in!
