@@ -23,8 +23,10 @@ npm run dev
 ### AI Service
 ```bash
 cd ai-service
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate      # Windows
+# Activate virtual environment
+source D:/venvs/civic-issue-monitor/Scripts/activate  # Git Bash
+D:\venvs\civic-issue-monitor\Scripts\Activate.ps1      # PowerShell
+D:\venvs\civic-issue-monitor\Scripts\activate.bat      # Command Prompt
 python app.py
 ```
 

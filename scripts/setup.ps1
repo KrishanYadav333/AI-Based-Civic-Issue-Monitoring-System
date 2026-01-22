@@ -1,9 +1,14 @@
 # Setup Script for Windows
 # PowerShell version of setup.sh
 
+# Get script directory and change to project root
+$Script:ProjectRoot = if ($PSScriptRoot) { Split-Path -Parent $PSScriptRoot } else { Get-Location }
+Set-Location $Script:ProjectRoot
+
 Write-Host "================================" -ForegroundColor Cyan
 Write-Host "Civic Issue Monitoring System" -ForegroundColor Cyan
 Write-Host "Automated Setup Script (Windows)" -ForegroundColor Cyan
+Write-Host "Working Directory: $(Get-Location)" -ForegroundColor Gray
 Write-Host "================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -12,7 +17,7 @@ function Check-Prerequisites {
     Write-Host "Checking prerequisites..." -ForegroundColor Yellow
     
     # Check Node.js
-    if (Get-Command node -ErrorAction SilentlyContinue) {
+    if (Get-Command node -ErrorAction SilentlyContinue) {cd
         $nodeVersion = node --version
         Write-Host "✓ Node.js $nodeVersion" -ForegroundColor Green
     } else {
@@ -57,18 +62,22 @@ function Setup-Environment {
     $DB_PASSWORD = -join ((65..90) + (97..122) + (48..57) | Get-Random -Count 16 | ForEach-Object {[char]$_})
     
     # Backend .env
-    if (-not (Test-Path "backend\.env")) {
-        Copy-Item "backend\.env.example" "backend\.env"
-        (Get-Content "backend\.env") -replace 'your_password_here', $DB_PASSWORD | Set-Content "backend\.env"
-        (Get-Content "backend\.env") -replace 'your_super_secret_jwt_key_change_this_in_production', $JWT_SECRET | Set-Content "backend\.env"
+    $backendEnvPath = Join-Path $Script:ProjectRoot "backend\.env"
+    $backendEnvExample = Join-Path $Script:ProjectRoot "backend\.env.example"
+    if (-not (Test-Path $backendEnvPath)) {
+        Copy-Item $backendEnvExample $backendEnvPath
+        (Get-Content $backendEnvPath) -replace 'your_password_here', $DB_PASSWORD | Set-Content $backendEnvPath
+        (Get-Content $backendEnvPath) -replace 'your_super_secret_jwt_key_change_this_in_production', $JWT_SECRET | Set-Content $backendEnvPath
         Write-Host "✓ Backend .env created" -ForegroundColor Green
     } else {
         Write-Host "⚠ Backend .env already exists, skipping" -ForegroundColor Yellow
     }
     
     # AI Service .env
-    if (-not (Test-Path "ai-service\.env")) {
-        Copy-Item "ai-service\.env.example" "ai-service\.env"
+    $aiEnvPath = Join-Path $Script:ProjectRoot "ai-service\.env"
+    $aiEnvExample = Join-Path $Script:ProjectRoot "ai-service\.env.example"
+    if (-not (Test-Path $aiEnvPath)) {
+        Copy-Item $aiEnvExample $aiEnvPath
         Write-Host "✓ AI Service .env created" -ForegroundColor Green
     } else {
         Write-Host "⚠ AI Service .env already exists, skipping" -ForegroundColor Yellow
@@ -96,33 +105,46 @@ function Install-Dependencies {
     
     # Backend
     Write-Host "Installing backend dependencies..."
-    Set-Location backend
+    Push-Location (Join-Path $Script:ProjectRoot "backend")
     npm install
-    Set-Location ..
+    Pop-Location
     Write-Host "✓ Backend dependencies installed" -ForegroundColor Green
     
     # Frontend
     Write-Host "Installing frontend dependencies..."
-    Set-Location frontend
+    Push-Location (Join-Path $Script:ProjectRoot "frontend")
     npm install
-    Set-Location ..
+    Pop-Location
     Write-Host "✓ Frontend dependencies installed" -ForegroundColor Green
     
     # Mobile App
     Write-Host "Installing mobile app dependencies..."
-    Set-Location mobile-app
+    Push-Location (Join-Path $Script:ProjectRoot "mobile-app")
     npm install
-    Set-Location ..
+    Pop-Location
     Write-Host "✓ Mobile app dependencies installed" -ForegroundColor Green
     
     # AI Service
     Write-Host "Installing AI service dependencies..."
-    Set-Location ai-service
-    python -m venv venv
-    .\venv\Scripts\Activate.ps1
+    
+    # Create D:\venvs directory if it doesn't exist
+    $VenvBaseDir = "D:\venvs"
+    if (-not (Test-Path $VenvBaseDir)) {
+        New-Item -ItemType Directory -Path $VenvBaseDir -Force | Out-Null
+        Write-Host "Created virtual environment directory: $VenvBaseDir" -ForegroundColor Cyan
+    }
+    
+    # Create virtual environment at D:\venvs\civic-issue-monitor
+    $VenvPath = Join-Path $VenvBaseDir "civic-issue-monitor"
+    if (-not (Test-Path $VenvPath)) {
+        Write-Host "Creating virtual environment at: $VenvPath" -ForegroundColor Cyan
+        python -m venv $VenvPath
+    }
+    
+    Push-Location (Join-Path $Script:ProjectRoot "ai-service")
+    & "$VenvPath\Scripts\Activate.ps1"
     pip install -r requirements.txt
-    deactivate
-    Set-Location ..
+    Pop-Location
     Write-Host "✓ AI service dependencies installed" -ForegroundColor Green
     
     Write-Host ""
@@ -173,7 +195,7 @@ function Setup-Complete {
     Write-Host "   cd backend; npm run dev"
     Write-Host ""
     Write-Host "2. Start the AI service:"
-    Write-Host "   cd ai-service; .\venv\Scripts\Activate.ps1; python app.py"
+    Write-Host "   cd ai-service; D:\venvs\civic-issue-monitor\Scripts\Activate.ps1; python app.py"
     Write-Host ""
     Write-Host "3. Start the frontend:"
     Write-Host "   cd frontend; npm run dev"
@@ -196,7 +218,7 @@ function Setup-Complete {
 # Main execution
 Check-Prerequisites
 Setup-Environment
-Create-Directories
+New-Directories
 Install-Dependencies
 
 $setupDB = Read-Host "Do you want to setup the database now? (yes/no)"
