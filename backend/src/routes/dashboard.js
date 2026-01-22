@@ -103,7 +103,7 @@ router.get('/admin/stats', authMiddleware, authorize('admin'), async (req, res, 
       SELECT 
         il.id,
         il.action,
-        il.timestamp,
+        il.created_at as timestamp,
         il.notes,
         u.name as user_name,
         i.id as issue_id,
@@ -111,7 +111,7 @@ router.get('/admin/stats', authMiddleware, authorize('admin'), async (req, res, 
       FROM issue_logs il
       JOIN users u ON il.user_id = u.id
       JOIN issues i ON il.issue_id = i.id
-      ORDER BY il.timestamp DESC
+      ORDER BY il.created_at DESC
       LIMIT 50
     `);
 

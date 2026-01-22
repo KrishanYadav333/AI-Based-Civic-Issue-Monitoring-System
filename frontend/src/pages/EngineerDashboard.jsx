@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import axios from '../config/axios';
 
 export default function EngineerDashboard() {
   const { user, logout } = useAuth();
@@ -18,11 +18,12 @@ export default function EngineerDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await axios.get(`/api/dashboard/engineer/${user.id}`);
+      const response = await axios.get(`/dashboard/engineer/${user.id}`);
       setIssues(response.data.issues);
       setStatistics(response.data.statistics);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
+      alert('Failed to load dashboard. Please check if backend is running.');
     } finally {
       setLoading(false);
     }
@@ -40,7 +41,7 @@ export default function EngineerDashboard() {
       const formData = new FormData();
       formData.append('resolution_image', resolutionImage);
 
-      await axios.post(`/api/issues/${issueId}/resolve`, formData, {
+      await axios.post(`/issues/${issueId}/resolve`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 

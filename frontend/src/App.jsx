@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Login from './pages/Login';
 import EngineerDashboard from './pages/EngineerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import SurveyorDashboard from './pages/SurveyorDashboard';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 function ProtectedRoute({ children, allowedRoles }) {
@@ -49,11 +50,21 @@ function AppRoutes() {
       />
       
       <Route 
+        path="/surveyor" 
+        element={
+          <ProtectedRoute allowedRoles={['surveyor']}>
+            <SurveyorDashboard />
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
         path="/" 
         element={
           user ? (
             user.role === 'engineer' ? <Navigate to="/engineer" /> : 
             user.role === 'admin' ? <Navigate to="/admin" /> :
+            user.role === 'surveyor' ? <Navigate to="/surveyor" /> :
             <Navigate to="/login" />
           ) : (
             <Navigate to="/login" />

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
-import axios from 'axios';
+import axios from '../config/axios';
 
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
@@ -17,14 +17,15 @@ export default function AdminDashboard() {
   const fetchDashboardData = async () => {
     try {
       const [statsResponse, heatmapResponse] = await Promise.all([
-        axios.get('/api/dashboard/admin/stats'),
-        axios.get('/api/dashboard/admin/heatmap')
+        axios.get('/dashboard/admin/stats'),
+        axios.get('/dashboard/admin/heatmap')
       ]);
       
       setStatistics(statsResponse.data);
       setHeatmapData(heatmapResponse.data.points);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
+      alert('Failed to load dashboard data. Please check if backend is running.');
     } finally {
       setLoading(false);
     }

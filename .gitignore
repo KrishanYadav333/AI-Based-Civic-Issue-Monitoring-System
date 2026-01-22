@@ -1,108 +1,183 @@
-# Dependencies
+# ========================================
+# AI Civic Issue Monitor - .gitignore
+# ========================================
+
+# === Dependencies ===
 node_modules/
 */node_modules/
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
 venv/
 env/
 .venv/
+ENV/
 *.egg-info/
 .Python
+pip-log.txt
+pip-delete-this-directory.txt
 
-# Environment variables
+# === Environment Variables ===
 .env
-.env.*
-!.env.example
 .env.local
 .env.production
 .env.development
+.env.staging
+.env.test
+!.env.example
+!.env.production.example
 
-# Build outputs
+# === Build Outputs ===
 dist/
 build/
+out/
 *.log
 logs/
 *.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+backend/logs/*.log
+!backend/logs/.gitkeep
 
-# IDE
+# === IDE & Editors ===
 .vscode/
 .idea/
 *.swp
 *.swo
 *.sublime-*
 .vs/
+*.code-workspace
 
-# OS
+# === OS Specific ===
 .DS_Store
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+$RECYCLE.BIN/
+*.lnk
 
-# Database
+# === Database ===
 *.db
 *.sqlite
 *.sqlite3
 backups/
+*.dump
+*.sql.backup
 
-# Uploads & Temp
-uploads/
+# === Uploads & Temporary Files ===
+uploads/*
+!uploads/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
+ai-service/uploads/*
+!ai-service/uploads/.gitkeep
 temp/
 tmp/
+cache/
+*.jpg
+*.jpeg
+*.png
+*.gif
+!**/assets/**/*.jpg
+!**/assets/**/*.jpeg
+!**/assets/**/*.png
+!**/assets/**/*.gif
 
-# Testing
+# === Testing & Coverage ===
 coverage/
 .nyc_output/
 .pytest_cache/
 *.cover
 .coverage
 .coverage.*
+htmlcov/
+test-results/
+junit.xml
 
-# ML Models
+# === ML Models & Data ===
+# Large model files (download separately or train locally)
+ai-service/models/*.keras
 ai-service/models/*.h5
+ai-service/models/*.pkl
 ai-service/models/*.tflite
+ai-service/models/*.onnx
+ai-service/models/best_model.keras
 ai-service/dataset/
+ai-service/training_data/
 !ai-service/models/.gitkeep
+!ai-service/models/class_indices.json
+!ai-service/training_data/.gitkeep
 
-# React Native
+# AI Service Logs
+ai-service/logs/
+ai-service/uploads/
+!ai-service/uploads/.gitkeep
+
+# === React Native ===
 mobile-app/.expo/
+mobile-app/.expo-shared/
 mobile-app/ios/Pods/
 mobile-app/android/.gradle/
 mobile-app/android/app/build/
+mobile-app/android/.idea/
 mobile-app/ios/build/
 *.jks
 *.keystore
+*.p8
+*.p12
+*.mobileprovision
 
-# Local documentation (keep main docs)
-TESTING_GUIDE.md
-.github/copilot-instructions.md
+# === Frontend Build ===
+frontend/build/
+frontend/.next/
+frontend/dist/
+
+# === Docker ===
+*.dockerfile.swp
+docker-compose.override.yml
+
+# === Security & Secrets ===
+*.pem
+*.key
+*.cert
+*.csr
+secrets/
+.secrets/
+
+# === Session & Testing Reports ===
+SESSION_SUMMARY.md
+TESTING_FIXES.md
+TEST_RESULTS.md
+FINAL_TEST_STATUS.md
+COMPREHENSIVE_TEST_REPORT.md
+VENV_*.md
 WORK_ORGANIZATION.md
-ADVANCED_FEATURES.md
+ML_TRAINING_REPORT.md
+FRONTEND_*.md
+PROJECT_RESTRUCTURE.md
 IMPLEMENTATION_COMPLETE.md
+DEPLOYMENT_READY.md
+FINAL_TEST_REPORT.md
+FINAL_SYSTEM_TEST_REPORT.md
 IMPROVEMENTS.md
+README_old.md
 README_main.md
-FREE_TIER_DEPLOYMENT.md
 
-# Extra features (keep local)
-backend/src/websocket.js
-backend/src/routes/feedback.js
-backend/src/routes/reports.js
-backend/src/routes/geospatial.js
-backend/src/routes/notifications.js
-backend/src/utils/cacheService.js
-backend/src/utils/pushNotificationService.js
-ai-service/train_model.py
-ai-service/predictive_analytics.py
-ai-service/test_app.py
-database/advanced_features.sql
-database/enhancements.sql
-frontend/src/components/ThemeToggle.jsx
-frontend/src/context/ThemeContext.jsx
-frontend/src/styles/
-mobile-app/src/i18n/
-mobile-app/src/utils/offlineManager.js
-plans/REQUIREMENTS.md
-plans/TEAM_ASSIGNMENTS.md
-plans/IMPLEMENTATION.md
-plans/USER_WORKFLOWS.md
-plans/DEPLOYMENT.md
+# === Test Outputs ===
+backend/test-output.txt
+backend/test-final.txt
+ai-service/test_*.py
+!ai-service/test_app.py
+
+# === Optional Documentation (Keep in repo if needed) ===
+# Uncomment to exclude:
+# CHANGELOG.md
+# CONTRIBUTING.md
+# QUICKSTART.md
+FREE_TIER_DEPLOYMENT.md
+PROJECT_RESTRUCTURE.md
+ADVANCED_FEATURES.md
+# MODEL_TUNING_GUIDE.md
+# API_DOCUMENTATION.md
