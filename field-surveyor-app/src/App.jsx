@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Login from './pages/Login';
 import Home from './pages/Home';
@@ -14,9 +14,10 @@ function PrivateRoute({ children }) {
 
 function App() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route
@@ -31,7 +32,7 @@ function App() {
           path="/report"
           element={
             <PrivateRoute>
-              <ReportIssue />
+              <ReportIssue key={location.key || 'report'} />
             </PrivateRoute>
           }
         />

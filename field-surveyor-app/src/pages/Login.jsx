@@ -44,24 +44,36 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* Left Sidebar - Branding & Login */}
-      <div className="w-96 bg-white shadow-xl flex flex-col justify-center p-8">
+    <div 
+      className="min-h-screen flex items-center justify-center p-6 relative"
+      style={{
+        backgroundImage: `url(${loginImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Navy blue gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-blue-800/30 to-blue-600/35"></div>
+      
+      {/* Glassmorphism Login Card */}
+      <div className="w-full max-w-md glass-card-strong rounded-3xl p-8 shadow-2xl relative z-10">
         <div className="text-center mb-8">
           <div className="mb-6">
-            <div className="w-24 h-24 mx-auto mb-4 bg-white border-2 border-orange-500 rounded-full flex items-center justify-center overflow-hidden">
+            <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center overflow-hidden border-4 border-white/30 shadow-lg">
               <img src={logo} alt="VMC Logo" className="w-full h-full object-cover" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          <h1 className="text-5xl font-bold mb-2 metallic-text">
             CivicLens
           </h1>
-          <p className="text-gray-600 text-sm">Field Surveyor</p>
+          <p className="text-lg font-medium metallic-text-secondary">Field Surveyor Portal</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
+            <div className="glass-card bg-red-500/20 border-red-400/50 text-white px-4 py-3 rounded-xl text-sm backdrop-blur-md">
               {error}
             </div>
           )}
@@ -71,7 +83,7 @@ export default function Login() {
               type="text"
               value={credentials.username}
               onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+              className="w-full px-4 py-3 glass-card-light text-white placeholder-white/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
               placeholder="Username"
               required
             />
@@ -82,49 +94,32 @@ export default function Login() {
               type="password"
               value={credentials.password}
               onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+              className="w-full px-4 py-3 glass-card-light text-white placeholder-white/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
               placeholder="Password"
               required
             />
           </div>
 
           <div className="flex items-center">
-            <input type="checkbox" id="remember" className="mr-2" />
-            <label htmlFor="remember" className="text-sm text-gray-600">Remember Me</label>
+            <input type="checkbox" id="remember" className="mr-2 accent-blue-600" />
+            <label htmlFor="remember" className="text-sm text-white/80">Remember Me</label>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-600 transition-all disabled:opacity-50 shadow-lg transform hover:scale-105 duration-200"
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
           
           <div className="text-center">
-            <a href="#" className="text-sm text-blue-600 hover:underline">Forgot Password?</a>
+            <a href="#" className="text-sm text-white/80 hover:text-white transition-colors">Forgot Password?</a>
           </div>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-gray-200 text-center text-xs text-gray-500">
+        <div className="mt-8 pt-6 border-t border-white/20 text-center text-xs text-white/60">
           <p>Demo: surveyor / password123</p>
-        </div>
-      </div>
-
-      {/* Right Side - Hero/Info */}
-      <div className="flex-1 bg-gray-900 flex items-center justify-center p-12 relative overflow-hidden">
-        <img 
-          src={loginImage} 
-          alt="Civic Infrastructure" 
-          className="absolute inset-0 w-full h-full object-cover opacity-60"
-        />
-        <div className="text-white text-center max-w-2xl relative z-10">
-          <h2 className="text-5xl font-bold mb-6 drop-shadow-lg">CivicLens</h2>
-          <p className="text-2xl mb-4 drop-shadow-lg">Field Surveyor Web App</p>
-          <p className="text-lg drop-shadow-lg">
-            Empowering field surveyors to efficiently report and manage civic issues with
-            real-time GPS tracking, photo documentation, and offline-first capabilities.
-          </p>
         </div>
       </div>
     </div>
