@@ -7,7 +7,10 @@ import os
 import yaml
 import shutil
 from pathlib import Path
-from ultralytics import YOLO
+try:
+    from ultralytics import YOLO
+except ImportError:
+    from ultralytics.models.yolo import YOLO
 import cv2
 import numpy as np
 from PIL import Image

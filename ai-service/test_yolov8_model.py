@@ -5,7 +5,10 @@ Comprehensive testing of trained YOLOv8 civic issue detector
 
 import os
 from pathlib import Path
-from ultralytics import YOLO
+try:
+    from ultralytics import YOLO
+except ImportError:
+    from ultralytics.models.yolo import YOLO
 import cv2
 import numpy as np
 from PIL import Image
@@ -232,7 +235,8 @@ if len(valid_predictions) > 0:
             data.append(class_confs[class_name])
             labels.append(class_name)
     
-    plt.boxplot(data, positions=positions, labels=labels)
+    bp = plt.boxplot(data, positions=positions)
+    plt.xticks(positions, labels)
     plt.xlabel('Issue Type')
     plt.ylabel('Confidence Score')
     plt.title('Confidence by Issue Type')

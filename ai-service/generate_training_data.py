@@ -44,7 +44,10 @@ def apply_rotation(img, angle=None):
 
 def apply_flip(img):
     """Horizontal flip"""
-    return img.transpose(Image.FLIP_LEFT_RIGHT)
+    try:
+        return img.transpose(Image.FLIP_LEFT_RIGHT)
+    except AttributeError:
+        return img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
 
 
 def apply_blur(img, radius=None):
@@ -75,7 +78,10 @@ def apply_zoom(img, zoom_factor=None):
     bottom = top + new_height
     
     cropped = img.crop((left, top, right, bottom))
-    return cropped.resize((width, height), Image.LANCZOS)
+    try:
+        return cropped.resize((width, height), Image.LANCZOS)
+    except AttributeError:
+        return cropped.resize((width, height), Image.Resampling.LANCZOS)
 
 
 def apply_crop(img, crop_factor=None):
@@ -85,7 +91,10 @@ def apply_crop(img, crop_factor=None):
     new_width = int(width * crop_factor)
     new_height = int(height * crop_factor)
     
-    resized = img.resize((new_width, new_height), Image.LANCZOS)
+    try:
+        resized = img.resize((new_width, new_height), Image.LANCZOS)
+    except AttributeError:
+        resized = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
     
     # Create new image with padding
     new_img = Image.new('RGB', (width, height), (128, 128, 128))

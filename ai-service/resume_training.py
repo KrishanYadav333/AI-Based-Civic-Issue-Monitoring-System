@@ -5,7 +5,10 @@ Use this if training was interrupted
 
 import os
 from pathlib import Path
-from ultralytics import YOLO
+try:
+    from ultralytics import YOLO
+except ImportError:
+    from ultralytics.models.yolo import YOLO
 import torch
 
 print("=" * 80)

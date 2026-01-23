@@ -4,7 +4,10 @@ YOLOv8 Model Handler
 """
 
 import os
-from ultralytics import YOLO
+try:
+    from ultralytics import YOLO
+except ImportError:
+    from ultralytics.models.yolo import YOLO
 from PIL import Image
 import numpy as np
 import logging
