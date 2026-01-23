@@ -7,7 +7,7 @@ extra-work-not-anuj/
 
 # === AI Agent Internal Notes ===
 .ai-notes.md
-
+/extra-work-not-anuj/
 # === Dependencies ===
 node_modules/
 */node_modules/
@@ -180,6 +180,32 @@ backend/test-final.txt
 ai-service/test_*.py
 !ai-service/test_app.py
 
+# === YOLOv8 Training Artifacts ===
+ai-service/dataset_yolo/
+ai-service/runs/
+ai-service/yolov8*.pt
+ai-service/models/*.pt
+!ai-service/models/.gitkeep
+ai-service/training_summary.json
+ai-service/test_results/
+ai-service/training_data/*.cache
+ai-service/*.cache
+
+# === AI Training Scripts (Keep for M4 Training) ===
+# ai-service/generate_training_data.py
+# ai-service/resume_training.py
+# ai-service/train_yolov8_custom.py
+# ai-service/test_yolov8_model.py
+ai-service/train_model_enhanced.py
+
+# === Internal Tracking Docs (Exclude) ===
+CLEANUP_SUMMARY.md
+NEXT_STEPS.md
+
+# === Requirements Files ===
+# requirements.txt (tracked)
+requirements-locked.txt
+
 # === Optional Documentation (Keep in repo if needed) ===
 # Uncomment to exclude:
 # CHANGELOG.md
@@ -190,3 +216,40 @@ PROJECT_RESTRUCTURE.md
 ADVANCED_FEATURES.md
 # MODEL_TUNING_GUIDE.md
 # API_DOCUMENTATION.md
+
+# === VS Code Settings ===
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+
+# === Python Cache & Compiled ===
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# === Jupyter Notebooks Checkpoints ===
+.ipynb_checkpoints/
+*.ipynb
+
+# === Large Model Files ===
+*.pt
+*.pth
+*.onnx
+*.h5
+*.keras
+*.pkl
+*.safetensors
+
+# === Training Data & Datasets ===
+ai-service/training_data/
+!ai-service/training_data/.gitkeep
+dataset/
+data/raw/
+data/processed/
