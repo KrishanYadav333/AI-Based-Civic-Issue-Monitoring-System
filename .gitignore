@@ -90,6 +90,9 @@ cache/
 !**/assets/**/*.jpeg
 !**/assets/**/*.png
 !**/assets/**/*.gif
+!ai-service/training_data/**/*.png
+!ai-service/training_data/**/*.jpg
+!ai-service/training_data/**/*.jpeg
 
 # === Testing & Coverage ===
 coverage/
@@ -111,10 +114,10 @@ ai-service/models/*.tflite
 ai-service/models/*.onnx
 ai-service/models/best_model.keras
 ai-service/dataset/
-ai-service/training_data/
+# ai-service/training_data/ (tracking for M4 training)
 !ai-service/models/.gitkeep
 !ai-service/models/class_indices.json
-!ai-service/training_data/.gitkeep
+# !ai-service/training_data/.gitkeep (not needed - tracking all training data)
 
 # AI Service Logs
 ai-service/logs/
