@@ -7,6 +7,7 @@ import { MapPin, Filter, Search, AlertCircle, Clock, CheckCircle, Zap, TrendingU
 import { motion } from 'framer-motion';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import backgroundImage from '../../assets/images/Background_image.jpg';
 
 // Fix Leaflet default icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -160,35 +161,51 @@ const MapView = () => {
     );
   }
 
-  const StatCard = ({ icon: Icon, label, value, color, bgGradient }) => (
+  const StatCard = ({ icon: Icon, label, value, color, bgGradient, iconBg }) => (
     <motion.div 
       initial={{ opacity: 0, y: 10 }} 
-      animate={{ opacity: 1, y: 0 }} 
-      className={`${bgGradient} rounded-lg border border-opacity-20 border-white p-5 hover:shadow-lg transition-all duration-300 transform hover:scale-105`}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.05, y: -8, transition: { duration: 0.3 } }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
+      className="glass-card-strong rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer"
     >
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-gray-100 text-xs font-medium uppercase tracking-wider opacity-90">{label}</p>
-          <p className="text-4xl font-bold text-white mt-2">{value}</p>
+          <p className="text-white/90 text-xs font-semibold uppercase tracking-wider transition-colors duration-300">{label}</p>
+          <p className="text-4xl font-bold text-white mt-2 transition-all duration-300">{value}</p>
         </div>
-        <div className={`p-3 rounded-xl ${color} shadow-lg`}>
-          <Icon className="w-6 h-6 text-white" />
+        <div className={`${iconBg} p-3 rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-110`}>
+          <Icon className="w-6 h-6 text-white transition-transform duration-300 hover:rotate-12" />
         </div>
       </div>
     </motion.div>
   );
 
   return (
-    <div className="space-y-6">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Navy blue gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-blue-800/30 to-blue-600/35 pointer-events-none"></div>
+      
+      <div className="relative z-10 space-y-6 p-8">
       {/* Header Section */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
+          <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
             <MapPin className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">Geospatial View</h1>
-            <p className="text-gray-600 text-sm mt-1">Interactive map with real-time issue tracking</p>
+            <h1 className="text-4xl font-bold metallic-text">Geospatial View</h1>
+            <p className="text-white/80 text-sm mt-1 font-medium">Interactive map with real-time issue tracking</p>
           </div>
         </div>
       </motion.div>
@@ -198,30 +215,26 @@ const MapView = () => {
         <StatCard 
           icon={MapPin} 
           label="Issues on Map" 
-          value={stats.total} 
-          color="bg-blue-500"
-          bgGradient="bg-gradient-to-br from-blue-500 to-blue-600"
+          value={stats.total}
+          iconBg="bg-blue-500/30"
         />
         <StatCard 
           icon={AlertCircle} 
           label="Critical" 
-          value={stats.critical} 
-          color="bg-red-500"
-          bgGradient="bg-gradient-to-br from-red-500 to-red-600"
+          value={stats.critical}
+          iconBg="bg-red-500/30"
         />
         <StatCard 
           icon={Clock} 
           label="In Progress" 
-          value={stats.inProgress} 
-          color="bg-yellow-500"
-          bgGradient="bg-gradient-to-br from-yellow-500 to-orange-600"
+          value={stats.inProgress}
+          iconBg="bg-orange-500/30"
         />
         <StatCard 
           icon={CheckCircle} 
           label="Resolved" 
-          value={stats.resolved} 
-          color="bg-green-500"
-          bgGradient="bg-gradient-to-br from-green-500 to-emerald-600"
+          value={stats.resolved}
+          iconBg="bg-emerald-500/30"
         />
       </div>
 
@@ -229,31 +242,32 @@ const MapView = () => {
       <motion.div 
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
-        transition={{ delay: 0.1 }} 
-        className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-5"
+        transition={{ delay: 0.1 }}
+        whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
+        className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
       >
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
           <div className="flex-1 relative group">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/60 group-focus-within:text-white transition-colors duration-300" />
             <input
               type="text"
               placeholder="Search by issue title or ward..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all"
+              className="w-full pl-12 pr-4 py-3 glass-card-light text-white placeholder-white/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 border border-white/20 transition-all duration-300"
             />
           </div>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-5 py-3 rounded-lg font-medium transition-all ${
+            className={`flex items-center gap-2 px-5 py-3 rounded-xl font-medium transition-all duration-300 ${
               showFilters 
-                ? 'bg-blue-50 text-blue-700 border-2 border-blue-300' 
-                : 'bg-gray-50 text-gray-700 border border-gray-300 hover:bg-gray-100'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg' 
+                : 'glass-card-light text-white/90 border border-white/20 hover:bg-white/10'
             }`}
           >
-            <Filter className="w-4 h-4" />
+            <Filter className="w-4 h-4 transition-transform duration-300" />
             Filters
           </motion.button>
         </div>
@@ -264,35 +278,36 @@ const MapView = () => {
             initial={{ opacity: 0, height: 0 }} 
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mt-5 pt-5 border-t border-gray-200 space-y-4"
+            transition={{ duration: 0.3 }}
+            className="mt-5 pt-5 border-t border-white/20 space-y-4"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Priority Level</label>
+                <label className="block text-sm font-semibold text-white/90 mb-2">Priority Level</label>
                 <select
                   value={priorityFilter}
                   onChange={(e) => setPriorityFilter(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium bg-white hover:border-gray-400 transition-colors"
+                  className="w-full px-4 py-2.5 glass-card-light text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 border border-white/20 font-medium hover:bg-white/10 transition-all duration-300"
                 >
-                  <option value="all">All Priorities</option>
-                  <option value="critical">Critical</option>
-                  <option value="high">High</option>
-                  <option value="medium">Medium</option>
-                  <option value="low">Low</option>
+                  <option value="all" className="bg-gray-800">All Priorities</option>
+                  <option value="critical" className="bg-gray-800">Critical</option>
+                  <option value="high" className="bg-gray-800">High</option>
+                  <option value="medium" className="bg-gray-800">Medium</option>
+                  <option value="low" className="bg-gray-800">Low</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+                <label className="block text-sm font-semibold text-white/90 mb-2">Status</label>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium bg-white hover:border-gray-400 transition-colors"
+                  className="w-full px-4 py-2.5 glass-card-light text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 border border-white/20 font-medium hover:bg-white/10 transition-all duration-300"
                 >
-                  <option value="all">All Statuses</option>
-                  <option value="pending">Pending</option>
-                  <option value="assigned">Assigned</option>
-                  <option value="in progress">In Progress</option>
-                  <option value="resolved">Resolved</option>
+                  <option value="all" className="bg-gray-800">All Statuses</option>
+                  <option value="pending" className="bg-gray-800">Pending</option>
+                  <option value="assigned" className="bg-gray-800">Assigned</option>
+                  <option value="in progress" className="bg-gray-800">In Progress</option>
+                  <option value="resolved" className="bg-gray-800">Resolved</option>
                 </select>
               </div>
             </div>
@@ -301,16 +316,16 @@ const MapView = () => {
       </motion.div>
 
       {/* Map with enhanced styling */}
-      <div 
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        whileHover={{ scale: 1.005, transition: { duration: 0.3 } }}
+        className="glass-card rounded-2xl shadow-2xl overflow-hidden"
         style={{ 
           width: '100%',
           height: '550px',
-          backgroundColor: '#fff',
-          borderRadius: '12px',
-          border: '1px solid #e5e7eb',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-          position: 'relative',
-          marginBottom: '24px'
+          position: 'relative'
         }}
       >
         <div 
@@ -326,58 +341,51 @@ const MapView = () => {
           }} 
         />
         {filteredIssues.length > 0 && (
-          <div 
-            style={{ 
-              position: 'absolute',
-              top: '16px',
-              right: '16px',
-              backgroundColor: '#fff',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-              padding: '12px',
-              zIndex: 10,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4 }}
+            className="absolute top-4 right-4 glass-card-strong rounded-xl shadow-xl px-4 py-3 z-10 flex items-center gap-2 border border-white/20"
           >
-            <TrendingUp className="w-4 h-4 text-green-600" />
-            <p style={{ fontSize: '14px', fontWeight: '600', color: '#1f2937', margin: 0 }}>
+            <TrendingUp className="w-4 h-4 text-emerald-300" />
+            <p className="text-sm font-semibold text-white">
               {filteredIssues.length} Issues
             </p>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
 
       {/* Enhanced Legend */}
       <motion.div 
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
-        transition={{ delay: 0.2 }} 
-        className="bg-white rounded-xl border border-gray-200 shadow-md p-6"
+        transition={{ delay: 0.25 }}
+        whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
+        className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
       >
-        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-          <Zap className="w-6 h-6 text-blue-600" />
+        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+          <Zap className="w-6 h-6 text-blue-400" />
           Map Legend
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { color: 'bg-red-500', name: 'Critical', desc: 'High priority issues', shadow: 'shadow-red-200' },
-            { color: 'bg-orange-500', name: 'High', desc: 'Important issues', shadow: 'shadow-orange-200' },
-            { color: 'bg-yellow-500', name: 'Medium', desc: 'Standard priority', shadow: 'shadow-yellow-200' },
-            { color: 'bg-green-500', name: 'Low', desc: 'Minor issues', shadow: 'shadow-green-200' },
+            { color: 'bg-red-500', name: 'Critical', desc: 'High priority issues', shadow: 'shadow-red-500/50' },
+            { color: 'bg-orange-500', name: 'High', desc: 'Important issues', shadow: 'shadow-orange-500/50' },
+            { color: 'bg-yellow-500', name: 'Medium', desc: 'Standard priority', shadow: 'shadow-yellow-500/50' },
+            { color: 'bg-green-500', name: 'Low', desc: 'Minor issues', shadow: 'shadow-green-500/50' },
           ].map((item, idx) => (
             <motion.div 
               key={idx}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.25 + idx * 0.05 }}
-              className="flex items-center gap-4 p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+              transition={{ delay: 0.3 + idx * 0.05, duration: 0.4 }}
+              whileHover={{ x: 8, scale: 1.05, transition: { duration: 0.2 } }}
+              className="flex items-center gap-4 p-4 rounded-xl glass-card-light hover:glass-card transition-all duration-300 cursor-pointer"
             >
-              <div className={`w-10 h-10 rounded-full ${item.color} shadow-lg ${item.shadow}`} />
+              <div className={`w-10 h-10 rounded-full ${item.color} shadow-lg ${item.shadow} transition-transform duration-300 hover:scale-110`} />
               <div>
-                <p className="font-semibold text-gray-900 text-sm">{item.name}</p>
-                <p className="text-xs text-gray-600">{item.desc}</p>
+                <p className="font-semibold text-white text-sm transition-colors duration-300">{item.name}</p>
+                <p className="text-xs text-white/70 transition-colors duration-300">{item.desc}</p>
               </div>
             </motion.div>
           ))}
@@ -388,14 +396,16 @@ const MapView = () => {
       {filteredIssues.length === 0 && (
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }} 
-          animate={{ opacity: 1, scale: 1 }} 
-          className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-8 text-center shadow-sm"
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="glass-card-light rounded-2xl p-8 text-center shadow-lg border border-white/20"
         >
-          <AlertCircle className="w-12 h-12 text-blue-600 mx-auto mb-3" />
-          <p className="text-lg font-semibold text-gray-900 mb-2">No Issues Found</p>
-          <p className="text-gray-600">Try adjusting your search criteria or filters to find issues on the map.</p>
+          <AlertCircle className="w-12 h-12 text-blue-400 mx-auto mb-3" />
+          <p className="text-lg font-semibold text-white mb-2">No Issues Found</p>
+          <p className="text-white/70">Try adjusting your search criteria or filters to find issues on the map.</p>
         </motion.div>
       )}
+    </div>
     </div>
   );
 };
