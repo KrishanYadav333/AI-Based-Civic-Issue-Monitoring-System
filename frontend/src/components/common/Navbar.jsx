@@ -14,13 +14,13 @@ const Navbar = ({ sidebarOpen, setSidebarOpen, onSearch }) => {
   };
 
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-soft">
+    <nav className="glass-card-strong border-b border-white/20 sticky top-0 z-40 shadow-lg backdrop-blur-xl">
       <div className="px-4 py-3 flex items-center justify-between">
         {/* Left side */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition"
+            className="p-2 hover:bg-white/10 rounded-lg transition text-white"
           >
             {sidebarOpen ? (
               <X className="w-5 h-5" />
@@ -28,7 +28,7 @@ const Navbar = ({ sidebarOpen, setSidebarOpen, onSearch }) => {
               <Menu className="w-5 h-5" />
             )}
           </button>
-          <h1 className="text-lg font-semibold text-gray-900">
+          <h1 className="text-lg font-semibold metallic-text">
             Civic Dashboard
           </h1>
         </div>
@@ -39,13 +39,13 @@ const Navbar = ({ sidebarOpen, setSidebarOpen, onSearch }) => {
           <div className="relative">
             <button
               onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition"
+              className="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded-lg transition border border-white/20"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                {user?.name?.charAt(0) || 'U'}
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-semibold shadow-lg">
+                {user?.name?.charAt(0) || 'A'}
               </div>
-              <span className="hidden sm:inline text-sm font-medium text-gray-900">
-                {user?.name}
+              <span className="hidden sm:inline text-sm font-medium text-white">
+                Admin User
               </span>
             </button>
 
@@ -53,19 +53,19 @@ const Navbar = ({ sidebarOpen, setSidebarOpen, onSearch }) => {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2"
+                className="absolute right-0 mt-2 w-48 glass-card-strong border border-white/20 rounded-lg shadow-2xl py-2"
               >
-                <div className="px-4 py-2 border-b border-gray-200">
-                  <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
-                  <p className="text-xs text-gray-500">{user?.email}</p>
+                <div className="px-4 py-2 border-b border-white/20">
+                  <p className="text-sm font-semibold text-white">{user?.name || 'Admin User'}</p>
+                  <p className="text-xs text-white/70">{user?.email || 'admin@example.com'}</p>
                 </div>
-                <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                <button className="w-full text-left px-4 py-2 text-sm text-white/90 hover:bg-white/10 flex items-center gap-2 transition-colors">
                   <Settings className="w-4 h-4" />
                   Settings
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                  className="w-full text-left px-4 py-2 text-sm text-red-300 hover:bg-red-500/20 flex items-center gap-2 transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   Logout
