@@ -180,12 +180,9 @@ backend/test-final.txt
 # ai-service/test_*.py (commented - keeping test scripts)
 !ai-service/test_yolov8_model.py
 
-# === YOLOv8 Training Artifacts ===
+# === YOLOv8 Training Artifacts (Generated) ===
 ai-service/dataset_yolo/
 ai-service/runs/
-ai-service/yolov8*.pt
-ai-service/models/*.pt
-!ai-service/models/.gitkeep
 ai-service/training_summary.json
 ai-service/test_results/
 ai-service/training_data/*.cache
@@ -238,18 +235,19 @@ build/
 .ipynb_checkpoints/
 *.ipynb
 
-# === Large Model Files ===
-*.pt
-*.pth
-*.onnx
-*.h5
-*.keras
-*.pkl
-*.safetensors
+# === Large Model Files (Generated During Training) ===
+# Comment out to keep trained models in repo (not recommended for large files)
+ai-service/models/*.pt
+!ai-service/models/.gitkeep
+ai-service/yolov8n.pt
 
-# === Training Data & Datasets ===
-ai-service/training_data/
-!ai-service/training_data/.gitkeep
-dataset/
-data/raw/
-data/processed/
+# === Training Outputs (Generated) ===
+ai-service/dataset_yolo/
+ai-service/runs/
+ai-service/training_summary.json
+
+# === Training Data & Datasets (Now Tracked for M4) ===
+# ai-service/training_data/ (commented - tracking for M4 training)
+# dataset/
+# data/raw/
+# data/processed/
