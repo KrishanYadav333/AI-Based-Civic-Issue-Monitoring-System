@@ -1,24 +1,23 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database with PostGIS
-  postgres:
-    image: postgis/postgis:15-3.3
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
     container_name: civic-issues-db
     environment:
-      POSTGRES_DB: civic_issues
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres123}
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD:-admin123}
+      MONGO_INITDB_DATABASE: civic_issues
     ports:
-      - "5432:5432"
+      - "27017:27017"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
-      - ./database/seed_data.sql:/docker-entrypoint-initdb.d/02-seed_data.sql
+      - mongodb_data:/data/db
+      - ./database/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
       - civic-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -30,11 +29,11 @@ services:
       dockerfile: Dockerfile
     container_name: civic-issues-backend
     environment:
-      DB_HOST: postgres
-      DB_PORT: 5432
+      DB_HOST: mongodb
+      DB_PORT: 27017
       DB_NAME: civic_issues
-      DB_USER: postgres
-      DB_PASSWORD: ${DB_PASSWORD:-postgres123}
+      DB_USER: ${DB_USER:-admin}
+      DB_PASSWORD: ${DB_PASSWORD:-admin123}
       JWT_SECRET: ${JWT_SECRET:-your_secret_key_change_in_production}
       AI_SERVICE_URL: http://ai-service:5000
       PORT: 3000
@@ -44,7 +43,7 @@ services:
       - ./backend/uploads:/app/uploads
       - ./backend/logs:/app/logs
     depends_on:
-      postgres:
+      mongodb:
         condition: service_healthy
     networks:
       - civic-network
@@ -80,7 +79,7 @@ services:
     restart: unless-stopped
 
 volumes:
-  postgres_data:
+  mongodb_data:
 
 networks:
   civic-network:
