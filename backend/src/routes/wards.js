@@ -67,26 +67,26 @@ router.get(
     authenticate,
     asyncHandler(async (req, res) => {
         const { latitude, longitude } = req.query;
-        
+
         if (!latitude || !longitude) {
             return res.status(400).json({
                 success: false,
                 message: 'Latitude and longitude are required'
             });
         }
-        
+
         const ward = await geoService.getWardFromCoordinates(
             parseFloat(latitude),
             parseFloat(longitude)
         );
-        
+
         if (!ward) {
             return res.status(404).json({
                 success: false,
                 message: 'No ward found for these coordinates'
             });
         }
-        
+
         return successResponse(res, ward, 'Ward located successfully');
     })
 );

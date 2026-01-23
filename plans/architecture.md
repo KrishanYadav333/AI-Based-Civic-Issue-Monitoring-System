@@ -5,19 +5,19 @@
 The AI-Based Civic Issue Monitoring System is designed to automate the detection, assignment, and resolution of civic issues in Vadodara's 19 wards. The system targets VMC employees only, with no citizen login required.
 
 Key components:
-- **Mobile App** (React Native): Used by Field Surveyors to capture issues on-site.
+- **Field Surveyor React App** (React.js): A responsive web app used by Field Surveyors to capture issues on-site via mobile browsers.
 - **Backend** (Node.js/Express + Render): Handles API requests, geo-fencing, auto-routing, and workflow automation.
 - **AI Service** (YOLOv8 + PyTorch): Processes images to detect and classify civic issues.
 - **Database** (PostgreSQL + PostGIS): Stores user data, ward boundaries, issues, and resolution details.
 - **Dashboards** (React.js + OpenStreetMap): Web interfaces for Ward Engineers and Admins to monitor and resolve issues.
 
 ## Roles
-- **Field Surveyor**: Captures issues via mobile app.
+- **Field Surveyor**: Captures issues via React app on mobile devices.
 - **Ward Engineer**: Reviews assigned issues, uploads resolution images.
 - **Admin**: Monitors system-wide statistics and heatmaps.
 
 ## Data Flow
-1. Field Surveyor captures image and GPS via Mobile App.
+1. Field Surveyor captures image and GPS via React App.
 2. Mobile App sends data to Backend.
 3. Backend performs geo-fencing to assign ward.
 4. Backend sends image to AI for issue detection.
@@ -30,7 +30,7 @@ Key components:
 
 ```mermaid
 graph TD
-    A[Field Surveyor Mobile App<br/>React Native + expo-camera] -->|Submit Issue: Image + GPS| B[Backend API Server<br/>Node.js/Express on Render]
+    A[Field Surveyor React App<br/>React.js + PWA] -->|Submit Issue: Image + GPS| B[Backend API Server<br/>Node.js/Express on Render]
     B -->|Geo-fencing<br/>PostGIS spatial queries| C[Ward Boundary Service<br/>PostgreSQL+PostGIS]
     C -->|Ward ID| B
     B -->|Image Analysis| D[AI Issue Detection<br/>YOLOv8 + PyTorch<br/>Local Inference]

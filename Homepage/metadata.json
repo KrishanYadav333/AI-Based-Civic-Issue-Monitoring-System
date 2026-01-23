@@ -1,0 +1,9 @@
+
+{
+  "name": "VMC AI Civic Monitoring Portal",
+  "description": "A government-style portal for the Vadodara Municipal Corporation's AI-based civic issue monitoring system, featuring real-time detection of potholes, garbage, and more across 19 wards.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
