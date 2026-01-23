@@ -8,7 +8,7 @@ const MainLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="min-h-screen">
       <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       <Sidebar isOpen={sidebarOpen} />
 
@@ -16,11 +16,9 @@ const MainLayout = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.2 }}
-        className="md:ml-64 pt-4 pb-8 px-4 md:px-8"
+        className={`transition-all duration-300 ${sidebarOpen ? 'md:ml-64' : 'md:ml-0'}`}
       >
-        <div className="max-w-7xl">
-          <Outlet />
-        </div>
+        <Outlet />
       </motion.main>
     </div>
   );

@@ -37,8 +37,8 @@ const Sidebar = ({ isOpen }) => {
     <motion.div
       initial={{ x: -250 }}
       animate={{ x: isOpen ? 0 : -250 }}
-      transition={{ duration: 0.3 }}
-      className={`fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-white border-r border-gray-200 overflow-y-auto z-30 ${
+      transition={{ duration: 0.4, ease: 'easeInOut' }}
+      className={`fixed left-0 top-16 h-[calc(100vh-64px)] w-64 glass-card-strong border-r border-white/20 overflow-y-auto z-30 shadow-2xl transition-all duration-300 ${
         isOpen ? '' : 'hidden md:block'
       }`}
     >
@@ -51,13 +51,13 @@ const Sidebar = ({ isOpen }) => {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 ${
                 active
-                  ? 'bg-primary-50 text-primary-600'
-                  : 'text-gray-600 hover:bg-gray-50'
+                  ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg'
+                  : 'text-white/90 hover:bg-white/10 hover:shadow-md'
               }`}
             >
-              <Icon className="w-5 h-5 flex-shrink-0" />
+              <Icon className="w-5 h-5 flex-shrink-0 transition-transform duration-300" />
               <span className="font-medium">{item.label}</span>
             </Link>
           );
