@@ -1,16 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-
-import api from '../services/api';
+import { mockIssues } from '../data/mockData';
 
 export const fetchIssues = createAsyncThunk(
   'issues/fetchIssues',
-  async (params = {}, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      // params can contain { status, priority, page, limit, etc. }
-      const response = await api.get('/issues', { params });
-      // Backend returns { data: [...], pagination: {...} } or just [...] depending on implementation
-      // Based on provided backend docs: GET /api/issues returns { data: [], pagination: {} }
-      return response.data;
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 800));
+      return mockIssues;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -19,22 +16,10 @@ export const fetchIssues = createAsyncThunk(
 
 export const updateIssue = createAsyncThunk(
   'issues/updateIssue',
-  async ({ id, data }, { rejectWithValue }) => {
+  async (issueData, { rejectWithValue }) => {
     try {
-      const response = await api.patch(`/issues/${id}`, data);
-      return response.data || response; // Adjust based on actual API response
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-export const fetchIssueById = createAsyncThunk(
-  'issues/fetchIssueById',
-  async (id, { rejectWithValue }) => {
-    try {
-      const response = await api.get(`/issues/${id}`);
-      return response.data || response;
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return issueData;
     } catch (error) {
       return rejectWithValue(error.message);
     }

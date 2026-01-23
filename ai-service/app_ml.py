@@ -15,11 +15,11 @@ from datetime import datetime
 import numpy as np
 from PIL import Image
 import io
-from tensorflow import keras
+from tensorflow import keras # pyright: ignore[reportAttributeAccessIssue]
 # Try to load TensorFlow/Keras for ML model
 try:
     import tensorflow as tf
-    from tensorflow import keras
+    from tensorflow import keras # pyright: ignore[reportAttributeAccessIssue]
     ML_AVAILABLE = True
     logging.info("TensorFlow loaded successfully")
 except ImportError:

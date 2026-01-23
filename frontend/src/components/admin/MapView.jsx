@@ -8,8 +8,6 @@ import { motion } from 'framer-motion';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-import 'leaflet.heat';
-
 // Fix Leaflet default icon
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -27,7 +25,6 @@ const MapView = () => {
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
-  const [showHeatmap, setShowHeatmap] = useState(false);
 
   useEffect(() => {
     dispatch(fetchIssues());
@@ -37,7 +34,7 @@ const MapView = () => {
   const filteredIssues = useMemo(() => {
     return issues.filter(issue => {
       const matchSearch = issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        issue.ward.toLowerCase().includes(searchTerm.toLowerCase());
+                         issue.ward.toLowerCase().includes(searchTerm.toLowerCase());
       const matchPriority = priorityFilter === 'all' || issue.priority.toLowerCase() === priorityFilter.toLowerCase();
       const matchStatus = statusFilter === 'all' || issue.status.toLowerCase() === statusFilter.toLowerCase();
       return matchSearch && matchPriority && matchStatus;
@@ -63,7 +60,7 @@ const MapView = () => {
     const initializeMap = () => {
       try {
         console.log('Attempting to initialize map with container:', mapRef.current);
-
+        
         const mapContainer = mapRef.current;
         if (!mapContainer) {
           console.error('Map container is null');
@@ -92,7 +89,7 @@ const MapView = () => {
         // Force map to recalculate size
         mapInstance.invalidateSize();
         console.log('Map size invalidated');
-
+        
         mapInstanceRef.current = mapInstance;
         console.log('Map initialization complete');
       } catch (error) {
@@ -108,7 +105,7 @@ const MapView = () => {
     return () => cancelAnimationFrame(animationFrame);
   }, []);
 
-  // Update markers and heatmap
+  // Update markers when filtered issues change
   useEffect(() => {
     if (!mapInstanceRef.current) return;
 
@@ -116,79 +113,44 @@ const MapView = () => {
 
     // Clear existing markers
     map.eachLayer(layer => {
-      if (layer instanceof L.Marker || layer._heat) {
+      if (layer instanceof L.Marker) {
         map.removeLayer(layer);
       }
     });
 
-    if (showHeatmap) {
-      if (!L.heatLayer) {
-        console.warn('Leaflet.heat not loaded');
-        return;
-      }
+    // Add markers for each filtered issue
+    filteredIssues.forEach(issue => {
+      const color = issue.priority === 'Critical' ? 'red' : 
+                   issue.priority === 'High' ? 'orange' : 
+                   issue.priority === 'Medium' ? 'yellow' : 'green';
 
-      const points = filteredIssues.map(i => [
-        i.location.lat,
-        i.location.lng,
-        i.priority === 'Critical' ? 1.0 : i.priority === 'High' ? 0.7 : 0.4
-      ]);
-
-      L.heatLayer(points, {
-        radius: 25,
-        blur: 15,
-        maxZoom: 17,
-      }).addTo(map);
-
-    } else {
-      // Add markers for each filtered issue
-      filteredIssues.forEach(issue => {
-        let icon;
-
-        if (issue.priority === 'Critical') {
-          icon = L.divIcon({
-            className: 'custom-div-icon',
-            html: "<div style='background-color:#ef4444;' class='request-loader'></div>",
-            iconSize: [20, 20],
-            iconAnchor: [10, 10]
-          });
-        } else if (issue.priority === 'High') {
-          icon = L.divIcon({
-            className: 'custom-div-icon',
-            html: "<div style='background-color:#f59e0b;' class='request-loader warning'></div>",
-            iconSize: [20, 20],
-            iconAnchor: [10, 10]
-          });
-        } else {
-          const color = issue.priority === 'Medium' ? 'yellow' : 'green';
-          icon = L.icon({
-            iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-${color}.png`,
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41],
-          });
-        }
-
-        const marker = L.marker(
-          [issue.location.lat, issue.location.lng],
-          { icon }
-        ).addTo(map);
-
-        marker.bindPopup(`
-            <div style="font-family: system-ui;">
-              <h3 style="margin: 0 0 8px 0; font-weight: bold; font-size: 14px; color: #000;">${issue.title}</h3>
-              <p style="margin: 4px 0; font-size: 13px; color: #555;">${issue.description}</p>
-              <div style="border-top: 1px solid #e5e7eb; margin: 8px 0; padding-top: 8px;">
-                <p style="margin: 4px 0; font-size: 12px; color: #666;"><strong>Ward:</strong> ${issue.ward}</p>
-                <p style="margin: 4px 0; font-size: 12px; color: #666;"><strong>Status:</strong> <span style="padding: 2px 6px; border-radius: 4px; background: ${issue.status === 'Resolved' ? '#d1fae5' : issue.status === 'In Progress' ? '#dbeafe' : '#fef3c7'}; color: ${issue.status === 'Resolved' ? '#065f46' : issue.status === 'In Progress' ? '#0c4a6e' : '#92400e'}; font-size: 11px;">${issue.status}</span></p>
-                <p style="margin: 4px 0; font-size: 12px; color: #666;"><strong>Priority:</strong> <span style="padding: 2px 6px; border-radius: 4px; background: ${issue.priority === 'Critical' ? '#fee2e2' : '#f3e8ff'}; color: ${issue.priority === 'Critical' ? '#7f1d1d' : '#6b21a8'}; font-size: 11px;">${issue.priority}</span></p>
-              </div>
-            </div>
-          `);
+      const icon = L.icon({
+        iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-${color}.png`,
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
       });
-    }
-  }, [filteredIssues, showHeatmap]);
+
+      const marker = L.marker(
+        [issue.location.lat, issue.location.lng],
+        { icon }
+      ).addTo(map);
+
+      marker.bindPopup(`
+        <div style="font-family: system-ui;">
+          <h3 style="margin: 0 0 8px 0; font-weight: bold; font-size: 14px; color: #000;">${issue.title}</h3>
+          <p style="margin: 4px 0; font-size: 13px; color: #555;">${issue.description}</p>
+          <div style="border-top: 1px solid #e5e7eb; margin: 8px 0; padding-top: 8px;">
+            <p style="margin: 4px 0; font-size: 12px; color: #666;"><strong>Ward:</strong> ${issue.ward}</p>
+            <p style="margin: 4px 0; font-size: 12px; color: #666;"><strong>Status:</strong> <span style="padding: 2px 6px; border-radius: 4px; background: ${issue.status === 'Resolved' ? '#d1fae5' : issue.status === 'In Progress' ? '#dbeafe' : '#fef3c7'}; color: ${issue.status === 'Resolved' ? '#065f46' : issue.status === 'In Progress' ? '#0c4a6e' : '#92400e'}; font-size: 11px;">${issue.status}</span></p>
+            <p style="margin: 4px 0; font-size: 12px; color: #666;"><strong>Priority:</strong> <span style="padding: 2px 6px; border-radius: 4px; background: ${issue.priority === 'Critical' ? '#fee2e2' : '#f3e8ff'}; color: ${issue.priority === 'Critical' ? '#7f1d1d' : '#6b21a8'}; font-size: 11px;">${issue.priority}</span></p>
+          </div>
+        </div>
+      `);
+    });
+  }, [filteredIssues]);
 
   if (loading) {
     return (
@@ -199,9 +161,9 @@ const MapView = () => {
   }
 
   const StatCard = ({ icon: Icon, label, value, color, bgGradient }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }} 
+      animate={{ opacity: 1, y: 0 }} 
       className={`${bgGradient} rounded-lg border border-opacity-20 border-white p-5 hover:shadow-lg transition-all duration-300 transform hover:scale-105`}
     >
       <div className="flex items-start justify-between">
@@ -233,41 +195,41 @@ const MapView = () => {
 
       {/* Stats Grid with Gradients */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          icon={MapPin}
-          label="Issues on Map"
-          value={stats.total}
+        <StatCard 
+          icon={MapPin} 
+          label="Issues on Map" 
+          value={stats.total} 
           color="bg-blue-500"
           bgGradient="bg-gradient-to-br from-blue-500 to-blue-600"
         />
-        <StatCard
-          icon={AlertCircle}
-          label="Critical"
-          value={stats.critical}
+        <StatCard 
+          icon={AlertCircle} 
+          label="Critical" 
+          value={stats.critical} 
           color="bg-red-500"
           bgGradient="bg-gradient-to-br from-red-500 to-red-600"
         />
-        <StatCard
-          icon={Clock}
-          label="In Progress"
-          value={stats.inProgress}
+        <StatCard 
+          icon={Clock} 
+          label="In Progress" 
+          value={stats.inProgress} 
           color="bg-yellow-500"
           bgGradient="bg-gradient-to-br from-yellow-500 to-orange-600"
         />
-        <StatCard
-          icon={CheckCircle}
-          label="Resolved"
-          value={stats.resolved}
+        <StatCard 
+          icon={CheckCircle} 
+          label="Resolved" 
+          value={stats.resolved} 
           color="bg-green-500"
           bgGradient="bg-gradient-to-br from-green-500 to-emerald-600"
         />
       </div>
 
       {/* Search and Filters Section */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
+      <motion.div 
+        initial={{ opacity: 0 }} 
+        animate={{ opacity: 1 }} 
+        transition={{ delay: 0.1 }} 
         className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-5"
       >
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
@@ -284,35 +246,12 @@ const MapView = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => setShowHeatmap(!showHeatmap)}
-            className={`flex items-center gap-2 px-5 py-3 rounded-lg font-medium transition-all ${showHeatmap
-              ? 'bg-red-50 text-red-700 border-2 border-red-300'
-              : 'bg-gray-50 text-gray-700 border border-gray-300 hover:bg-gray-100'
-              }`}
-          >
-            <Zap className={`w-4 h-4 ${showHeatmap ? 'text-red-500 fill-current' : ''}`} />
-            {showHeatmap ? 'Heatmap On' : 'Heatmap'}
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowHeatmap(!showHeatmap)}
-            className={`flex items-center gap-2 px-5 py-3 rounded-lg font-medium transition-all ${showHeatmap
-                ? 'bg-red-50 text-red-700 border-2 border-red-300'
-                : 'bg-gray-50 text-gray-700 border border-gray-300 hover:bg-gray-100'
-              }`}
-          >
-            <Zap className={`w-4 h-4 ${showHeatmap ? 'text-red-500 fill-current' : ''}`} />
-            {showHeatmap ? 'Heatmap On' : 'Heatmap'}
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-5 py-3 rounded-lg font-medium transition-all ${showFilters
-              ? 'bg-blue-50 text-blue-700 border-2 border-blue-300'
-              : 'bg-gray-50 text-gray-700 border border-gray-300 hover:bg-gray-100'
-              }`}
+            className={`flex items-center gap-2 px-5 py-3 rounded-lg font-medium transition-all ${
+              showFilters 
+                ? 'bg-blue-50 text-blue-700 border-2 border-blue-300' 
+                : 'bg-gray-50 text-gray-700 border border-gray-300 hover:bg-gray-100'
+            }`}
           >
             <Filter className="w-4 h-4" />
             Filters
@@ -321,8 +260,8 @@ const MapView = () => {
 
         {/* Expandable Filters with better styling */}
         {showFilters && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }} 
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             className="mt-5 pt-5 border-t border-gray-200 space-y-4"
@@ -362,8 +301,8 @@ const MapView = () => {
       </motion.div>
 
       {/* Map with enhanced styling */}
-      <div
-        style={{
+      <div 
+        style={{ 
           width: '100%',
           height: '550px',
           backgroundColor: '#fff',
@@ -374,21 +313,21 @@ const MapView = () => {
           marginBottom: '24px'
         }}
       >
-        <div
-          ref={mapRef}
-          id="map"
-          style={{
+        <div 
+          ref={mapRef} 
+          id="map" 
+          style={{ 
             width: '100%',
             height: '100%',
             position: 'absolute',
             top: 0,
             left: 0,
             borderRadius: '12px'
-          }}
+          }} 
         />
         {filteredIssues.length > 0 && (
-          <div
-            style={{
+          <div 
+            style={{ 
               position: 'absolute',
               top: '16px',
               right: '16px',
@@ -411,10 +350,10 @@ const MapView = () => {
       </div>
 
       {/* Enhanced Legend */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
+      <motion.div 
+        initial={{ opacity: 0 }} 
+        animate={{ opacity: 1 }} 
+        transition={{ delay: 0.2 }} 
         className="bg-white rounded-xl border border-gray-200 shadow-md p-6"
       >
         <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
@@ -428,7 +367,7 @@ const MapView = () => {
             { color: 'bg-yellow-500', name: 'Medium', desc: 'Standard priority', shadow: 'shadow-yellow-200' },
             { color: 'bg-green-500', name: 'Low', desc: 'Minor issues', shadow: 'shadow-green-200' },
           ].map((item, idx) => (
-            <motion.div
+            <motion.div 
               key={idx}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -447,9 +386,9 @@ const MapView = () => {
 
       {/* Empty State */}
       {filteredIssues.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }} 
+          animate={{ opacity: 1, scale: 1 }} 
           className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-8 text-center shadow-sm"
         >
           <AlertCircle className="w-12 h-12 text-blue-600 mx-auto mb-3" />

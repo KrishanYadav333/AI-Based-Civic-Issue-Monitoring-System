@@ -43,15 +43,16 @@ router.post(
     asyncHandler(async (req, res) => {
         const data = {
             ...req.body,
+            surveyor_id: req.user.id,
             submitted_by: req.user.id
         };
-        
+
         const result = await issueService.submitIssue(data);
-        
+
         if (result.duplicate) {
             return successResponse(res, result, result.message);
         }
-        
+
         return createdResponse(res, result.issue, result.message);
     })
 );
@@ -74,14 +75,14 @@ router.get(
             sortBy: req.query.sortBy,
             order: req.query.order
         };
-        
+
         const pagination = {
             page: req.query.page,
             limit: req.query.limit
         };
-        
+
         const result = await issueService.getIssues(filters, pagination);
-        
+
         return successResponse(res, result, 'Issues retrieved successfully');
     })
 );
@@ -95,22 +96,22 @@ router.get(
     authenticate,
     asyncHandler(async (req, res) => {
         const { latitude, longitude, radius } = req.query;
-        
+
         if (!latitude || !longitude) {
             return res.status(400).json({
                 success: false,
                 message: 'Latitude and longitude are required'
             });
         }
-        
+
         const radiusMeters = parseInt(radius) || 1000;
-        
+
         const issues = await issueService.getIssuesNearLocation(
             parseFloat(latitude),
             parseFloat(longitude),
             radiusMeters
         );
-        
+
         return successResponse(res, issues, 'Nearby issues retrieved successfully');
     })
 );
@@ -124,14 +125,14 @@ router.get(
     authenticate,
     asyncHandler(async (req, res) => {
         const issue = await issueService.getIssueById(req.params.id);
-        
+
         if (!issue) {
             return res.status(404).json({
                 success: false,
                 message: 'Issue not found'
             });
         }
-        
+
         return successResponse(res, issue, 'Issue retrieved successfully');
     })
 );
@@ -150,7 +151,7 @@ router.patch(
             req.body,
             req.user.id
         );
-        
+
         return successResponse(res, updatedIssue, 'Issue updated successfully');
     })
 );
@@ -175,7 +176,7 @@ router.post(
             req.body.engineer_id,
             req.user.id
         );
-        
+
         return successResponse(res, updatedIssue, 'Issue assigned successfully');
     })
 );
@@ -205,7 +206,7 @@ router.post(
             req.user.id,
             req.body.remarks
         );
-        
+
         return successResponse(res, updatedIssue, 'Issue status updated successfully');
     })
 );
@@ -230,7 +231,7 @@ router.post(
             req.user.id,
             req.body.resolution_notes
         );
-        
+
         return successResponse(res, updatedIssue, 'Issue resolved successfully');
     })
 );
@@ -255,7 +256,7 @@ router.post(
             req.user.id,
             req.body.reason
         );
-        
+
         return successResponse(res, updatedIssue, 'Issue rejected successfully');
     })
 );
@@ -273,7 +274,7 @@ router.post(
             req.params.id,
             req.user.id
         );
-        
+
         return successResponse(res, updatedIssue, 'Issue accepted successfully');
     })
 );
@@ -297,7 +298,7 @@ router.post(
             req.user.id,
             req.body.reason
         );
-        
+
         return successResponse(res, updatedIssue, 'Issue reopened successfully');
     })
 );
@@ -311,7 +312,7 @@ router.get(
     authenticate,
     asyncHandler(async (req, res) => {
         const history = await workflowService.getIssueHistory(req.params.id);
-        
+
         return successResponse(res, history, 'Issue history retrieved successfully');
     })
 );

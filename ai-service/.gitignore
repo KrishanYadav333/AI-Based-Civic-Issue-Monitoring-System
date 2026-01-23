@@ -1,0 +1,17 @@
+node_modules/
+uploads/
+!uploads/.gitkeep
+logs/
+!logs/.gitkeep
+models/
+!models/.gitkeep
+runs/
+dataset_yolo/
+training_data/
+.env
+*.log
+*.log.*
+coverage/
+dist/
+build/
+.DS_Store

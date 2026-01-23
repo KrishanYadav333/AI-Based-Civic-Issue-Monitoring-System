@@ -1,0 +1,14 @@
+≡ƒº¬ Starting Premium Feature Test...
+
+1. Registering Surveyor (surveyor_1769194982013)...
+   Γ£à Surveyor Registered
+
+2. Submitting Issue with AI Classification...
+
+Γ¥î Test Failed: Request failed with status code 500
+   Status: 500
+   Data: {
+  success: false,
+  message: 'null value in column "issue_number" of relation "issues" violates not-null constraint',
+  timestamp: '2026-01-23T19:03:02.247Z'
+}

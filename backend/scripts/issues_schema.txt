@@ -1,0 +1,33 @@
+≡ƒöì Inspecting Issues Table Schema...
+[2026-01-24 00:29:36] [32MINFO[39M: Database connection established
+[32minfo[39m: Database connection established {"timestamp":"2026-01-24 00:29:36"}
+Columns in issues table:
+  - id: uuid
+  - issue_number: character varying
+  - latitude: numeric
+  - longitude: numeric
+  - ward_id: uuid
+  - address: text
+  - issue_type_id: uuid
+  - issue_type_code: character varying
+  - department: character varying
+  - ai_confidence: numeric
+  - ai_alternative_classes: jsonb
+  - priority: character varying
+  - status: character varying
+  - description: text
+  - image_url: text
+  - resolution_image_url: text
+  - resolution_notes: text
+  - surveyor_id: uuid
+  - engineer_id: uuid
+  - created_at: timestamp without time zone
+  - updated_at: timestamp without time zone
+  - assigned_at: timestamp without time zone
+  - resolved_at: timestamp without time zone
+  - closed_at: timestamp without time zone
+  - upvotes: integer
+  - estimated_cost: numeric
+  - resolution_rating: integer
+[2026-01-24 00:29:36] [32MINFO[39M: Database pool closed
+[32minfo[39m: Database pool closed {"timestamp":"2026-01-24 00:29:36"}

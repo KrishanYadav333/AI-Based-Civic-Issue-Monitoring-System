@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../services/api';
+import { mockUsers } from '../data/mockData';
 
 export const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get('/users');
-      return response.data;
+      await new Promise(resolve => setTimeout(resolve, 600));
+      return mockUsers;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -17,22 +17,19 @@ export const addUser = createAsyncThunk(
   'users/addUser',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await api.post('/auth/register', userData);
-      return response.data.user; // /auth/register returns { user, token }
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return { ...userData, id: `user-${Date.now()}` };
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
-// Delete user logic is not fully exposed in backend routes yet (probably soft delete via PATCH)
-// Keeping it illustrative or unimplemented for now
 export const deleteUser = createAsyncThunk(
   'users/deleteUser',
   async (userId, { rejectWithValue }) => {
     try {
-      // Assuming a soft delete endpoint or patch
-      // await api.patch(`/users/${userId}`, { is_active: false });
+      await new Promise(resolve => setTimeout(resolve, 400));
       return userId;
     } catch (error) {
       return rejectWithValue(error.message);

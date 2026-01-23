@@ -23,8 +23,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    // Backend expects 'username' field, which can be email or username
-    dispatch(loginUser({ username: email, password }));
+    dispatch(loginUser({ email, password }));
   };
 
   return (

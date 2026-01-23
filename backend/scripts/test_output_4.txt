@@ -1,0 +1,14 @@
+≡ƒº¬ Starting Premium Feature Test...
+
+1. Registering Surveyor (surveyor_1769194930649)...
+   Γ£à Surveyor Registered
+
+2. Submitting Issue with AI Classification...
+
+Γ¥î Test Failed: Request failed with status code 500
+   Status: 500
+   Data: {
+  success: false,
+  message: 'column i.submitted_at does not exist',
+  timestamp: '2026-01-23T19:02:10.996Z'
+}

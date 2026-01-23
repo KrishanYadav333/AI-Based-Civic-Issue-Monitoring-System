@@ -1,0 +1,14 @@
+≡ƒº¬ Starting Premium Feature Test...
+
+1. Registering Surveyor (surveyor_1769191494083)...
+   Γ£à Surveyor Registered
+
+2. Submitting Issue with AI Classification...
+
+Γ¥î Test Failed: Request failed with status code 500
+   Status: 500
+   Data: {
+  success: false,
+  message: 'column "boundary" does not exist',
+  timestamp: '2026-01-23T18:04:54.298Z'
+}

@@ -3,6 +3,7 @@ import { Menu, X, LogOut, Settings } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/authSlice';
 import { motion } from 'framer-motion';
+import NotificationBell from './NotificationBell';
 
 const Navbar = ({ sidebarOpen, setSidebarOpen, onSearch }) => {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -35,6 +36,9 @@ const Navbar = ({ sidebarOpen, setSidebarOpen, onSearch }) => {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
+          {/* Notification Bell */}
+          <NotificationBell />
+          
           {/* Profile dropdown */}
           <div className="relative">
             <button

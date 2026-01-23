@@ -1,0 +1,25 @@
+≡ƒöì Inspecting Wards Table Schema...
+[2026-01-24 00:26:21] [32MINFO[39M: Database connection established
+[32minfo[39m: Database connection established {"timestamp":"2026-01-24 00:26:21"}
+Columns in wards table:
+[
+  {
+    column_name: 'updated_at',
+    data_type: 'timestamp without time zone'
+  },
+  { column_name: 'ward_number', data_type: 'integer' },
+  {
+    column_name: 'created_at',
+    data_type: 'timestamp without time zone'
+  },
+  { column_name: 'id', data_type: 'uuid' },
+  { column_name: 'boundary_json', data_type: 'jsonb' },
+  { column_name: 'centroid_lat', data_type: 'numeric' },
+  { column_name: 'centroid_lng', data_type: 'numeric' },
+  { column_name: 'area_sqkm', data_type: 'numeric' },
+  { column_name: 'population', data_type: 'integer' },
+  { column_name: 'ward_name', data_type: 'character varying' },
+  { column_name: 'department', data_type: 'character varying' }
+]
+[2026-01-24 00:26:21] [32MINFO[39M: Database pool closed
+[32minfo[39m: Database pool closed {"timestamp":"2026-01-24 00:26:21"}

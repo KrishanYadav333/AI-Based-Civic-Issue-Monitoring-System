@@ -1,0 +1,19 @@
+≡ƒº¬ Starting Premium Feature Test...
+
+1. Registering Surveyor (surveyor_1769195176355)...
+   Γ£à Surveyor Registered
+
+2. Submitting Issue with AI Classification...
+   Γ£à Issue Created: undefined
+   Issue Number: N/A
+   Initial Upvotes: 0
+
+3. Registering Voter (voter_1769195176608)...
+   Γ£à Voter Registered
+
+4. Voting on Issue (Civic Voice)...
+   Γ¥î Vote Failed: Request failed with status code 500
+
+Γ¥î Test Failed: Request failed with status code 500
+   Status: 500
+   Data: { error: 'Failed to record vote' }

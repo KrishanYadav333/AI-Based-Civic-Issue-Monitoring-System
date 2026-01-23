@@ -1,0 +1,11 @@
+≡ƒº¬ Starting Premium Feature Test...
+
+1. Registering Surveyor (surveyor_1769191396130)...
+
+Γ¥î Test Failed: Request failed with status code 500
+   Status: 500
+   Data: {
+  success: false,
+  message: 'null value in column "full_name" of relation "users" violates not-null constraint',
+  timestamp: '2026-01-23T18:03:16.439Z'
+}

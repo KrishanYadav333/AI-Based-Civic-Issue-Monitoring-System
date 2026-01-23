@@ -1,16 +1,11 @@
-# ========================================
-# AI Civic Issue Monitor - .gitignore
-# ========================================
-
-# === AI Agent Reference Documentation (Not for Production) ===
-.ai-docs/
-.ai-notes.md
-
-# === Extra Work (Not Anuj's Assignment) ===
-extra-work-not-anuj/
-# === Dependencies ===
+### === Monorepo .gitignore (Unified) ===
+# Node.js
 node_modules/
 */node_modules/
+package-lock.json
+yarn.lock
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -24,30 +19,44 @@ ENV/
 pip-log.txt
 pip-delete-this-directory.txt
 
-# === Environment Variables ===
+# Environment files
 .env
-.env.local
-.env.production
-.env.development
-.env.staging
-.env.test
+.env.*
 !.env.example
 !.env.production.example
 
-# === Build Outputs ===
+# Build/Dist/Coverage
 dist/
 build/
 out/
-*.log
+coverage/
+*/dist/
+*/build/
+*/out/
+*/coverage/
+
+# Logs
 logs/
+*.log
 *.log.*
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-backend/logs/*.log
+*/logs/
+*/logs/*.log
 !backend/logs/.gitkeep
 
-# === IDE & Editors ===
+# Uploads, Data, Models
+uploads/
+*/uploads/
+ai-service/models/
+ai-service/runs/
+ai-service/dataset_yolo/
+ai-service/training_data/
+ai-service/logs/
+ai-service/coverage.xml
+backend/coverage/
+backend/coverage-final.json
+backend/coverage/
+
+# IDE/Editor
 .vscode/
 .idea/
 *.swp
@@ -56,8 +65,31 @@ backend/logs/*.log
 .vs/
 *.code-workspace
 
-# === OS Specific ===
+# OS
 .DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+
+# Misc
+*.bak
+*.tmp
+*.swp
+*.swo
+
+# Allow docs, configs, scripts
+!docs/
+!database/
+!scripts/
+!*.md
+!*.json
+!*.js
+!*.ts
+!*.yml
+!*.yaml
+!*.sql
+!Dockerfile
+!docker-compose.yml
 Thumbs.db
 ehthumbs.db
 Desktop.ini

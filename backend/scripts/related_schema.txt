@@ -1,0 +1,21 @@
+≡ƒöì Inspecting Related Tables Schema...
+
+=== issue_history ===
+[2026-01-24 00:30:30] [32MINFO[39M: Database connection established
+[32minfo[39m: Database connection established {"timestamp":"2026-01-24 00:30:30"}
+Table does not exist
+
+=== notifications ===
+Table does not exist
+
+=== issue_types ===
+  - id: uuid
+  - code: character varying
+  - name: character varying
+  - description: text
+  - department: character varying
+  - default_priority: character varying
+  - is_active: boolean
+  - created_at: timestamp without time zone
+[2026-01-24 00:30:30] [32MINFO[39M: Database pool closed
+[32minfo[39m: Database pool closed {"timestamp":"2026-01-24 00:30:30"}

@@ -1,0 +1,33 @@
+≡ƒº¬ Starting Premium Feature Test...
+
+1. Registering Surveyor (surveyor_1769195231980)...
+   Γ£à Surveyor Registered
+
+2. Submitting Issue with AI Classification...
+   Response: {
+  "success": true,
+  "message": "Similar issue already reported nearby (Issue #VMC-20260123-8405)",
+  "data": {
+    "duplicate": true,
+    "existing_issue": {
+      "id": "05acefe5-8901-4216-afc7-be0d4cba6a10",
+      "issue_number": "VMC-20260123-8405",
+      "latitude": "22.30720000",
+      "longitude": "73.18120000",
+      "ward_id": "536d946e-b89a-4e41-8a5b-6944256c1b5f",
+      "address": null,
+      "issue_type_id": "a89529ec-8bbd-4ec1-874d-c18c42c6f6aa",
+      "issue_type_code": "pothole"
+   Γ£à Issue Created: undefined
+   Issue Number: N/A
+   Initial Upvotes: 0
+
+3. Registering Voter (voter_1769195232240)...
+   Γ£à Voter Registered
+
+4. Voting on Issue (Civic Voice)...
+   Γ¥î Vote Failed: Request failed with status code 500
+
+Γ¥î Test Failed: Request failed with status code 500
+   Status: 500
+   Data: { error: 'Failed to record vote' }

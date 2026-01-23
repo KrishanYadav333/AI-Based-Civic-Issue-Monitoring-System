@@ -106,23 +106,30 @@ async function submitIssue(data) {
 
         // Create issue in transaction
         const issue = await db.transaction(async (client) => {
+            // Generate issue number (format: VMC-YYYYMMDD-XXXX)
+            const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+            const issueNumber = `VMC-${dateStr}-${randomSuffix}`;
+
             // Insert issue
             const insertResult = await client.query(
                 `INSERT INTO issues (
-                    location,
+                    issue_number,
                     latitude,
                     longitude,
                     ward_id,
                     issue_type_id,
+                    issue_type_code,
+                    department,
                     priority,
                     status,
                     image_url,
                     description,
                     surveyor_id,
-                    ai_confidence,
-                    ai_class
+                    ai_confidence
                 ) VALUES (
-                    ST_SetSRID(ST_MakePoint($1, $2), 4326),
+                    $1,
+                    $2,
                     $3,
                     $4,
                     $5,
@@ -136,19 +143,19 @@ async function submitIssue(data) {
                     $13
                 ) RETURNING *`,
                 [
-                    longitude,
-                    latitude,
+                    issueNumber,
                     latitude,
                     longitude,
                     ward.id,
                     issueType.id,
+                    issueType.code,
+                    issueType.department || 'General',
                     priority,
                     ISSUE_STATUS.PENDING,
                     image_url,
                     description || null,
                     surveyor_id,
-                    processedClassification.confidence,
-                    processedClassification.aiClass
+                    processedClassification.confidence
                 ]
             );
 
@@ -220,8 +227,7 @@ async function getIssueById(issueId) {
                 u_sub.username as submitted_by_username,
                 u_sub.email as submitted_by_email,
                 u_asn.username as assigned_to_username,
-                u_asn.email as assigned_to_email,
-                ST_AsGeoJSON(i.location) as location_geojson
+                u_asn.email as assigned_to_email
              FROM issues i
              LEFT JOIN issue_types it ON i.issue_type_id = it.id
              LEFT JOIN wards w ON i.ward_id = w.id

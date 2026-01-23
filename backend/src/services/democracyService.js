@@ -21,7 +21,7 @@ async function voteForIssue(issueId, userId) {
             throw new Error('Issue not found');
         }
 
-        // 2. Check if user already voted (Database constraint handles this, but nice to check)
+        // 2. Check if user already voted
         const existingVote = await db.query(
             'SELECT id FROM issue_votes WHERE issue_id = $1 AND user_id = $2',
             [issueId, userId]
@@ -37,20 +37,31 @@ async function voteForIssue(issueId, userId) {
             [issueId, userId]
         );
 
-        // 4. Trigger auto-escalation logic is handled by Database Trigger `update_issue_priority_on_vote`
-        // However, we can fetch the fresh state to return to UI
-        const updatedIssue = await db.findOne('issues', { id: issueId });
+        // 4. Manually increment upvotes (since trigger may not exist)
+        const currentUpvotes = issue.upvotes || 0;
+        const newUpvotes = currentUpvotes + 1;
 
-        // 5. If Priority changed to Critical due to this vote, Notify Admin manually (double safety)
-        if (issue.priority !== 'critical' && updatedIssue.priority === 'critical') {
+        // Check if priority should escalate (50+ votes = critical)
+        const shouldEscalate = newUpvotes >= 50 && issue.priority !== 'critical' &&
+            !['resolved', 'closed', 'rejected'].includes(issue.status);
+
+        const newPriority = shouldEscalate ? 'critical' : issue.priority;
+
+        await db.query(
+            'UPDATE issues SET upvotes = $1, priority = $2 WHERE id = $3',
+            [newUpvotes, newPriority, issueId]
+        );
+
+        // 5. If Priority escalated, Notify Admin
+        if (shouldEscalate) {
             logger.info(`🚨 Issue ${issue.issue_number} escalated to CRITICAL via Civic Voice!`);
-            await notificationService.notifyAdminOfEscalation(updatedIssue);
+            await notificationService.notifyAdminOfEscalation({ ...issue, priority: 'critical', upvotes: newUpvotes });
         }
 
         return {
             success: true,
-            upvotes: updatedIssue.upvotes,
-            priority: updatedIssue.priority,
+            upvotes: newUpvotes,
+            priority: newPriority,
             message: 'Vote recorded successfully'
         };
 

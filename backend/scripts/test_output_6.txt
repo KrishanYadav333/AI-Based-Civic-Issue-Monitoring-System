@@ -1,0 +1,18 @@
+≡ƒº¬ Starting Premium Feature Test...
+
+1. Registering Surveyor (surveyor_1769195021623)...
+   Γ£à Surveyor Registered
+
+2. Submitting Issue with AI Classification...
+   Γ£à Issue Created: 05acefe5-8901-4216-afc7-be0d4cba6a10
+   Initial Upvotes: 0
+
+3. Registering Citizen (citizen_1769195021865)...
+
+Γ¥î Test Failed: Request failed with status code 500
+   Status: 500
+   Data: {
+  success: false,
+  message: 'new row for relation "users" violates check constraint "users_role_check"',
+  timestamp: '2026-01-23T19:03:41.954Z'
+}

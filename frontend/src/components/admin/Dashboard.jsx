@@ -4,7 +4,6 @@ import { fetchIssues } from '../../store/issueSlice';
 import { fetchUsers } from '../../store/analyticsSlice';
 import { CardSkeleton } from '../common/Loaders';
 import { FileText, AlertCircle, CheckCircle, Clock, Users, TrendingUp, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import Leaderboard from '../common/Leaderboard';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -94,8 +93,8 @@ const AdminDashboard = () => {
   const recentIssues = [...issues].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 6);
 
   const StatCard = ({ icon: Icon, label, value, trend, bgGradient }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }} 
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.02 }}
       className={`${bgGradient} rounded-2xl border border-opacity-20 border-white p-6 shadow-sm hover:shadow-md transition-all duration-300`}
@@ -127,7 +126,7 @@ const AdminDashboard = () => {
       </motion.div>
 
       {/* KPI Cards */}
-      <motion.div
+      <motion.div 
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
         variants={containerVariants}
         initial="hidden"
@@ -148,7 +147,7 @@ const AdminDashboard = () => {
       </motion.div>
 
       {/* Charts Grid */}
-      <motion.div
+      <motion.div 
         className="grid grid-cols-1 lg:grid-cols-3 gap-6"
         variants={containerVariants}
         initial="hidden"
@@ -177,8 +176,8 @@ const AdminDashboard = () => {
                 className="flex items-center justify-between text-sm"
               >
                 <div className="flex items-center gap-2">
-                  <motion.div
-                    className="w-3 h-3 rounded-full"
+                  <motion.div 
+                    className="w-3 h-3 rounded-full" 
                     style={{ backgroundColor: item.color }}
                     whileHover={{ scale: 1.3 }}
                   ></motion.div>
@@ -228,13 +227,13 @@ const AdminDashboard = () => {
       </motion.div>
 
       {/* Charts Row 2 */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95, y: 20 }} 
+        animate={{ opacity: 1, scale: 1, y: 0 }} 
         transition={{ delay: 0.25, duration: 0.6 }}
         className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all p-6"
       >
-        <motion.h3
+        <motion.h3 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.35, duration: 0.4 }}
@@ -254,24 +253,14 @@ const AdminDashboard = () => {
         </ResponsiveContainer>
       </motion.div>
 
-      {/* Leaderboard */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <h3 className="text-xl font-bold text-gray-900 mb-4 px-2">Top Contributors</h3>
-        <Leaderboard />
-      </motion.div>
-
       {/* Recent Activity */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95, y: 20 }} 
+        animate={{ opacity: 1, scale: 1, y: 0 }} 
         transition={{ delay: 0.3, duration: 0.6 }}
         className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all p-6"
       >
-        <motion.h3
+        <motion.h3 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.4 }}
@@ -290,7 +279,7 @@ const AdminDashboard = () => {
               className="flex items-center justify-between p-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
             >
               <div className="flex-1">
-                <motion.p
+                <motion.p 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.45 + index * 0.08 }}
@@ -305,28 +294,30 @@ const AdminDashboard = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2 ml-4">
-                <motion.span
+                <motion.span 
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.5 + index * 0.08 }}
                   whileHover={{ scale: 1.1 }}
-                  className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${issue.status === 'Resolved' ? 'bg-emerald-100 text-emerald-700' :
+                  className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
+                    issue.status === 'Resolved' ? 'bg-emerald-100 text-emerald-700' :
                     issue.status === 'In Progress' ? 'bg-blue-100 text-blue-700' :
-                      issue.status === 'Assigned' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-gray-100 text-gray-700'
-                    }`}
+                    issue.status === 'Assigned' ? 'bg-yellow-100 text-yellow-700' :
+                    'bg-gray-100 text-gray-700'
+                  }`}
                 >
                   {issue.status}
                 </motion.span>
-                <motion.span
+                <motion.span 
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.55 + index * 0.08 }}
                   whileHover={{ scale: 1.1 }}
-                  className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ${issue.priority === 'Critical' ? 'bg-red-100 text-red-700' :
+                  className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ${
+                    issue.priority === 'Critical' ? 'bg-red-100 text-red-700' :
                     issue.priority === 'High' ? 'bg-orange-100 text-orange-700' :
-                      'bg-gray-100 text-gray-700'
-                    }`}
+                    'bg-gray-100 text-gray-700'
+                  }`}
                 >
                   {issue.priority}
                 </motion.span>

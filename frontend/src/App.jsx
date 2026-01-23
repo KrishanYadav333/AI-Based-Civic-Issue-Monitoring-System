@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,17 +22,9 @@ function App() {
   useEffect(() => {
     // Restore authentication on app load
     const token = localStorage.getItem('authToken');
-    const userStr = localStorage.getItem('user');
-
-    if (token && userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        dispatch(restoreAuth(user));
-      } catch (e) {
-        console.error('Failed to parse user from local storage');
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('user');
-      }
+    if (token) {
+      // In a real app, you'd verify the token here
+      // For now, we'll just assume it's valid if it exists
     }
   }, [dispatch]);
 
