@@ -10,7 +10,7 @@ from pathlib import Path
 try:
     from ultralytics import YOLO
 except ImportError:
-    from ultralytics.models.yolo import YOLO
+    from ultralytics import YOLO
 import cv2
 import numpy as np
 from PIL import Image

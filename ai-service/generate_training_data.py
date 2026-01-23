@@ -45,9 +45,10 @@ def apply_rotation(img, angle=None):
 def apply_flip(img):
     """Horizontal flip"""
     try:
-        return img.transpose(Image.FLIP_LEFT_RIGHT)
+           from PIL import ImageOps
+           return ImageOps.mirror(img)
     except AttributeError:
-        return img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+        return img.transpose(getattr(Image, 'Transpose', Image).__dict__.get('FLIP_LEFT_RIGHT', 0))
 
 
 def apply_blur(img, radius=None):
@@ -79,9 +80,10 @@ def apply_zoom(img, zoom_factor=None):
     
     cropped = img.crop((left, top, right, bottom))
     try:
-        return cropped.resize((width, height), Image.LANCZOS)
+           from PIL import Image
+           return cropped.resize((width, height), Image.Resampling.LANCZOS)
     except AttributeError:
-        return cropped.resize((width, height), Image.Resampling.LANCZOS)
+        return cropped.resize((width, height), getattr(Image, 'Resampling', Image).__dict__.get('LANCZOS', 1))
 
 
 def apply_crop(img, crop_factor=None):
@@ -92,9 +94,10 @@ def apply_crop(img, crop_factor=None):
     new_height = int(height * crop_factor)
     
     try:
-        resized = img.resize((new_width, new_height), Image.LANCZOS)
+           from PIL import Image
+           resized = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
     except AttributeError:
-        resized = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        resized = img.resize((new_width, new_height), getattr(Image, 'Resampling', Image).__dict__.get('LANCZOS', 1))
     
     # Create new image with padding
     new_img = Image.new('RGB', (width, height), (128, 128, 128))

@@ -41,7 +41,7 @@ class CacheService:
             logger.warning(f"Redis cache not available: {e}")
             self.enabled = False
     
-    def _generate_cache_key(self, image_path: str = None, image_base64: str = None) -> str:
+    def _generate_cache_key(self, image_path: str = None, image_base64: str = None) -> Optional[str]:
         """
         Generate cache key from image content
         
@@ -52,24 +52,23 @@ class CacheService:
         Returns:
             Cache key (hash of image content)
         """
-        if image_base64:
-            # Hash base64 string
-            content = image_base64.encode('utf-8')
-        elif image_path:
-            # Read and hash file content
-            try:
+        try:
+            if image_base64:
+                # Hash base64 string
+                content = image_base64.encode('utf-8')
+            elif image_path:
+                # Read and hash file content
                 with open(image_path, 'rb') as f:
                     content = f.read()
-            except Exception as e:
-                logger.error(f"Error reading file for cache key: {e}")
+            else:
                 return None
-        else:
+            # Generate SHA256 hash
+            hash_obj = hashlib.sha256(content)
+            cache_key = f"classification:{hash_obj.hexdigest()}"
+            return cache_key
+        except Exception as e:
+            logger.error(f"Error generating cache key: {e}")
             return None
-        
-        # Generate SHA256 hash
-        hash_obj = hashlib.sha256(content)
-        cache_key = f"classification:{hash_obj.hexdigest()}"
-        return cache_key
     
     def get(self, image_path: str = None, image_base64: str = None) -> Optional[Dict]:
         """
@@ -82,22 +81,18 @@ class CacheService:
         Returns:
             Cached result or None
         """
-        if not self.enabled:
+        if not self.enabled or self.redis_client is None:
             return None
-        
         try:
             cache_key = self._generate_cache_key(image_path, image_base64)
             if not cache_key:
                 return None
-            
-            cached_data = self.redis_client.get(cache_key)
+            cached_data = self.redis_client.get(cache_key) if self.redis_client else None
             if cached_data:
                 logger.info(f"Cache hit for key: {cache_key[:20]}...")
                 return json.loads(cached_data)
-            
             logger.debug(f"Cache miss for key: {cache_key[:20]}...")
             return None
-        
         except Exception as e:
             logger.error(f"Error getting cache: {e}")
             return None
@@ -114,14 +109,12 @@ class CacheService:
         Returns:
             True if cached successfully
         """
-        if not self.enabled:
+        if not self.enabled or self.redis_client is None:
             return False
-        
         try:
             cache_key = self._generate_cache_key(image_path, image_base64)
             if not cache_key:
                 return False
-            
             # Cache with TTL
             self.redis_client.setex(
                 cache_key,
@@ -130,40 +123,35 @@ class CacheService:
             )
             logger.info(f"Cached result with key: {cache_key[:20]}...")
             return True
-        
         except Exception as e:
             logger.error(f"Error setting cache: {e}")
             return False
     
     def clear(self) -> bool:
         """Clear all classification cache"""
-        if not self.enabled:
+        if not self.enabled or self.redis_client is None:
             return False
-        
         try:
             # Delete all keys matching pattern
-            keys = self.redis_client.keys('classification:*')
+            keys = self.redis_client.keys('classification:*') if self.redis_client else []
             if keys:
                 self.redis_client.delete(*keys)
                 logger.info(f"Cleared {len(keys)} cached results")
             return True
-        
         except Exception as e:
             logger.error(f"Error clearing cache: {e}")
             return False
     
     def get_stats(self) -> Dict:
         """Get cache statistics"""
-        if not self.enabled:
+        if not self.enabled or self.redis_client is None:
             return {
                 'enabled': False,
                 'connected': False
             }
-        
         try:
-            info = self.redis_client.info('stats')
-            keys = self.redis_client.keys('classification:*')
-            
+            info = self.redis_client.info('stats') if self.redis_client else {}
+            keys = self.redis_client.keys('classification:*') if self.redis_client else []
             return {
                 'enabled': True,
                 'connected': True,
@@ -172,7 +160,6 @@ class CacheService:
                 'keyspace_misses': info.get('keyspace_misses', 0),
                 'hit_rate': info.get('keyspace_hits', 0) / max(info.get('keyspace_hits', 0) + info.get('keyspace_misses', 0), 1)
             }
-        
         except Exception as e:
             logger.error(f"Error getting cache stats: {e}")
             return {

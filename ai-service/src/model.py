@@ -7,7 +7,7 @@ import os
 try:
     from ultralytics import YOLO
 except ImportError:
-    from ultralytics.models.yolo import YOLO
+    from ultralytics import YOLO
 from PIL import Image
 import numpy as np
 import logging

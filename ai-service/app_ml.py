@@ -176,7 +176,7 @@ def feature_based_classifier(image_data):
     
     # Get best match or default to other
     if scores:
-        issue_type = max(scores, key=scores.get)
+        issue_type = max(scores, key=lambda k: scores[k])
         confidence = round(min(scores[issue_type], 0.95), 2)
     else:
         issue_type = 'broken_road'  # Default fallback
@@ -238,7 +238,7 @@ def detect_issue():
             return jsonify({'error': 'Empty filename'}), 400
         
         # Validate file type
-        if not file.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+        if file.filename and hasattr(file.filename, 'lower') and not file.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
             return jsonify({'error': 'Invalid file type. Only PNG and JPEG allowed.'}), 400
         
         # Read image data

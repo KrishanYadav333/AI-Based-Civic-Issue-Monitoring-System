@@ -145,7 +145,7 @@ model, base_model = create_enhanced_model()
 
 print("✓ Model architecture created")
 print(f"✓ Total parameters: {model.count_params():,}")
-print(f"✓ Trainable parameters: {sum([tf.size(w).numpy() for w in model.trainable_weights]):,}")
+print(f"✓ Trainable parameters: {int(tf.reduce_sum([tf.size(w) for w in model.trainable_weights]).numpy()):,}")
 
 # Compile model
 print("\n[4/8] Compiling model...")
@@ -213,7 +213,7 @@ for layer in base_model.layers[:-50]:
     layer.trainable = False
 
 print(f"✓ Unfrozen last 50 layers")
-print(f"✓ New trainable parameters: {sum([tf.size(w).numpy() for w in model.trainable_weights]):,}")
+print(f"✓ New trainable parameters: {int(tf.reduce_sum([tf.size(w) for w in model.trainable_weights]).numpy()):,}")
 
 # Recompile with lower learning rate
 model.compile(
