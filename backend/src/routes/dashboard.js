@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../services/database');
-const { authMiddleware, authorize } = require('../middleware/auth');
+const { authenticate, authorize } = require('../middleware/auth');
 
 // GET /api/dashboard/engineer/:engineerId - Get assigned issues for engineer
-router.get('/engineer/:engineerId', authMiddleware, authorize('engineer', 'admin'), async (req, res, next) => {
+router.get('/engineer/:engineerId', authenticate, authorize('engineer', 'admin'), async (req, res, next) => {
   try {
     const engineerId = parseInt(req.params.engineerId);
     const { priority } = req.query;
@@ -57,7 +57,7 @@ router.get('/engineer/:engineerId', authMiddleware, authorize('engineer', 'admin
 });
 
 // GET /api/dashboard/admin/stats - Get system statistics
-router.get('/admin/stats', authMiddleware, authorize('admin'), async (req, res, next) => {
+router.get('/admin/stats', authenticate, authorize('admin'), async (req, res, next) => {
   try {
     // Overall statistics
     const overallStats = await db.query(`
@@ -127,7 +127,7 @@ router.get('/admin/stats', authMiddleware, authorize('admin'), async (req, res, 
 });
 
 // GET /api/dashboard/admin/heatmap - Get issue heatmap data
-router.get('/admin/heatmap', authMiddleware, authorize('admin'), async (req, res, next) => {
+router.get('/admin/heatmap', authenticate, authorize('admin'), async (req, res, next) => {
   try {
     const { status, type, startDate, endDate } = req.query;
 
@@ -194,7 +194,7 @@ router.get('/admin/heatmap', authMiddleware, authorize('admin'), async (req, res
 });
 
 // GET /api/dashboard/ward/:wardId - Get ward-specific dashboard
-router.get('/ward/:wardId', authMiddleware, async (req, res, next) => {
+router.get('/ward/:wardId', authenticate, async (req, res, next) => {
   try {
     const wardId = parseInt(req.params.wardId);
 

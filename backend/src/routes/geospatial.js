@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../services/database');
-const { authMiddleware, authorize } = require('../middleware/auth');
+const { authenticate, authorize } = require('../middleware/auth');
 const cacheService = require('../utils/cacheService');
 const logger = require('../utils/logger');
 
 /**
  * Get heatmap data with clustering
  */
-router.get('/heatmap', authMiddleware, authorize('admin', 'engineer'), async (req, res) => {
+router.get('/heatmap', authenticate, authorize('admin', 'engineer'), async (req, res) => {
   try {
     const { ward_id, status, priority, start_date, end_date, cluster_radius = 0.01 } = req.query;
 
@@ -100,7 +100,7 @@ router.get('/heatmap', authMiddleware, authorize('admin', 'engineer'), async (re
 /**
  * Get ward boundaries as GeoJSON
  */
-router.get('/wards/boundaries', authMiddleware, async (req, res) => {
+router.get('/wards/boundaries', authenticate, async (req, res) => {
   try {
     const cached = await cacheService.getWardBoundary();
     
@@ -144,7 +144,7 @@ router.get('/wards/boundaries', authMiddleware, async (req, res) => {
 /**
  * Calculate route between points (for engineer navigation)
  */
-router.post('/route', authMiddleware, authorize('engineer', 'admin'), async (req, res) => {
+router.post('/route', authenticate, authorize('engineer', 'admin'), async (req, res) => {
   try {
     const { start, waypoints, end } = req.body;
 
@@ -186,7 +186,7 @@ router.post('/route', authMiddleware, authorize('engineer', 'admin'), async (req
 /**
  * Find nearest issues to a location
  */
-router.get('/nearby', authMiddleware, async (req, res) => {
+router.get('/nearby', authenticate, async (req, res) => {
   try {
     const { latitude, longitude, radius = 1, status, limit = 20 } = req.query;
 
@@ -242,7 +242,7 @@ router.get('/nearby', authMiddleware, async (req, res) => {
 /**
  * Get spatial statistics
  */
-router.get('/stats/spatial', authMiddleware, authorize('admin'), async (req, res) => {
+router.get('/stats/spatial', authenticate, authorize('admin'), async (req, res) => {
   try {
     const { ward_id } = req.query;
 
@@ -286,7 +286,7 @@ router.get('/stats/spatial', authMiddleware, authorize('admin'), async (req, res
 /**
  * Identify issue density hotspots
  */
-router.get('/hotspots', authMiddleware, authorize('admin'), async (req, res) => {
+router.get('/hotspots', authenticate, authorize('admin'), async (req, res) => {
   try {
     const { days = 30, min_issues = 5 } = req.query;
 

@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const QRCode = require('qrcode');
 const db = require('../services/database');
-const { authMiddleware } = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 const logger = require('../utils/logger');
 
 /**
  * Generate QR code for issue feedback
  */
-router.get('/issue/:id/qr', authMiddleware, async (req, res) => {
+router.get('/issue/:id/qr', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -99,7 +99,7 @@ router.post('/feedback/:id', async (req, res) => {
 /**
  * Get feedback for an issue
  */
-router.get('/feedback/:id', authMiddleware, async (req, res) => {
+router.get('/feedback/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -125,7 +125,7 @@ router.get('/feedback/:id', authMiddleware, async (req, res) => {
 /**
  * Get feedback statistics
  */
-router.get('/feedback/stats/summary', authMiddleware, async (req, res) => {
+router.get('/feedback/stats/summary', authenticate, async (req, res) => {
   try {
     const { ward_id, start_date, end_date } = req.query;
 
@@ -173,7 +173,7 @@ router.get('/feedback/stats/summary', authMiddleware, async (req, res) => {
 /**
  * Get recent feedback comments
  */
-router.get('/feedback/recent', authMiddleware, async (req, res) => {
+router.get('/feedback/recent', authenticate, async (req, res) => {
   try {
     const { limit = 10, offset = 0 } = req.query;
 
@@ -200,7 +200,7 @@ router.get('/feedback/recent', authMiddleware, async (req, res) => {
 /**
  * Generate bulk QR codes for resolved issues
  */
-router.post('/bulk-qr', authMiddleware, async (req, res) => {
+router.post('/bulk-qr', authenticate, async (req, res) => {
   try {
     const { issue_ids } = req.body;
 

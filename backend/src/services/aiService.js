@@ -11,7 +11,7 @@ const { AI_CONFIG } = require('../core/constants');
 const { mapAIClassToIssueType } = require('../utils/helpers');
 
 // AI Service base URL
-const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:5000';
 
 /**
  * Classify image from file path
@@ -33,7 +33,7 @@ async function classifyImageFromFile(imagePath) {
         
         // Call AI service
         const response = await axios.post(
-            `${AI_SERVICE_URL}/classify`,
+            `${AI_SERVICE_URL}/api/detect`,
             formData,
             {
                 headers: {
@@ -89,10 +89,8 @@ async function classifyImageFromBase64(imageBase64) {
         
         // Call AI service
         const response = await axios.post(
-            `${AI_SERVICE_URL}/classify-base64`,
-            {
-                image_base64: imageBase64
-            },
+            `${AI_SERVICE_URL}/api/detect`,
+            { image: base64Image },
             {
                 timeout: AI_CONFIG.REQUEST_TIMEOUT_MS || 30000,
                 headers: {

@@ -3,13 +3,13 @@ const router = express.Router();
 const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
 const db = require('../services/database');
-const { authMiddleware, authorize } = require('../middleware/auth');
+const { authenticate, authorize } = require('../middleware/auth');
 const logger = require('../utils/logger');
 
 /**
  * Generate PDF report for issues
  */
-router.post('/export/pdf', authMiddleware, authorize('engineer', 'admin'), async (req, res) => {
+router.post('/export/pdf', authenticate, authorize('engineer', 'admin'), async (req, res) => {
   try {
     const { ward_id, status, priority, start_date, end_date, type } = req.body;
 
@@ -172,7 +172,7 @@ router.post('/export/pdf', authMiddleware, authorize('engineer', 'admin'), async
 /**
  * Generate Excel report for issues
  */
-router.post('/export/excel', authMiddleware, authorize('engineer', 'admin'), async (req, res) => {
+router.post('/export/excel', authenticate, authorize('engineer', 'admin'), async (req, res) => {
   try {
     const { ward_id, status, priority, start_date, end_date, type } = req.body;
 
@@ -381,7 +381,7 @@ router.post('/export/excel', authMiddleware, authorize('engineer', 'admin'), asy
 /**
  * Generate ward performance report (PDF)
  */
-router.get('/export/ward-performance', authMiddleware, authorize('admin'), async (req, res) => {
+router.get('/export/ward-performance', authenticate, authorize('admin'), async (req, res) => {
   try {
     const result = await db.query(`
       SELECT * FROM ward_performance_summary

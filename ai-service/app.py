@@ -86,7 +86,7 @@ def simple_classifier(image_data):
     
     # Get best match or default to other
     if scores:
-        issue_type = max(scores, key=scores.get)
+        issue_type = max(scores.keys(), key=lambda k: scores[k])
         confidence = round(min(scores[issue_type], 0.95), 2)
     else:
         issue_type = 'broken_road'  # Default fallback
@@ -95,13 +95,16 @@ def simple_classifier(image_data):
     priority = ISSUE_TYPES[issue_type]['priority']
     
     return {
-        'issueType': issue_type,
+        'success': True,
+        'issue_type': issue_type,
         'confidence': confidence,
         'priority': priority,
+        'ai_class': issue_type,
         'features': {
             'brightness': round(brightness, 2),
             'color_variation': round(color_std, 2)
-        }
+        },
+        'message': f'Detected {issue_type} with {confidence:.1%} confidence'
     }
 
 # Advanced ML classifier (placeholder for future implementation)
