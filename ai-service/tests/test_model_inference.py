@@ -44,7 +44,7 @@ class TestModelInference:
     def test_model_loads(self, model_path):
         """Test that the model can be loaded"""
         try:
-            from ultralytics import YOLO
+            from ultralytics.yolo.engine.model import YOLO
             model = YOLO(str(model_path))
             assert model is not None, "Model failed to load"
         except ImportError:
@@ -55,7 +55,7 @@ class TestModelInference:
     def test_model_has_correct_classes(self, model_path, class_indices):
         """Test that model recognizes all 6 civic issue classes"""
         try:
-            from ultralytics import YOLO
+            from ultralytics.yolo.engine.model import YOLO
             model = YOLO(str(model_path))
             # Check model has 6 classes
             assert len(model.names) == 6, f"Expected 6 classes, got {len(model.names)}"
@@ -70,7 +70,7 @@ class TestModelInference:
     def test_model_inference_on_dummy_image(self, model_path):
         """Test model inference on a dummy image"""
         try:
-            from ultralytics import YOLO
+            from ultralytics.yolo.engine.model import YOLO
             
             # Create a dummy 640x640 RGB image
             dummy_image = Image.new('RGB', (640, 640), color='gray')
@@ -90,7 +90,7 @@ class TestModelInference:
     def test_inference_speed(self, model_path):
         """Test that inference completes within acceptable time (~100ms)"""
         try:
-            from ultralytics import YOLO
+            from ultralytics.yolo.engine.model import YOLO
             import time
             
             dummy_image = Image.new('RGB', (640, 640), color='gray')
@@ -113,7 +113,7 @@ class TestModelInference:
     def test_batch_inference(self, model_path):
         """Test model can handle batch inference"""
         try:
-            from ultralytics import YOLO
+            from ultralytics.yolo.engine.model import YOLO
             
             # Create batch of 4 dummy images
             images = [Image.new('RGB', (640, 640), color='gray') for _ in range(4)]
@@ -141,7 +141,7 @@ class TestModelInference:
     def test_model_confidence_scores(self, model_path):
         """Test that model returns confidence scores in valid range [0, 1]"""
         try:
-            from ultralytics import YOLO
+            from ultralytics.yolo.engine.model import YOLO
             
             dummy_image = Image.new('RGB', (640, 640), color='gray')
             model = YOLO(str(model_path))

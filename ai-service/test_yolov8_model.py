@@ -6,9 +6,9 @@ Comprehensive testing of trained YOLOv8 civic issue detector
 import os
 from pathlib import Path
 try:
-    from ultralytics import YOLO
+    from ultralytics.yolo.engine.model import YOLO
 except ImportError:
-    from ultralytics import YOLO
+    from ultralytics.yolo.engine.model import YOLO
 import cv2
 import numpy as np
 from PIL import Image

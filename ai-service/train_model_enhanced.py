@@ -17,6 +17,10 @@ import seaborn as sns
 import json
 from datetime import datetime
 
+from tensorflow import keras
+from tensorflow.keras import applications
+from tensorflow.keras import preprocessing
+from tensorflow.keras import callbacks
 # Set random seeds for reproducibility
 np.random.seed(42)
 tf.random.set_seed(42)

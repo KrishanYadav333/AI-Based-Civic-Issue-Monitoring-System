@@ -8,9 +8,9 @@ import yaml
 import shutil
 from pathlib import Path
 try:
-    from ultralytics import YOLO
+    from ultralytics.yolo.engine.model import YOLO
 except ImportError:
-    from ultralytics import YOLO
+    from ultralytics.yolo.engine.model import YOLO
 import cv2
 import numpy as np
 from PIL import Image

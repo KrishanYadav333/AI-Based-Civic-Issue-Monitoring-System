@@ -5,9 +5,9 @@ YOLOv8 Model Handler
 
 import os
 try:
-    from ultralytics import YOLO
+    from ultralytics.yolo.engine.model import YOLO
 except ImportError:
-    from ultralytics import YOLO
+    from ultralytics.yolo.engine.model import YOLO
 from PIL import Image
 import numpy as np
 import logging
