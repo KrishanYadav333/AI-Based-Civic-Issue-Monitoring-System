@@ -180,7 +180,7 @@ router.get('/feedback/recent', authenticate, async (req, res) => {
     const result = await db.query(
       `SELECT 
         cf.id, cf.rating, cf.comment, cf.submitted_at,
-        i.id as issue_id, i.type, i.ward_id, w.name as ward_name
+        i.id as issue_id, i.type, i.ward_id, w.ward_name
        FROM citizen_feedback cf
        JOIN issues i ON cf.issue_id = i.id
        JOIN wards w ON i.ward_id = w.id

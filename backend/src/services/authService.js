@@ -9,6 +9,7 @@ const db = require('./database');
 const logger = require('../utils/logger');
 const { USER_ROLES, ERROR_MESSAGES } = require('../core/constants');
 const { validateEmail, validateUsername, validatePassword } = require('../utils/validation');
+const { AuthenticationError, ValidationError, ConflictError } = require('../utils/errors');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
@@ -154,7 +155,7 @@ async function register(data) {
 async function login(username, password) {
     try {
         if (!username || !password) {
-            throw new Error('Username and password are required');
+            throw new ValidationError('Username and password are required');
         }
         
         // Find user by username or email
@@ -166,7 +167,7 @@ async function login(username, password) {
         );
         
         if (result.rows.length === 0) {
-            throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
+            throw new AuthenticationError(ERROR_MESSAGES.INVALID_CREDENTIALS);
         }
         
         const user = result.rows[0];
@@ -175,7 +176,7 @@ async function login(username, password) {
         const isValidPassword = await comparePassword(password, user.password_hash);
         
         if (!isValidPassword) {
-            throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
+            throw new AuthenticationError(ERROR_MESSAGES.INVALID_CREDENTIALS);
         }
         
         // Generate token
@@ -215,7 +216,7 @@ async function getUserById(userId) {
                 u.created_at,
                 u.updated_at,
                 w.ward_number,
-                w.name as ward_name
+                w.ward_name
              FROM users u
              LEFT JOIN wards w ON u.ward_id = w.id
              WHERE u.id = $1`,
@@ -247,7 +248,7 @@ async function getUsers(filters = {}) {
                 u.full_name,
                 u.created_at,
                 w.ward_number,
-                w.name as ward_name
+                w.ward_name
             FROM users u
             LEFT JOIN wards w ON u.ward_id = w.id
             WHERE 1=1

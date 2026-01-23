@@ -7,7 +7,7 @@ process.env.DB_NAME = 'civic_issues_test';
 process.env.DB_USER = 'postgres';
 process.env.DB_PASSWORD = 'postgres';
 process.env.AI_SERVICE_URL = 'http://localhost:5000';
-process.env.PORT = '3001'; // Use different port for testing
+process.env.PORT = '3002'; // Use different port for testing to avoid conflicts
 process.env.REDIS_HOST = 'localhost';
 process.env.REDIS_PORT = '6379';
 

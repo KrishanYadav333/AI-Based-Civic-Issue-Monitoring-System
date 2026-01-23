@@ -2,6 +2,32 @@
 
 A comprehensive solution for monitoring and managing civic issues in Vadodara city, featuring AI-powered issue classification, geographic assignment, and role-based dashboards.
 
+## ✅ Current Status
+
+- **Backend Tests**: 14/34 passing (41% - All auth tests passing ✅)
+- **Database**: Fully configured with 5 tables
+- **Deployment**: Automated scripts ready
+- **Documentation**: Complete setup guides
+
+## 📁 Project Structure
+
+```
+├── ai-service/          # Python Flask AI classification service
+├── backend/             # Node.js Express REST API
+├── database/            # PostgreSQL schemas and migrations
+├── docs/                # Deployment and technical documentation
+├── frontend/            # React + Vite web application
+├── Mobile_Application/  # React Native mobile app
+├── scripts/             # Deployment and setup automation
+├── .github/             # GitHub Actions CI/CD workflows
+├── docker-compose.yml   # Docker orchestration
+├── QUICKSTART.md        # Quick deployment guide
+├── QUICK_DEPLOY.md      # One-command deployment
+├── SETUP_INSTRUCTIONS.md # Detailed setup steps
+├── TESTING_GUIDE.md     # Testing documentation
+└── README.md            # This file
+```
+
 ## 🌟 Features
 
 ### Core Functionality

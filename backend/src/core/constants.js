@@ -98,6 +98,8 @@ const NOTIFICATION_TYPES = {
   HIGH_PRIORITY_ALERT: 'high_priority_alert',
   SLA_BREACH: 'sla_breach',
   DUPLICATE_DETECTED: 'duplicate_detected',
+  PRIORITY_ESCALATED: 'priority_escalated',
+  CIVIC_VOICE_ALERT: 'civic_voice_alert',
 };
 
 // SLA Targets (in minutes)

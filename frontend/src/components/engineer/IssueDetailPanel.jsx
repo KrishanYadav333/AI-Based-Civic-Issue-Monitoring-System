@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { formatDateTime } from '../../utils/helpers';
 import { motion } from 'framer-motion';
+import TrustBadge from '../common/TrustBadge';
+import CivicVoiceWidget from '../common/CivicVoiceWidget';
 
 const IssueDetailPanel = ({ isOpen = true, onClose, issue }) => {
   if (!issue) return null;
@@ -107,6 +109,15 @@ const IssueDetailPanel = ({ isOpen = true, onClose, issue }) => {
                 <span>Resolved: {issue.resolutionDate}</span>
               </div>
             )}
+          </div>
+
+          <div className="flex items-center gap-2 mt-2">
+            <span className="text-xs font-semibold text-gray-500 uppercase">Reporter Trust:</span>
+            <TrustBadge userId={issue?.submittedBy} />
+          </div>
+
+          <div className="mt-4">
+            <CivicVoiceWidget issueId={issue?.id} initialUpvotes={issue?.upvotes || 0} />
           </div>
         </div>
 

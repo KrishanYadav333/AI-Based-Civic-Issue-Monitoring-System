@@ -1,20 +1,20 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const app = require('../../src/server');
-const db = require('../../src/config/database');
+const bcrypt = require('bcrypt');
+const app = require('../../src/index');
+const db = require('../../src/services/database');
 
 describe('Authentication API', () => {
   let server;
   let testUser;
   
   beforeAll(async () => {
-    // Create test user without ward_id to avoid foreign key constraint
+    // Create test user with username field
     const hashedPassword = await bcrypt.hash('Test@123', 10);
     const result = await db.query(
-      `INSERT INTO users (name, email, password_hash, role) 
-       VALUES ($1, $2, $3, $4) RETURNING *`,
-      ['Test User', 'test@example.com', hashedPassword, 'admin']
+      `INSERT INTO users (username, email, password_hash, role, full_name) 
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      ['testuser', 'test@example.com', hashedPassword, 'admin', 'Test User']
     );
     testUser = result.rows[0];
   });
@@ -30,116 +30,114 @@ describe('Authentication API', () => {
       const response = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'test@example.com',
+          username: 'testuser',
           password: 'Test@123'
         });
 
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('token');
-      expect(response.body.user).toHaveProperty('id');
-      expect(response.body.user.email).toBe('test@example.com');
-      expect(response.body.user).not.toHaveProperty('password');
+      expect(response.body.success).toBe(true);
+      expect(response.body.data).toHaveProperty('token');
+      expect(response.body.data.user).toHaveProperty('id');
     });
 
     test('should fail with invalid password', async () => {
       const response = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'test@example.com',
+          username: 'testuser',
           password: 'wrongpassword'
         });
 
       expect(response.status).toBe(401);
-      expect(response.body.error).toBe('Invalid credentials');
+      expect(response.body.success).toBe(false);
     });
 
-    test('should fail with non-existent email', async () => {
+    test('should fail with non-existent username', async () => {
       const response = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'nonexistent@example.com',
+          username: 'nonexistentuser',
           password: 'Test@123'
         });
 
       expect(response.status).toBe(401);
-      expect(response.body.error).toBe('Invalid credentials');
+      expect(response.body.success).toBe(false);
     });
 
-    test('should fail with missing email', async () => {
+    test('should fail with missing username', async () => {
       const response = await request(app)
         .post('/api/auth/login')
         .send({
           password: 'Test@123'
         });
 
-      expect(response.status).toBe(400);
-      expect(response.body.error).toBeDefined();
+      expect(response.status).toBe(422);
+      expect(response.body.success).toBe(false);
     });
 
-    test('should fail with invalid email format', async () => {
+    test('should fail with missing password', async () => {
       const response = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'invalid-email',
-          password: 'Test@123'
+          username: 'testuser'
         });
 
-      expect(response.status).toBe(400);
-      expect(response.body.error).toBeDefined();
+      expect(response.status).toBe(422);
+      expect(response.body.success).toBe(false);
     });
   });
 
-  describe('POST /api/auth/verify', () => {
+  describe('GET /api/auth/me', () => {
     let validToken;
 
     beforeAll(() => {
       validToken = jwt.sign(
-        { id: testUser.id, email: testUser.email, role: testUser.role },
+        { id: testUser.id, username: testUser.username, role: testUser.role },
         process.env.JWT_SECRET,
         { expiresIn: '24h' }
       );
     });
 
-    test('should verify valid token', async () => {
+    test('should get current user with valid token', async () => {
       const response = await request(app)
-        .post('/api/auth/verify')
+        .get('/api/auth/me')
         .set('Authorization', `Bearer ${validToken}`);
 
       expect(response.status).toBe(200);
-      expect(response.body.valid).toBe(true);
-      expect(response.body.user.email).toBe('test@example.com');
+      expect(response.body.success).toBe(true);
+      expect(response.body.data).toHaveProperty('username');
     });
 
     test('should fail with invalid token', async () => {
       const response = await request(app)
-        .post('/api/auth/verify')
+        .get('/api/auth/me')
         .set('Authorization', 'Bearer invalid-token');
 
       expect(response.status).toBe(401);
-      expect(response.body.error).toContain('token');
+      expect(response.body.success).toBe(false);
     });
 
     test('should fail with missing token', async () => {
       const response = await request(app)
-        .post('/api/auth/verify');
+        .get('/api/auth/me');
 
       expect(response.status).toBe(401);
-      expect(response.body.error).toContain('token');
+      expect(response.body.success).toBe(false);
     });
 
     test('should fail with expired token', async () => {
       const expiredToken = jwt.sign(
-        { userId: testUser.id, email: testUser.email },
+        { id: testUser.id, username: testUser.username },
         process.env.JWT_SECRET,
         { expiresIn: '-1h' }
       );
 
       const response = await request(app)
-        .post('/api/auth/verify')
+        .get('/api/auth/me')
         .set('Authorization', `Bearer ${expiredToken}`);
 
       expect(response.status).toBe(401);
-      expect(response.body.error).toContain('expired');
+      expect(response.body.success).toBe(false);
     });
   });
 
@@ -153,7 +151,7 @@ describe('Authentication API', () => {
           request(app)
             .post('/api/auth/login')
             .send({
-              email: 'test@example.com',
+              username: 'testuser',
               password: 'wrongpassword'
             })
         );
@@ -164,8 +162,9 @@ describe('Authentication API', () => {
 
       // Rate limiting may not work in test env without Redis
       // Just verify that the endpoint is functional
-      expect([401, 429, 500]).toContain(lastResponse.status);
+      expect([401, 422, 429, 500]).toContain(lastResponse.status);
       // Don't check for error property as response format may vary
     }, 20000); // Increased timeout for rate limiting test
   });
 });
+

@@ -1,36 +1,34 @@
+
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Mock async authentication
+import api from '../services/api';
+
+
+
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
-  async ({ email, password }, { rejectWithValue }) => {
+  async (credentials, { rejectWithValue }) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Mock validation
-      if (!email || !password) {
-        return rejectWithValue('Email and password required');
-      }
+      // credentials should be { username, password }
+      const response = await api.post('/auth/login', credentials);
+      const { user, token } = response;
 
-      const mockUser = {
-        id: email === 'admin@example.com' ? '1' : '2',
-        email,
-        role: email === 'admin@example.com' ? 'admin' : 'engineer',
-        name: email === 'admin@example.com' ? 'Admin User' : 'Engineer User',
-        wardAssigned: email === 'admin@example.com' ? null : ['Ward 1', 'Ward 2'],
-      };
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('user', JSON.stringify(user));
 
-      return mockUser;
+      return { user, token };
     } catch (error) {
-      return rejectWithValue(error.message);
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data.message || 'Login failed');
+      }
+      return rejectWithValue(error.message || 'Login failed');
     }
   }
 );
 
 const initialState = {
-  user: null,
-  isAuthenticated: false,
+  user: JSON.parse(localStorage.getItem('user')) || null,
+  isAuthenticated: !!localStorage.getItem('authToken'),
   loading: false,
   error: null,
   token: localStorage.getItem('authToken') || null,
@@ -45,7 +43,8 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.token = null;
       localStorage.removeItem('authToken');
-      localStorage.removeItem('userRole');
+      localStorage.removeItem('user');
+      localStorage.removeItem('userRole'); // clean up legacy
     },
     restoreAuth: (state, action) => {
       const user = action.payload;
@@ -61,11 +60,9 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
         state.isAuthenticated = true;
-        state.token = `token-${action.payload.id}`;
-        localStorage.setItem('authToken', state.token);
-        localStorage.setItem('userRole', action.payload.role);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;

@@ -21,6 +21,7 @@ const dashboardRoutes = require('./routes/dashboard');
 const feedbackRoutes = require('./routes/feedback');
 const geospatialRoutes = require('./routes/geospatial');
 const reportsRoutes = require('./routes/reports');
+const premiumRoutes = require('./routes/premium');
 
 // Initialize Express
 const app = express();
@@ -45,7 +46,7 @@ app.use((req, res, next) => {
 app.get('/health', async (req, res) => {
     try {
         const dbStatus = await db.testConnection();
-        
+
         res.json({
             status: 'healthy',
             timestamp: new Date().toISOString(),
@@ -71,6 +72,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/geospatial', geospatialRoutes);
 app.use('/api/reports', reportsRoutes);
+app.use('/api/premium', premiumRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -104,13 +106,13 @@ async function startServer() {
         // Test database connection
         logger.info('Testing database connection...');
         const dbConnected = await db.testConnection();
-        
+
         if (!dbConnected) {
             throw new Error('Database connection failed');
         }
-        
+
         logger.info('Database connected successfully');
-        
+
         // Start listening
         app.listen(PORT, () => {
             logger.info('='.repeat(60));
@@ -120,7 +122,7 @@ async function startServer() {
             logger.info(`Health: http://localhost:${PORT}/health`);
             logger.info('='.repeat(60));
         });
-        
+
     } catch (error) {
         logger.error('Failed to start server:', error);
         process.exit(1);
@@ -140,7 +142,9 @@ process.on('SIGINT', async () => {
     process.exit(0);
 });
 
-// Start the server
-startServer();
+// Start the server only if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+    startServer();
+}
 
 module.exports = app;

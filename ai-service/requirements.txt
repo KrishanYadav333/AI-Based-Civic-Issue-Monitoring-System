@@ -1,17 +1,9 @@
-# AI Service - YOLOv8 Classification (100% FREE)
-# Python 3.9+
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-torch>=2.1.0
-torchvision>=0.16.0
-ultralytics>=8.0.217
-opencv-python>=4.8.1
+# AI Service - Lightweight Rule-Based Classifier
+# Optimized for small deployment size (<200MB)
+
+flask==3.0.0
+gunicorn==21.2.0
 pillow>=10.1.0
-numpy>=1.26.2
-python-multipart==0.0.6
-pydantic>=2.0.0
-redis==5.0.1
-python-dotenv==1.0.0
-matplotlib>=3.8.0
-seaborn>=0.13.0
-scikit-learn>=1.3.0
+numpy>=1.26.0
+python-dotenv>=1.0.0
+requests>=2.31.0

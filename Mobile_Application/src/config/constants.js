@@ -23,17 +23,18 @@ export const MAP_CONFIG = {
 };
 
 // Issue Types
+// Issue Types
 export const ISSUE_TYPES = [
-  { id: 'pothole', label: 'Pothole', icon: 'road-variant' },
-  { id: 'garbage', label: 'Garbage', icon: 'delete' },
-  { id: 'debris', label: 'Debris', icon: 'dump-truck' },
-  { id: 'stray_cattle', label: 'Stray Cattle', icon: 'cow' },
-  { id: 'broken_road', label: 'Broken Road', icon: 'road' },
-  { id: 'open_manhole', label: 'Open Manhole', icon: 'alert-circle' },
-  { id: 'street_light', label: 'Street Light', icon: 'lightbulb' },
-  { id: 'water_leakage', label: 'Water Leakage', icon: 'water' },
-  { id: 'tree_fall', label: 'Tree Fall', icon: 'tree' },
-  { id: 'illegal_construction', label: 'Illegal Construction', icon: 'home-alert' },
+  { id: 'pothole', label: 'Pothole', icon: 'road-variant', department: 'Roads' },
+  { id: 'garbage', label: 'Garbage', icon: 'delete', department: 'Sanitation' },
+  { id: 'debris', label: 'Debris', icon: 'dump-truck', department: 'Sanitation' },
+  { id: 'stray_cattle', label: 'Stray Cattle', icon: 'cow', department: 'AnimalControl' },
+  { id: 'broken_road', label: 'Broken Road', icon: 'road', department: 'Roads' },
+  { id: 'open_manhole', label: 'Open Manhole', icon: 'alert-circle', department: 'Drainage' },
+  { id: 'street_light', label: 'Street Light', icon: 'lightbulb', department: 'Electricity' },
+  { id: 'water_leakage', label: 'Water Leakage', icon: 'water', department: 'WaterSupply' },
+  { id: 'tree_fall', label: 'Tree Fall', icon: 'tree', department: 'Garden' },
+  { id: 'illegal_construction', label: 'Illegal Construction', icon: 'home-alert', department: 'TownPlanning' },
 ];
 
 // Issue Statuses

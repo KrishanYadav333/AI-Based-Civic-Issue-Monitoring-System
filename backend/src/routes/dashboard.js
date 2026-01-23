@@ -15,7 +15,7 @@ router.get('/engineer/:engineerId', authenticate, authorize('engineer', 'admin')
     }
 
     let queryStr = `
-      SELECT i.*, w.name as ward_name
+      SELECT i.*, w.ward_name
       FROM issues i
       LEFT JOIN wards w ON i.ward_id = w.id
       WHERE i.engineer_id = $1
@@ -75,14 +75,14 @@ router.get('/admin/stats', authenticate, authorize('admin'), async (req, res, ne
     const wardStats = await db.query(`
       SELECT 
         w.id,
-        w.name,
+        w.ward_name as name,
         COUNT(i.id) as total_issues,
         COUNT(i.id) FILTER (WHERE i.status = 'resolved') as resolved_issues,
         COUNT(i.id) FILTER (WHERE i.status = 'pending') as pending_issues,
         COUNT(i.id) FILTER (WHERE i.priority = 'high') as high_priority_issues
       FROM wards w
       LEFT JOIN issues i ON w.id = i.ward_id
-      GROUP BY w.id, w.name
+      GROUP BY w.id, w.ward_name
       ORDER BY w.id
     `);
 

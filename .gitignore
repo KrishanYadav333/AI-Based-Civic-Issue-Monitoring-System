@@ -2,12 +2,12 @@
 # AI Civic Issue Monitor - .gitignore
 # ========================================
 
+# === AI Agent Reference Documentation (Not for Production) ===
+.ai-docs/
+.ai-notes.md
+
 # === Extra Work (Not Anuj's Assignment) ===
 extra-work-not-anuj/
-
-# === AI Agent Internal Notes ===
-.ai-notes.md
-/extra-work-not-anuj/
 # === Dependencies ===
 node_modules/
 */node_modules/
@@ -184,12 +184,19 @@ backend/test-final.txt
 !ai-service/test_yolov8_model.py
 
 # === YOLOv8 Training Artifacts (Generated) ===
+# Ignore all training runs except the final trained model
 ai-service/dataset_yolo/
 ai-service/runs/
 ai-service/training_summary.json
 ai-service/test_results/
 ai-service/training_data/*.cache
 ai-service/*.cache
+
+# Root-level runs directory from training
+# Keep only best.pt model, ignore all other training artifacts
+runs/
+!runs/detect/runs/civic_issues/yolov8_training/weights/
+!runs/detect/runs/civic_issues/yolov8_training/weights/best.pt
 
 # === AI Training Scripts (Keep for M4 Training) ===
 # ai-service/generate_training_data.py
@@ -238,16 +245,21 @@ build/
 .ipynb_checkpoints/
 *.ipynb
 
-# === Large Model Files (Generated During Training) ===
-# Comment out to keep trained models in repo (not recommended for large files)
-ai-service/models/*.pt
+# === Large Model Files ===
+# Keep essential pretrained and trained models, ignore temporary training checkpoints
+ai-service/models/*.keras
+ai-service/models/*.h5
+ai-service/models/*.pkl
+ai-service/models/*.tflite
+ai-service/models/*.onnx
 !ai-service/models/.gitkeep
-ai-service/yolov8n.pt
+!ai-service/models/class_indices.json
 
-# === Training Outputs (Generated) ===
-ai-service/dataset_yolo/
-ai-service/runs/
-ai-service/training_summary.json
+# YOLOv8 base model (pretrained)
+!ai-service/yolov8n.pt
+
+# Training Outputs - Keep best model only
+!runs/detect/runs/civic_issues/yolov8_training/weights/best.pt
 
 # === Training Data & Datasets (Now Tracked for M4) ===
 # ai-service/training_data/ (commented - tracking for M4 training)
@@ -261,3 +273,4 @@ frontend/docs/DOCUMENTATION_INDEX.md
 frontend/docs/IMPLEMENTATION_SUMMARY.md
 frontend/docs/PROJECT_COMPLETION_REPORT.md
 frontend/docs/VERIFICATION_CHECKLIST.md
+OPTIMIZATION_REPORT.md

@@ -304,11 +304,11 @@ async function getEngineerIssues(engineerId, status = null) {
                    it.name as issue_type_name,
                    it.department,
                    w.ward_number,
-                   w.name as ward_name
+                   w.ward_name
             FROM issues i
             LEFT JOIN issue_types it ON i.issue_type_id = it.id
             LEFT JOIN wards w ON i.ward_id = w.id
-            WHERE i.assigned_to = $1
+            WHERE i.engineer_id = $1
         `;
         
         const params = [engineerId];
@@ -345,7 +345,7 @@ async function getSLABreachCandidates() {
             FROM issues i
             LEFT JOIN issue_types it ON i.issue_type_id = it.id
             LEFT JOIN wards w ON i.ward_id = w.id
-            LEFT JOIN users u ON i.assigned_to = u.id
+            LEFT JOIN users u ON i.engineer_id = u.id
             WHERE i.status NOT IN ($1, $2, $3)
         `, [ISSUE_STATUS.RESOLVED, ISSUE_STATUS.CLOSED, ISSUE_STATUS.REJECTED]);
         
@@ -453,7 +453,7 @@ async function autoAssignIssue(issueId, wardId, assignedBy) {
             `SELECT u.id, u.username,
                     COUNT(i.id) as current_load
              FROM users u
-             LEFT JOIN issues i ON i.assigned_to = u.id 
+             LEFT JOIN issues i ON i.engineer_id = u.id 
                   AND i.status NOT IN ($1, $2, $3)
              WHERE u.role = $4 
                   AND (u.ward_id = $5 OR u.ward_id IS NULL)
@@ -469,7 +469,7 @@ async function autoAssignIssue(issueId, wardId, assignedBy) {
                 `SELECT u.id, u.username,
                         COUNT(i.id) as current_load
                  FROM users u
-                 LEFT JOIN issues i ON i.assigned_to = u.id 
+                 LEFT JOIN issues i ON i.engineer_id = u.id 
                       AND i.status NOT IN ($1, $2, $3)
                  WHERE u.role = $4
                  GROUP BY u.id, u.username

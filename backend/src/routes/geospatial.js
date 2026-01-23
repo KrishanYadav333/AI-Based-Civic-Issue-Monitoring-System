@@ -250,7 +250,7 @@ router.get('/stats/spatial', authenticate, authorize('admin'), async (req, res) 
       WITH spatial_stats AS (
         SELECT 
           w.id as ward_id,
-          w.name as ward_name,
+          w.ward_name,
           w.number as ward_number,
           COUNT(i.id) as total_issues,
           ST_Area(w.boundary::geography) / 1000000 as area_sq_km,
@@ -258,7 +258,7 @@ router.get('/stats/spatial', authenticate, authorize('admin'), async (req, res) 
         FROM wards w
         LEFT JOIN issues i ON w.id = i.ward_id
         ${ward_id ? 'WHERE w.id = $1' : ''}
-        GROUP BY w.id, w.name, w.number, w.boundary
+        GROUP BY w.id, w.ward_name, w.number, w.boundary
       )
       SELECT 
         ward_id,

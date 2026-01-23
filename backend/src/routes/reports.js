@@ -18,7 +18,7 @@ router.post('/export/pdf', authenticate, authorize('engineer', 'admin'), async (
       SELECT 
         i.id, i.type, i.status, i.priority, i.description,
         i.latitude, i.longitude, i.created_at, i.resolved_at,
-        w.name as ward_name, w.number as ward_number,
+        w.ward_name, w.ward_number,
         u_creator.name as created_by_name, u_creator.email as created_by_email,
         u_engineer.name as assigned_engineer_name
       FROM issues i
@@ -181,7 +181,7 @@ router.post('/export/excel', authenticate, authorize('engineer', 'admin'), async
       SELECT 
         i.id, i.type, i.status, i.priority, i.description,
         i.latitude, i.longitude, i.created_at, i.resolved_at,
-        w.name as ward_name, w.number as ward_number,
+        w.ward_name, w.ward_number,
         u_creator.name as created_by_name, u_creator.email as created_by_email,
         u_engineer.name as assigned_engineer_name,
         d.name as department_name

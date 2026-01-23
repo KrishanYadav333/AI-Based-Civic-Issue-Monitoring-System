@@ -1,7 +1,7 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
-const app = require('../../src/server');
-const db = require('../../src/config/database');
+const app = require('../../src/index');
+const db = require('../../src/services/database');
 const path = require('path');
 const { createTestJpeg } = require('../helpers/imageHelpers');
 
@@ -10,44 +10,35 @@ describe('Issues API', () => {
   let surveyorToken;
   let adminToken;
   let testWardId;
-  let testDepartmentId;
   let testIssueId;
 
   beforeAll(async () => {
     // Create test ward (using simple JSON for test environment)
     const wardResult = await db.query(
-      `INSERT INTO wards (name, boundary_json) VALUES ($1, $2) RETURNING id`,
-      ['Test Ward', JSON.stringify({
+      `INSERT INTO wards (ward_number, ward_name, boundary_json) VALUES ($1, $2, $3) RETURNING id`,
+      [99, 'Test Ward', JSON.stringify({
         type: 'Polygon',
         coordinates: [[[73.18, 22.30], [73.19, 22.30], [73.19, 22.31], [73.18, 22.31], [73.18, 22.30]]]
       })]
     );
     testWardId = wardResult.rows[0].id;
 
-    // Create test department
-    const deptResult = await db.query(
-      `INSERT INTO departments (name, description)
-       VALUES ($1, $2) RETURNING id`,
-      ['Test Dept', 'Test Department for unit testing']
-    );
-    testDepartmentId = deptResult.rows[0].id;
-
-    // Create test users
+    // Create test users (no departments table - removed)
     const users = await Promise.all([
       db.query(
-        `INSERT INTO users (name, email, password_hash, role, ward_id, department_id)
+        `INSERT INTO users (username, email, password_hash, full_name, role, ward_id)
          VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-        ['Engineer', 'engineer@test.com', 'hashed', 'engineer', testWardId, testDepartmentId]
+        ['engineer_user', 'engineer@test.com', 'hashed', 'Test Engineer', 'engineer', testWardId]
       ),
       db.query(
-        `INSERT INTO users (name, email, password_hash, role, ward_id)
+        `INSERT INTO users (username, email, password_hash, full_name, role, ward_id)
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+        ['surveyor_user', 'surveyor@test.com', 'hashed', 'Test Surveyor', 'surveyor', testWardId]
+      ),
+      db.query(
+        `INSERT INTO users (username, email, password_hash, full_name, role)
          VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-        ['Surveyor', 'surveyor@test.com', 'hashed', 'surveyor', testWardId]
-      ),
-      db.query(
-        `INSERT INTO users (name, email, password_hash, role)
-         VALUES ($1, $2, $3, $4) RETURNING *`,
-        ['Admin', 'admin@test.com', 'hashed', 'admin']
+        ['admin_user', 'admin@test.com', 'hashed', 'Test Admin', 'admin']
       )
     ]);
 
@@ -73,7 +64,6 @@ describe('Issues API', () => {
     // Clean up test data
     await db.query('DELETE FROM issues WHERE ward_id = $1', [testWardId]);
     await db.query('DELETE FROM users WHERE email LIKE $1', ['%@test.com']);
-    await db.query('DELETE FROM departments WHERE id = $1', [testDepartmentId]);
     await db.query('DELETE FROM wards WHERE id = $1', [testWardId]);
     // Don't call db.end() as it's a shared pool
   });
@@ -115,7 +105,7 @@ describe('Issues API', () => {
         .field('longitude', '73.185')
         .field('description', 'Test issue');
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(422);
     });
 
     test('should fail without required fields', async () => {
@@ -125,7 +115,7 @@ describe('Issues API', () => {
         .field('latitude', '22.305');
         // Missing longitude and description
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(422);
     });
 
     test('should fail with engineer role', async () => {
@@ -237,7 +227,7 @@ describe('Issues API', () => {
         .set('Authorization', `Bearer ${engineerToken}`)
         .field('resolution_notes', 'Trying to resolve without image');
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(422);
       expect(response.body.error).toContain('Resolution image is required');
     });
   });

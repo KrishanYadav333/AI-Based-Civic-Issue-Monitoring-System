@@ -1,462 +1,342 @@
-# Deployment Guide
+# AI-Based Civic Issue Monitoring System - Deployment Guide
 
-## Table of Contents
-1. [Prerequisites](#prerequisites)
-2. [Installation](#installation)
-3. [Configuration](#configuration)
-4. [Deployment Options](#deployment-options)
-5. [Security](#security)
-6. [Monitoring](#monitoring)
-7. [Backup and Recovery](#backup-and-recovery)
-8. [Troubleshooting](#troubleshooting)
+## Quick Start with Docker
 
-## Prerequisites
+The fastest way to run the entire system is using Docker Compose.
 
-### System Requirements
-- **CPU**: 4+ cores recommended
-- **RAM**: 8GB minimum, 16GB recommended
-- **Storage**: 50GB minimum (for database, uploads, and logs)
-- **OS**: Linux (Ubuntu 20.04+ recommended), Windows Server 2019+, or macOS
+### Prerequisites
+- Docker Desktop (Windows/Mac) or Docker Engine (Linux)
+- Docker Compose
+- 4GB RAM minimum
+- 10GB disk space
 
-### Software Requirements
-- **Node.js**: 18.x or higher
-- **Python**: 3.8 or higher
-- **PostgreSQL**: 12.x or higher with PostGIS extension
-- **Redis**: 7.x or higher (for caching and rate limiting)
-- **Docker**: 20.10+ and Docker Compose 2.0+ (optional but recommended)
+### Steps
 
-## Installation
-
-### Option 1: Docker Deployment (Recommended)
-
-1. **Clone the repository**:
+1. **Clone the repository**
 ```bash
 git clone https://github.com/KrishanYadav333/AI-Based-Civic-Issue-Monitoring-System.git
 cd AI-Based-Civic-Issue-Monitoring-System
 ```
 
-2. **Configure environment**:
+2. **Create environment file**
 ```bash
-cp .env.production.example .env.production
-# Edit .env.production with your configuration
-nano .env.production
+cp .env.example .env
+# Edit .env with your configuration
 ```
 
-3. **Start services**:
+3. **Start all services**
 ```bash
 docker-compose up -d
 ```
 
-4. **Verify deployment**:
+4. **Check service status**
 ```bash
-curl http://localhost:3000/health
-curl http://localhost:5000/health
+docker-compose ps
 ```
 
-### Option 2: Manual Deployment
-
-1. **Run setup script**:
+5. **View logs**
 ```bash
-# Linux/macOS
-chmod +x scripts/setup.sh
-./scripts/setup.sh
-
-# Windows
-PowerShell -ExecutionPolicy Bypass -File scripts/setup.ps1
+docker-compose logs -f
 ```
 
-2. **Start services**:
+### Accessing the Application
 
-**Backend**:
+- **Backend API**: http://localhost:3000
+- **Frontend Dashboard**: http://localhost:3001
+- **AI Service**: http://localhost:5000
+- **Database**: localhost:5432
+
+### Default Credentials
+
+**Admin:**
+- Email: admin@vmc.gov.in
+- Password: admin123
+
+**Engineer (Ward 1):**
+- Email: engineer1@vmc.gov.in
+- Password: engineer123
+
+**Surveyor:**
+- Email: surveyora@vmc.gov.in
+- Password: surveyor123
+
+⚠️ **Change these passwords in production!**
+
+## Manual Installation
+
+### 1. Database Setup
+
+Install PostgreSQL 12+ with PostGIS extension:
+
+**Windows:**
 ```bash
-cd backend
-npm start
+# Download from postgresql.org
+# Install PostGIS from Application Stack Builder
 ```
 
-**AI Service**:
+**Linux:**
 ```bash
-cd ai-service
-source venv/bin/activate  # Windows: venv\Scripts\activate
-gunicorn --bind 0.0.0.0:5000 --workers 4 app:app
+sudo apt-get install postgresql-12 postgresql-12-postgis-3
 ```
 
-**Frontend** (build for production):
-```bash
-cd frontend
-npm run build
-# Serve with nginx or similar
-```
-
-## Configuration
-
-### Database Setup
-
-1. **Create database**:
+Create database:
 ```bash
 psql -U postgres
 CREATE DATABASE civic_issues;
 \c civic_issues
 CREATE EXTENSION postgis;
-```
+\q
 
-2. **Run migrations**:
-```bash
+# Run schema and seed data
 psql -U postgres -d civic_issues -f database/schema.sql
 psql -U postgres -d civic_issues -f database/seed_data.sql
 ```
 
-### SSL/TLS Configuration
+### 2. Backend Setup
 
-For production, enable HTTPS:
-
-1. **Obtain SSL certificates** (Let's Encrypt recommended):
 ```bash
-sudo certbot certonly --standalone -d yourdomain.com
+cd backend
+npm install
+cp .env.example .env
+# Edit .env with your database credentials
+mkdir uploads logs
+npm run dev
 ```
 
-2. **Configure Nginx**:
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name yourdomain.com;
-    
-    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
-    
-    # SSL configuration
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers HIGH:!aNULL:!MD5;
-    
-    location / {
-        proxy_pass http://localhost:3001;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-    
-    location /api {
-        proxy_pass http://localhost:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
+### 3. AI Service Setup
+
+```bash
+cd ai-service
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# Linux/Mac
+source venv/bin/activate
+
+pip install -r requirements.txt
+cp .env.example .env
+python app.py
 ```
 
-## Deployment Options
+### 4. Frontend Setup
 
-### AWS Deployment
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-1. **EC2 Instance**:
-   - Launch Ubuntu 22.04 LTS instance (t3.medium or larger)
-   - Open ports: 80, 443, 22
-   - Assign Elastic IP
+### 5. Mobile App Setup
 
-2. **RDS PostgreSQL**:
-   - Create PostgreSQL 14+ instance with PostGIS
-   - Configure security groups
-   - Update backend `.env` with RDS endpoint
+```bash
+cd mobile-app
+npm install
 
-3. **S3 for File Storage**:
-   - Create S3 bucket for image uploads
-   - Configure IAM roles and policies
-   - Update backend to use S3 SDK
+# Update API_URL in src/context/AuthContext.js
+# Replace 'http://your-backend-url:3000/api' with your backend URL
 
-4. **CloudWatch for Monitoring**:
-   - Configure CloudWatch agent
-   - Set up log groups
-   - Create alarms for critical metrics
+npx expo start
+```
 
-### Google Cloud Deployment
+## Production Deployment
 
-1. **Compute Engine**:
-   - Create VM instance with Ubuntu
-   - Configure firewall rules
+### Using Docker Compose (Recommended)
 
-2. **Cloud SQL**:
-   - Create PostgreSQL instance
-   - Enable PostGIS extension
+1. **Update environment variables**
+```bash
+# Edit .env file
+DB_PASSWORD=strong_password_here
+JWT_SECRET=random_secret_key_here
+NODE_ENV=production
+```
 
-3. **Cloud Storage**:
-   - Create storage bucket
-   - Configure access permissions
+2. **Build and start**
+```bash
+docker-compose up -d --build
+```
 
-### Azure Deployment
+3. **Setup SSL/TLS (recommended)**
+- Use Nginx or Traefik as reverse proxy
+- Obtain SSL certificates (Let's Encrypt)
+- Configure HTTPS
 
-1. **Virtual Machine**:
-   - Deploy Ubuntu VM
+### Cloud Deployment
 
-2. **Azure Database for PostgreSQL**:
-   - Create server instance
+#### AWS
 
-3. **Azure Blob Storage**:
-   - Configure storage account
+1. **Database**: Amazon RDS PostgreSQL with PostGIS
+2. **Backend**: ECS or Elastic Beanstalk
+3. **Frontend**: S3 + CloudFront
+4. **AI Service**: ECS or Lambda
+5. **Storage**: S3 for images
 
-## Security
+#### Azure
+
+1. **Database**: Azure Database for PostgreSQL with PostGIS
+2. **Backend**: Azure App Service or Container Instances
+3. **Frontend**: Azure Static Web Apps
+4. **AI Service**: Azure Container Instances
+5. **Storage**: Azure Blob Storage
+
+#### Google Cloud
+
+1. **Database**: Cloud SQL for PostgreSQL with PostGIS
+2. **Backend**: Cloud Run or App Engine
+3. **Frontend**: Cloud Storage + CDN
+4. **AI Service**: Cloud Run
+5. **Storage**: Cloud Storage
+
+## Configuration
+
+### Environment Variables
+
+**Backend (.env):**
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=civic_issues
+DB_USER=postgres
+DB_PASSWORD=your_password
+JWT_SECRET=your_jwt_secret
+AI_SERVICE_URL=http://localhost:5000
+PORT=3000
+NODE_ENV=production
+```
+
+**AI Service (.env):**
+```env
+PORT=5000
+DEBUG=False
+MODEL_PATH=./models/civic_issue_model.h5
+```
 
 ### Security Checklist
 
 - [ ] Change all default passwords
-- [ ] Generate strong JWT secret (min 32 characters)
+- [ ] Use strong JWT secret (32+ characters)
 - [ ] Enable HTTPS/TLS
-- [ ] Configure firewall rules
-- [ ] Enable rate limiting
-- [ ] Set up WAF (Web Application Firewall)
 - [ ] Configure CORS properly
-- [ ] Enable security headers
-- [ ] Regular security audits
-- [ ] Keep dependencies updated
-
-### User Security
-
-**Password Policy**:
-- Minimum 8 characters
-- Must include: uppercase, lowercase, number, special character
-- Passwords hashed with bcrypt (salt rounds: 10)
-
-**Authentication**:
-- JWT tokens with 24-hour expiration
-- Rate limiting on login attempts (5 attempts per 15 minutes)
-- Optional: Implement 2FA
-
-### Database Security
-
-```sql
--- Create read-only user for backups
-CREATE USER backup_user WITH PASSWORD 'strong_password';
-GRANT CONNECT ON DATABASE civic_issues TO backup_user;
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO backup_user;
-
--- Create application user with limited privileges
-CREATE USER civic_app WITH PASSWORD 'strong_password';
-GRANT CONNECT ON DATABASE civic_issues TO civic_app;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO civic_app;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO civic_app;
-```
+- [ ] Set up firewall rules
+- [ ] Enable database backups
+- [ ] Use environment variables for secrets
+- [ ] Implement rate limiting
+- [ ] Enable logging and monitoring
+- [ ] Regular security updates
 
 ## Monitoring
 
 ### Health Checks
 
-**Backend**: `GET /health`
-```json
-{
-  "status": "ok",
-  "timestamp": "2026-01-13T10:30:00Z",
-  "uptime": 3600,
-  "services": {
-    "database": "ok",
-    "ai": "ok"
-  }
-}
-```
+- Backend: `http://localhost:3000/health`
+- AI Service: `http://localhost:5000/health`
 
-**AI Service**: `GET /health`
-```json
-{
-  "status": "ok",
-  "service": "AI Issue Detection"
-}
-```
+### Logs
 
-### Prometheus Metrics
-
-Add to `docker-compose.yml`:
-```yaml
-prometheus:
-  image: prom/prometheus
-  ports:
-    - "9090:9090"
-  volumes:
-    - ./prometheus.yml:/etc/prometheus/prometheus.yml
-
-grafana:
-  image: grafana/grafana
-  ports:
-    - "3002:3000"
-  depends_on:
-    - prometheus
-```
-
-### Log Management
-
-**Centralized Logging** with ELK Stack:
+**Docker:**
 ```bash
-docker-compose -f docker-compose.monitoring.yml up -d
+docker-compose logs -f backend
+docker-compose logs -f ai-service
 ```
+
+**Manual:**
+- Backend logs: `backend/logs/`
+- AI Service: stdout/stderr
+
+### Metrics to Monitor
+
+- API response times
+- Database connection pool
+- Image upload success rate
+- AI classification accuracy
+- Issue resolution time
+- System uptime
 
 ## Backup and Recovery
 
-### Automated Backups
+### Database Backup
 
-**Daily backups** (add to crontab):
 ```bash
-0 2 * * * /path/to/scripts/backup.sh full >> /var/log/civic-backup.log 2>&1
+# Backup
+pg_dump -U postgres civic_issues > backup_$(date +%Y%m%d).sql
+
+# Restore
+psql -U postgres civic_issues < backup_20260113.sql
 ```
 
-**Backup to S3**:
-```bash
-#!/bin/bash
-BACKUP_FILE=$(ls -t backups/*.gz | head -1)
-aws s3 cp $BACKUP_FILE s3://your-backup-bucket/$(date +\%Y-\%m-\%d)/
-```
-
-### Disaster Recovery
-
-1. **Regular testing**: Test backups monthly
-2. **Off-site backups**: Store in different region/provider
-3. **Recovery Time Objective (RTO)**: < 4 hours
-4. **Recovery Point Objective (RPO)**: < 24 hours
-
-### Recovery Procedure
+### File Storage Backup
 
 ```bash
-# 1. Stop services
-docker-compose down
-
-# 2. Restore database
-./scripts/restore.sh backups/latest-backup.sql.gz
-
-# 3. Restore uploads
-aws s3 sync s3://your-backup-bucket/uploads ./uploads/
-
-# 4. Start services
-docker-compose up -d
-
-# 5. Verify
-curl http://localhost:3000/health
+# Backup uploads
+tar -czf uploads_backup_$(date +%Y%m%d).tar.gz backend/uploads/
 ```
 
 ## Troubleshooting
 
-### Common Issues
+### Backend won't start
+- Check database connection
+- Verify PostgreSQL is running
+- Check port 3000 availability
+- Review logs: `backend/logs/error.log`
 
-**1. Database connection failed**
-```bash
-# Check PostgreSQL status
-sudo systemctl status postgresql
+### AI Service errors
+- Verify Python dependencies installed
+- Check model file exists (if using custom model)
+- Review Python logs
 
-# Check connection
-psql -U postgres -h localhost -d civic_issues -c "SELECT 1;"
+### Database connection issues
+- Verify PostgreSQL is running
+- Check connection credentials
+- Ensure PostGIS extension is installed
+- Check firewall rules
 
-# View logs
-sudo tail -f /var/log/postgresql/postgresql-14-main.log
-```
-
-**2. Port already in use**
-```bash
-# Find process using port
-lsof -i :3000
-# or
-netstat -ano | findstr :3000
-
-# Kill process
-kill -9 <PID>
-```
-
-**3. Out of disk space**
-```bash
-# Check disk usage
-df -h
-
-# Clean up old logs
-find backend/logs -name "*.log" -mtime +30 -delete
-
-# Clean up old backups
-find backups -name "*.gz" -mtime +7 -delete
-```
-
-**4. High memory usage**
-```bash
-# Check memory
-free -m
-
-# Restart services
-docker-compose restart
-
-# Optimize PostgreSQL
-# Edit postgresql.conf:
-shared_buffers = 256MB
-effective_cache_size = 1GB
-work_mem = 16MB
-```
-
-**5. Slow API responses**
-```bash
-# Check database performance
-psql -U postgres -d civic_issues -c "
-SELECT pid, query, state, wait_event_type
-FROM pg_stat_activity
-WHERE state != 'idle';"
-
-# Add indexes if needed
-psql -U postgres -d civic_issues -c "
-CREATE INDEX IF NOT EXISTS idx_issues_created_at ON issues(created_at DESC);"
-```
-
-### Support
-
-For issues not covered here:
-1. Check GitHub issues
-2. Review application logs
-3. Contact: support@vmc.gov.in
+### Mobile app can't connect
+- Update API_URL in AuthContext.js
+- Ensure backend is accessible from device
+- Check network connectivity
+- Verify CORS settings
 
 ## Performance Optimization
 
 ### Database
+- Add indexes on frequently queried columns
+- Enable connection pooling
+- Regular VACUUM and ANALYZE
+- Optimize PostGIS queries
 
-```sql
--- Analyze and vacuum
-VACUUM ANALYZE;
+### Backend
+- Enable gzip compression
+- Implement caching (Redis)
+- Use CDN for static files
+- Load balancing for multiple instances
 
--- Update statistics
-ANALYZE;
+### Frontend
+- Code splitting
+- Image optimization
+- Browser caching
+- Minification
 
--- Reindex
-REINDEX DATABASE civic_issues;
-```
+## Scaling
 
-### Caching
+### Horizontal Scaling
+- Multiple backend instances behind load balancer
+- Database read replicas
+- Separate AI service instances
+- CDN for static content
 
-- Enable Redis caching for frequent queries
-- Configure CDN for static assets
-- Use browser caching headers
+### Vertical Scaling
+- Increase server resources
+- Optimize database queries
+- Tune database parameters
+- Increase worker processes
 
-### Load Balancing
+## Support
 
-For high-traffic scenarios:
-```yaml
-nginx:
-  image: nginx:alpine
-  volumes:
-    - ./nginx-lb.conf:/etc/nginx/nginx.conf
-  depends_on:
-    - backend-1
-    - backend-2
-    - backend-3
-```
+For issues and questions:
+- GitHub Issues: https://github.com/KrishanYadav333/AI-Based-Civic-Issue-Monitoring-System/issues
+- Documentation: See README.md and plan files
 
-## Maintenance
+## License
 
-### Regular Maintenance Tasks
-
-**Daily**:
-- Monitor system health
-- Check error logs
-- Review security alerts
-
-**Weekly**:
-- Analyze database performance
-- Review disk usage
-- Update dependencies (dev environment)
-
-**Monthly**:
-- Apply security patches
-- Test disaster recovery
-- Review and rotate logs
-- Performance tuning
-
-**Quarterly**:
-- Security audit
-- Capacity planning
-- Update documentation
+MIT License - See LICENSE file for details

@@ -15,6 +15,17 @@ const IssueSchema = Yup.object().shape({
   description: Yup.string().min(10, 'Description must be at least 10 characters'),
 });
 
+import * as Notifications from 'expo-notifications';
+
+// Configure notifications handler
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
 export default function ReportIssueScreen({ navigation, route }) {
   const [imageUri, setImageUri] = useState(route.params?.imageUri || null);
   const [location, setLocation] = useState(null);
@@ -24,14 +35,43 @@ export default function ReportIssueScreen({ navigation, route }) {
 
   useEffect(() => {
     getLocation();
+
+    // Register for push notifications
+    registerForPushNotificationsAsync();
+
+    // Listen for incoming notifications
+    const subscription = Notifications.addNotificationReceivedListener(notification => {
+      const data = notification.request.content.data;
+      if (data && data.issueId) {
+        Alert.alert(
+          notification.request.content.title,
+          notification.request.content.body,
+          [
+            { text: 'View', onPress: () => navigation.navigate('IssueDetails', { id: data.issueId }) },
+            { text: 'Close' }
+          ]
+        );
+      }
+    });
+
+    return () => subscription.remove();
   }, []);
+
+  async function registerForPushNotificationsAsync() {
+    // In a real app, successful registration would send token to backend
+    // user.update({ fcmToken: token });
+    const { status } = await Notifications.requestPermissionsAsync();
+    if (status !== 'granted') {
+      console.log('Notification permissions not granted');
+    }
+  }
 
   const getLocation = async () => {
     try {
       setLoadingLocation(true);
       const loc = await LocationService.getCurrentLocation();
       setLocation(loc);
-      
+
       // Get address
       const address = await LocationService.reverseGeocode(
         loc.coords.latitude,
@@ -126,15 +166,15 @@ export default function ReportIssueScreen({ navigation, route }) {
                   <View>
                     <Image source={{ uri: imageUri }} style={styles.image} />
                     <View style={styles.imageActions}>
-                      <Button 
-                        mode="outlined" 
+                      <Button
+                        mode="outlined"
                         onPress={() => navigation.navigate('Camera')}
                         icon="camera"
                       >
                         Retake
                       </Button>
-                      <Button 
-                        mode="outlined" 
+                      <Button
+                        mode="outlined"
                         onPress={pickImage}
                         icon="image"
                       >
@@ -147,15 +187,15 @@ export default function ReportIssueScreen({ navigation, route }) {
                     <Ionicons name="image-outline" size={64} color="#ccc" />
                     <Text style={styles.noImageText}>No image captured</Text>
                     <View style={styles.imageActions}>
-                      <Button 
-                        mode="contained" 
+                      <Button
+                        mode="contained"
                         onPress={() => navigation.navigate('Camera')}
                         icon="camera"
                       >
                         Take Photo
                       </Button>
-                      <Button 
-                        mode="outlined" 
+                      <Button
+                        mode="outlined"
                         onPress={pickImage}
                         icon="image"
                       >
@@ -174,13 +214,13 @@ export default function ReportIssueScreen({ navigation, route }) {
                 <View style={styles.chipsContainer}>
                   {ISSUE_TYPES.map((type) => (
                     <Chip
-                      key={type}
-                      selected={values.issueType === type}
-                      onPress={() => setFieldValue('issueType', type)}
+                      key={type.id}
+                      selected={values.issueType === type.id}
+                      onPress={() => setFieldValue('issueType', type.id)}
                       style={styles.chip}
                       mode="outlined"
                     >
-                      {type}
+                      {`${type.label} (${type.department})`}
                     </Chip>
                   ))}
                 </View>
@@ -226,8 +266,8 @@ export default function ReportIssueScreen({ navigation, route }) {
                     {location.address && (
                       <Text style={styles.addressText}>{location.address}</Text>
                     )}
-                    <Button 
-                      mode="text" 
+                    <Button
+                      mode="text"
                       onPress={getLocation}
                       icon="refresh"
                     >

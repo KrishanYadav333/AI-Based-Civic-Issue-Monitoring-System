@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "jest"
+    "test": "jest --runInBand",
+    "test:unit": "jest tests/unit --runInBand",
+    "test:integration": "jest tests/integration --runInBand",
+    "test:coverage": "jest --coverage --runInBand"
   },
   "keywords": [
     "civic",
@@ -32,7 +35,6 @@
     "pdfkit": "^0.13.0",
     "pg": "^8.11.3",
     "qrcode": "^1.5.3",
-    "redis": "^4.6.10",
     "winston": "^3.11.0",
     "ws": "^8.14.2"
   },
