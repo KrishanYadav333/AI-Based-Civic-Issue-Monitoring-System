@@ -3,8 +3,8 @@ uploads/
 !uploads/.gitkeep
 logs/
 !logs/.gitkeep
-models/
-!models/.gitkeep
+# Keep models directory for deployment (trained models)
+# models/ - REMOVED to include trained models
 runs/
 dataset_yolo/
 training_data/

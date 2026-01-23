@@ -43,10 +43,11 @@ logs/
 */logs/*.log
 !backend/logs/.gitkeep
 
-# Uploads, Data, Models
+# Uploads and Training Data (keep trained models for deployment)
 uploads/
 */uploads/
-ai-service/models/
+!uploads/.gitkeep
+# Exclude training artifacts but keep models directory
 ai-service/runs/
 ai-service/dataset_yolo/
 ai-service/training_data/
