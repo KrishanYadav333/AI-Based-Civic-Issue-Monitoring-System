@@ -177,8 +177,8 @@ extra-work-not-anuj/
 # === Test Outputs ===
 backend/test-output.txt
 backend/test-final.txt
-ai-service/test_*.py
-!ai-service/test_app.py
+# ai-service/test_*.py (commented - keeping test scripts)
+!ai-service/test_yolov8_model.py
 
 # === YOLOv8 Training Artifacts ===
 ai-service/dataset_yolo/
