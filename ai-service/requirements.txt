@@ -1,31 +1,14 @@
-# AI Service Dependencies - Civic Issue Monitoring System
-# Python 3.8+ required
-
-# Web Framework
-Flask==3.1.2
-flask-cors==6.0.2
-gunicorn==21.2.0
-
-# Deep Learning & ML
-tensorflow==2.20.0
-keras==3.11.3
-scikit-learn==1.8.0
-numpy==2.2.6
-
-# Image Processing
-Pillow==11.2.1
-
-# Data Analysis
-pandas==2.2.3
-matplotlib==3.10.8
-seaborn==0.13.2
-
-# Database
-psycopg2-binary==2.9.10
-
-# Utilities
+# AI Service - YOLOv8 Classification (100% FREE)
+# Python 3.9+
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+torch==2.1.0
+torchvision==0.16.0
+ultralytics==8.0.217
+opencv-python==4.8.1.78
+pillow==10.1.0
+numpy==1.26.2
+python-multipart==0.0.6
+pydantic==2.5.0
+redis==5.0.1
 python-dotenv==1.0.0
-requests==2.31.0
-
-# Testing
-pytest==8.3.4

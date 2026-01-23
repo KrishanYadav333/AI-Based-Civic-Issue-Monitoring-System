@@ -1,38 +1,48 @@
+/**
+ * Error Handling Middleware
+ */
+
 const logger = require('../utils/logger');
+const { errorResponse } = require('../utils/response');
 
-const errorHandler = (err, req, res, next) => {
-  logger.error('Error occurred', {
-    error: err.message,
-    stack: err.stack,
-    path: req.path,
-    method: req.method
-  });
+/**
+ * Global error handler
+ */
+function errorHandler(err, req, res, next) {
+    // Log error
+    logger.error('Error:', {
+        message: err.message,
+        stack: err.stack,
+        path: req.path,
+        method: req.method,
+        user: req.user?.id
+    });
+    
+    // Send response
+    const statusCode = err.statusCode || 500;
+    const message = err.message || 'Internal server error';
+    
+    return errorResponse(res, message, statusCode);
+}
 
-  // Default error
-  let statusCode = 500;
-  let message = 'Internal server error';
+/**
+ * Not found handler
+ */
+function notFoundHandler(req, res) {
+    return errorResponse(res, `Route not found: ${req.method} ${req.path}`, 404);
+}
 
-  // Handle specific error types
-  if (err.name === 'ValidationError') {
-    statusCode = 400;
-    message = err.message;
-  } else if (err.name === 'UnauthorizedError') {
-    statusCode = 401;
-    message = 'Unauthorized';
-  } else if (err.code === '23505') {
-    // PostgreSQL unique violation
-    statusCode = 409;
-    message = 'Resource already exists';
-  } else if (err.code === '23503') {
-    // PostgreSQL foreign key violation
-    statusCode = 400;
-    message = 'Invalid reference';
-  }
+/**
+ * Async route wrapper to catch errors
+ */
+function asyncHandler(fn) {
+    return (req, res, next) => {
+        Promise.resolve(fn(req, res, next)).catch(next);
+    };
+}
 
-  res.status(statusCode).json({
-    error: message,
-    ...(process.env.NODE_ENV === 'development' && { details: err.message, stack: err.stack })
-  });
+module.exports = {
+    errorHandler,
+    notFoundHandler,
+    asyncHandler
 };
-
-module.exports = { errorHandler };

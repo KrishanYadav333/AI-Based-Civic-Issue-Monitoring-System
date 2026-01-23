@@ -1,56 +1,90 @@
-const jwt = require('jsonwebtoken');
+/**
+ * Authentication Middleware
+ */
+
+const { verifyToken } = require('../services/authService');
 const logger = require('../utils/logger');
+const { unauthorizedResponse, forbiddenResponse } = require('../utils/response');
+const { USER_ROLES } = require('../core/constants');
 
-const authMiddleware = async (req, res, next) => {
-  try {
-    // Get token from header
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'No token provided' });
+/**
+ * Authenticate JWT token
+ */
+function authenticate(req, res, next) {
+    try {
+        // Get token from header
+        const authHeader = req.headers.authorization;
+        
+        if (!authHeader) {
+            return unauthorizedResponse(res, 'Authorization header is required');
+        }
+        
+        if (!authHeader.startsWith('Bearer ')) {
+            return unauthorizedResponse(res, 'Invalid authorization format. Use: Bearer <token>');
+        }
+        
+        const token = authHeader.substring(7);
+        
+        // Verify token
+        const decoded = verifyToken(token);
+        
+        // Attach user to request
+        req.user = decoded;
+        
+        next();
+        
+    } catch (error) {
+        logger.error('Authentication error:', error);
+        return unauthorizedResponse(res, 'Invalid or expired token');
     }
+}
 
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    // Attach user info to request
-    req.user = {
-      id: decoded.id,
-      email: decoded.email,
-      role: decoded.role,
-      wardId: decoded.wardId
+/**
+ * Authorize user role
+ */
+function authorize(...allowedRoles) {
+    return (req, res, next) => {
+        try {
+            if (!req.user) {
+                return unauthorizedResponse(res, 'Authentication required');
+            }
+            
+            if (!allowedRoles.includes(req.user.role)) {
+                return forbiddenResponse(res, 'Insufficient permissions');
+            }
+            
+            next();
+            
+        } catch (error) {
+            logger.error('Authorization error:', error);
+            return forbiddenResponse(res, 'Authorization failed');
+        }
     };
+}
 
-    next();
-  } catch (error) {
-    logger.error('Authentication error', { error: error.message });
-    
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({ error: 'Invalid token' });
+/**
+ * Optional authentication (doesn't fail if no token)
+ */
+function optionalAuth(req, res, next) {
+    try {
+        const authHeader = req.headers.authorization;
+        
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            const token = authHeader.substring(7);
+            const decoded = verifyToken(token);
+            req.user = decoded;
+        }
+        
+        next();
+        
+    } catch (error) {
+        // Continue without user
+        next();
     }
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({ error: 'Token expired' });
-    }
-    
-    return res.status(500).json({ error: 'Authentication failed' });
-  }
+}
+
+module.exports = {
+    authenticate,
+    authorize,
+    optionalAuth
 };
-
-// Role-based authorization middleware
-const authorize = (...roles) => {
-  return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Not authenticated' });
-    }
-
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ error: 'Access denied' });
-    }
-
-    next();
-  };
-};
-
-module.exports = { authMiddleware, authorize };

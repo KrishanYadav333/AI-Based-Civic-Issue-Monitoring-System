@@ -2,6 +2,12 @@
 # AI Civic Issue Monitor - .gitignore
 # ========================================
 
+# === Extra Work (Not Anuj's Assignment) ===
+extra-work-not-anuj/
+
+# === AI Agent Internal Notes ===
+.ai-notes.md
+
 # === Dependencies ===
 node_modules/
 */node_modules/
@@ -164,6 +170,9 @@ FINAL_SYSTEM_TEST_REPORT.md
 IMPROVEMENTS.md
 README_old.md
 README_main.md
+
+# === Extra Work Not Assigned to Anuj ===
+extra-work-not-anuj/
 
 # === Test Outputs ===
 backend/test-output.txt

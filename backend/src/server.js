@@ -16,6 +16,8 @@ const issueRoutes = require('./routes/issues');
 const wardRoutes = require('./routes/wards');
 const dashboardRoutes = require('./routes/dashboard');
 const userRoutes = require('./routes/users');
+const analyticsRoutes = require('./routes/analytics');
+const notificationsRoutes = require('./routes/notifications');
 
 // Import middleware
 const { errorHandler } = require('./middleware/errorHandler');
@@ -118,6 +120,8 @@ app.use('/api/issues', issueRoutes);
 app.use('/api/wards', wardRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/notifications', notificationsRoutes);
 
 // 404 handler
 app.use((req, res) => {
