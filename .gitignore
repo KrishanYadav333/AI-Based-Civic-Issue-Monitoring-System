@@ -254,3 +254,10 @@ ai-service/training_summary.json
 # dataset/
 # data/raw/
 # data/processed/
+INTEGRATION_COMPLETE.md
+INTEGRATION_FIXES_SUMMARY.md
+frontend/docs/DELIVERABLES_COMPLETED.md
+frontend/docs/DOCUMENTATION_INDEX.md
+frontend/docs/IMPLEMENTATION_SUMMARY.md
+frontend/docs/PROJECT_COMPLETION_REPORT.md
+frontend/docs/VERIFICATION_CHECKLIST.md
