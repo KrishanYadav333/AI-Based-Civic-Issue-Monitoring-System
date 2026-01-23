@@ -1,0 +1,28 @@
+{
+  "model": "YOLOv8n",
+  "dataset": {
+    "train_images": 1200,
+    "val_images": 300,
+    "classes": [
+      "pothole",
+      "garbage",
+      "debris",
+      "stray_cattle",
+      "broken_road",
+      "open_manhole"
+    ]
+  },
+  "training": {
+    "epochs": 100,
+    "batch_size": 32,
+    "img_size": 640,
+    "device": "mps"
+  },
+  "metrics": {
+    "mAP50": 0,
+    "mAP50-95": 0,
+    "precision": 0,
+    "recall": 0
+  },
+  "timestamp": "2026-01-23T19:19:37.296065"
+}

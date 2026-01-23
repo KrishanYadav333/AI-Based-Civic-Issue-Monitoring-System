@@ -1,0 +1,11 @@
+names:
+- pothole
+- garbage
+- debris
+- stray_cattle
+- broken_road
+- open_manhole
+nc: 6
+path: /Users/raghavdadhich/Desktop/AI Civic Sense /ai-service/dataset_yolo
+train: train/images
+val: val/images
