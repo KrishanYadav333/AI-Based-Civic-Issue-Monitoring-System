@@ -103,15 +103,11 @@ app.use(errorHandler);
 // Start server
 async function startServer() {
     try {
-        // Test database connection
-        logger.info('Testing database connection...');
-        const dbConnected = await db.testConnection();
+        // Connect to MongoDB
+        logger.info('Connecting to MongoDB...');
+        await db.connect();
 
-        if (!dbConnected) {
-            throw new Error('Database connection failed');
-        }
-
-        logger.info('Database connected successfully');
+        logger.info('MongoDB connected successfully');
 
         // Start listening
         app.listen(PORT, () => {

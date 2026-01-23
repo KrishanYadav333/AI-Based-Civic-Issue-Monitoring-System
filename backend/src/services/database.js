@@ -1,314 +1,123 @@
 /**
  * Database Connection Service
- * PostgreSQL connection pool with query methods
+ * MongoDB connection with Mongoose
  */
 
-const { Pool } = require('pg');
+const mongoose = require('mongoose');
 const logger = require('../utils/logger');
 
-// Create connection pool
-const pool = new Pool({
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT) || 5432,
-    database: process.env.DB_NAME || 'civic_monitoring',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || '',
-    max: 20, // Maximum connections
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 5000,
-});
+// MongoDB connection URL
+const getConnectionString = () => {
+    const mongoUri = process.env.MONGODB_URI;
+    
+    if (mongoUri) {
+        return mongoUri;
+    }
+    
+    // Build connection string from individual parameters
+    const host = process.env.DB_HOST || 'localhost';
+    const port = process.env.DB_PORT || '27017';
+    const database = process.env.DB_NAME || 'civic_monitoring';
+    const user = process.env.DB_USER;
+    const password = process.env.DB_PASSWORD;
+    
+    if (user && password) {
+        return `mongodb://${user}:${password}@${host}:${port}/${database}?authSource=admin`;
+    }
+    
+    return `mongodb://${host}:${port}/${database}`;
+};
 
-// Test connection on startup
-pool.on('connect', () => {
-    logger.info('Database connection established');
-});
+// Connection options
+const options = {
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+};
 
-pool.on('error', (err) => {
-    logger.error('Unexpected database error:', err);
-});
-
-/**
- * Execute a query with parameters
- * @param {string} text - SQL query
- * @param {Array} params - Query parameters
- * @returns {Promise<Object>} Query result
- */
-async function query(text, params = []) {
-    const start = Date.now();
+// Connect to MongoDB
+async function connect() {
     try {
-        const result = await pool.query(text, params);
-        const duration = Date.now() - start;
-        
-        logger.debug('Query executed', {
-            query: text.substring(0, 100),
-            duration: `${duration}ms`,
-            rows: result.rowCount
-        });
-        
-        return result;
+        const connectionString = getConnectionString();
+        await mongoose.connect(connectionString, options);
+        logger.info('MongoDB connection established');
+        return mongoose.connection;
     } catch (error) {
-        logger.error('Database query error:', {
-            error: error.message,
-            query: text.substring(0, 100),
-            params
-        });
+        logger.error('MongoDB connection error:', error);
         throw error;
     }
 }
 
-/**
- * Get a client from the pool for transactions
- * @returns {Promise<Object>} Database client
- */
-async function getClient() {
-    try {
-        const client = await pool.connect();
-        
-        // Add query method to client
-        const query = client.query.bind(client);
-        const release = client.release.bind(client);
-        
-        // Override release to log
-        client.release = () => {
-            client.query = query;
-            client.release = release;
-            return release();
-        };
-        
-        return client;
-    } catch (error) {
-        logger.error('Error getting database client:', error);
-        throw error;
-    }
-}
+// Connection event handlers
+mongoose.connection.on('connected', () => {
+    logger.info('Mongoose connected to MongoDB');
+});
 
-/**
- * Execute queries in a transaction
- * @param {Function} callback - Callback with client parameter
- * @returns {Promise<any>} Transaction result
- */
-async function transaction(callback) {
-    const client = await getClient();
-    
-    try {
-        await client.query('BEGIN');
-        const result = await callback(client);
-        await client.query('COMMIT');
-        return result;
-    } catch (error) {
-        await client.query('ROLLBACK');
-        logger.error('Transaction rolled back:', error);
-        throw error;
-    } finally {
-        client.release();
-    }
-}
+mongoose.connection.on('error', (err) => {
+    logger.error('Mongoose connection error:', err);
+});
 
-/**
- * Find a single record
- * @param {string} table - Table name
- * @param {Object} conditions - WHERE conditions
- * @returns {Promise<Object|null>} Record or null
- */
-async function findOne(table, conditions = {}) {
-    const keys = Object.keys(conditions);
-    
-    if (keys.length === 0) {
-        const result = await query(`SELECT * FROM ${table} LIMIT 1`);
-        return result.rows[0] || null;
-    }
-    
-    const whereClause = keys.map((key, idx) => `${key} = $${idx + 1}`).join(' AND ');
-    const values = keys.map(key => conditions[key]);
-    
-    const result = await query(
-        `SELECT * FROM ${table} WHERE ${whereClause} LIMIT 1`,
-        values
-    );
-    
-    return result.rows[0] || null;
-}
+mongoose.connection.on('disconnected', () => {
+    logger.warn('Mongoose disconnected from MongoDB');
+});
 
-/**
- * Find multiple records
- * @param {string} table - Table name
- * @param {Object} conditions - WHERE conditions
- * @param {Object} options - Query options (limit, offset, orderBy)
- * @returns {Promise<Array>} Records
- */
-async function findMany(table, conditions = {}, options = {}) {
-    const keys = Object.keys(conditions);
-    const { limit, offset, orderBy } = options;
-    
-    let sql = `SELECT * FROM ${table}`;
-    const values = [];
-    
-    if (keys.length > 0) {
-        const whereClause = keys.map((key, idx) => {
-            values.push(conditions[key]);
-            return `${key} = $${idx + 1}`;
-        }).join(' AND ');
-        sql += ` WHERE ${whereClause}`;
-    }
-    
-    if (orderBy) {
-        sql += ` ORDER BY ${orderBy}`;
-    }
-    
-    if (limit) {
-        sql += ` LIMIT ${parseInt(limit)}`;
-    }
-    
-    if (offset) {
-        sql += ` OFFSET ${parseInt(offset)}`;
-    }
-    
-    const result = await query(sql, values);
-    return result.rows;
-}
-
-/**
- * Count records
- * @param {string} table - Table name
- * @param {Object} conditions - WHERE conditions
- * @returns {Promise<number>} Count
- */
-async function count(table, conditions = {}) {
-    const keys = Object.keys(conditions);
-    
-    let sql = `SELECT COUNT(*) FROM ${table}`;
-    const values = [];
-    
-    if (keys.length > 0) {
-        const whereClause = keys.map((key, idx) => {
-            values.push(conditions[key]);
-            return `${key} = $${idx + 1}`;
-        }).join(' AND ');
-        sql += ` WHERE ${whereClause}`;
-    }
-    
-    const result = await query(sql, values);
-    return parseInt(result.rows[0].count);
-}
-
-/**
- * Insert a record
- * @param {string} table - Table name
- * @param {Object} data - Data to insert
- * @returns {Promise<Object>} Inserted record
- */
-async function insert(table, data) {
-    const keys = Object.keys(data);
-    const values = keys.map(key => data[key]);
-    
-    const columns = keys.join(', ');
-    const placeholders = keys.map((_, idx) => `$${idx + 1}`).join(', ');
-    
-    const result = await query(
-        `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING *`,
-        values
-    );
-    
-    return result.rows[0];
-}
-
-/**
- * Update records
- * @param {string} table - Table name
- * @param {Object} data - Data to update
- * @param {Object} conditions - WHERE conditions
- * @returns {Promise<Array>} Updated records
- */
-async function update(table, data, conditions) {
-    const dataKeys = Object.keys(data);
-    const conditionKeys = Object.keys(conditions);
-    
-    if (conditionKeys.length === 0) {
-        throw new Error('Update requires WHERE conditions');
-    }
-    
-    const setClause = dataKeys.map((key, idx) => `${key} = $${idx + 1}`).join(', ');
-    const whereClause = conditionKeys.map((key, idx) => 
-        `${key} = $${dataKeys.length + idx + 1}`
-    ).join(' AND ');
-    
-    const values = [
-        ...dataKeys.map(key => data[key]),
-        ...conditionKeys.map(key => conditions[key])
-    ];
-    
-    const result = await query(
-        `UPDATE ${table} SET ${setClause} WHERE ${whereClause} RETURNING *`,
-        values
-    );
-    
-    return result.rows;
-}
-
-/**
- * Delete records
- * @param {string} table - Table name
- * @param {Object} conditions - WHERE conditions
- * @returns {Promise<number>} Number of deleted records
- */
-async function deleteRecords(table, conditions) {
-    const keys = Object.keys(conditions);
-    
-    if (keys.length === 0) {
-        throw new Error('Delete requires WHERE conditions');
-    }
-    
-    const whereClause = keys.map((key, idx) => `${key} = $${idx + 1}`).join(' AND ');
-    const values = keys.map(key => conditions[key]);
-    
-    const result = await query(
-        `DELETE FROM ${table} WHERE ${whereClause}`,
-        values
-    );
-    
-    return result.rowCount;
-}
+// Graceful shutdown
+process.on('SIGINT', async () => {
+    await mongoose.connection.close();
+    logger.info('Mongoose connection closed through app termination');
+    process.exit(0);
+});
 
 /**
  * Test database connection
- * @returns {Promise<boolean>} Connection status
  */
 async function testConnection() {
     try {
-        await query('SELECT NOW()');
-        logger.info('Database connection test successful');
+        if (mongoose.connection.readyState === 0) {
+            await connect();
+        }
+        await mongoose.connection.db.admin().ping();
+        logger.info('MongoDB connection test successful');
         return true;
     } catch (error) {
-        logger.error('Database connection test failed:', error);
+        logger.error('MongoDB connection test failed:', error);
         return false;
     }
 }
 
 /**
- * Close database pool
- * @returns {Promise<void>}
+ * Close database connection
  */
 async function close() {
     try {
-        await pool.end();
-        logger.info('Database pool closed');
+        await mongoose.connection.close();
+        logger.info('Database connection closed');
     } catch (error) {
-        logger.error('Error closing database pool:', error);
+        logger.error('Error closing database connection:', error);
         throw error;
     }
 }
 
+/**
+ * Get database connection
+ */
+function getConnection() {
+    return mongoose.connection;
+}
+
+/**
+ * Get database instance (for raw MongoDB operations)
+ */
+function getDb() {
+    return mongoose.connection.db;
+}
+
+// Export all functions
 module.exports = {
-    pool,
-    query,
-    getClient,
-    transaction,
-    findOne,
-    findMany,
-    count,
-    insert,
-    update,
-    deleteRecords,
+    connect,
     testConnection,
-    close
+    close,
+    getConnection,
+    getDb,
+    mongoose
 };

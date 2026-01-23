@@ -2,10 +2,10 @@
 process.env.NODE_ENV = 'test';
 process.env.JWT_SECRET = 'test-secret-key-for-testing-min-32-chars';
 process.env.DB_HOST = 'localhost';
-process.env.DB_PORT = '5432';
+process.env.DB_PORT = '27017';
 process.env.DB_NAME = 'civic_issues_test';
-process.env.DB_USER = 'postgres';
-process.env.DB_PASSWORD = 'postgres';
+process.env.DB_USER = '';
+process.env.DB_PASSWORD = '';
 process.env.AI_SERVICE_URL = 'http://localhost:5000';
 process.env.PORT = '3002'; // Use different port for testing to avoid conflicts
 process.env.REDIS_HOST = 'localhost';
