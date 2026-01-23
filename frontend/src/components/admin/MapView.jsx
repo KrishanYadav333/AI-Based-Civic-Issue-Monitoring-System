@@ -68,10 +68,10 @@ const MapView = () => {
           return;
         }
 
-        // Create the map instance
+        // Create the map instance with Vadodara coordinates
         const mapInstance = L.map(mapContainer, {
-          center: [40.7128, -74.0060],
-          zoom: 12,
+          center: [22.3072, 73.1812], // Vadodara, Gujarat, India
+          zoom: 13,
           zoomControl: true,
           attributionControl: true,
         });
@@ -321,10 +321,10 @@ const MapView = () => {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2, duration: 0.5 }}
         whileHover={{ scale: 1.005, transition: { duration: 0.3 } }}
-        className="glass-card rounded-2xl shadow-2xl overflow-hidden"
+        className="glass-card rounded-2xl shadow-2xl overflow-hidden p-4"
         style={{ 
           width: '100%',
-          height: '550px',
+          height: '600px',
           position: 'relative'
         }}
       >
@@ -334,10 +334,9 @@ const MapView = () => {
           style={{ 
             width: '100%',
             height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            borderRadius: '12px'
+            borderRadius: '12px',
+            position: 'relative',
+            zIndex: 1
           }} 
         />
         {filteredIssues.length > 0 && (
