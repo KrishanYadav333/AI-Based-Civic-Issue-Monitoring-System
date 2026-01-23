@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const QRCode = require('qrcode');
-const db = require('../config/database');
+const db = require('../services/database');
 const { authMiddleware } = require('../middleware/auth');
 const logger = require('../utils/logger');
 

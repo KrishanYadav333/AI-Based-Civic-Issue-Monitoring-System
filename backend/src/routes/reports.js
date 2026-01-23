@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
-const db = require('../config/database');
+const db = require('../services/database');
 const { authMiddleware, authorize } = require('../middleware/auth');
 const logger = require('../utils/logger');
 

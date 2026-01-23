@@ -17,6 +17,10 @@ const usersRoutes = require('./routes/users');
 const wardsRoutes = require('./routes/wards');
 const analyticsRoutes = require('./routes/analytics');
 const notificationsRoutes = require('./routes/notifications');
+const dashboardRoutes = require('./routes/dashboard');
+const feedbackRoutes = require('./routes/feedback');
+const geospatialRoutes = require('./routes/geospatial');
+const reportsRoutes = require('./routes/reports');
 
 // Initialize Express
 const app = express();
@@ -63,6 +67,10 @@ app.use('/api/users', usersRoutes);
 app.use('/api/wards', wardsRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/notifications', notificationsRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/feedback', feedbackRoutes);
+app.use('/api/geospatial', geospatialRoutes);
+app.use('/api/reports', reportsRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -77,7 +85,11 @@ app.get('/', (req, res) => {
             users: '/api/users',
             wards: '/api/wards',
             analytics: '/api/analytics',
-            notifications: '/api/notifications'
+            notifications: '/api/notifications',
+            dashboard: '/api/dashboard',
+            feedback: '/api/feedback',
+            geospatial: '/api/geospatial',
+            reports: '/api/reports'
         }
     });
 });

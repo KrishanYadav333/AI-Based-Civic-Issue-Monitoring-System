@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { query } = require('../config/database');
+const db = require('../services/database');
 const { authMiddleware, authorize } = require('../middleware/auth');
 
 // GET /api/dashboard/engineer/:engineerId - Get assigned issues for engineer
@@ -30,10 +30,10 @@ router.get('/engineer/:engineerId', authMiddleware, authorize('engineer', 'admin
 
     queryStr += ' ORDER BY i.priority DESC, i.created_at DESC';
 
-    const result = await query(queryStr, params);
+    const result = await db.query(queryStr, params);
 
     // Get statistics
-    const statsResult = await query(
+    const statsResult = await db.query(
       `SELECT 
         COUNT(*) as total,
         COUNT(*) FILTER (WHERE status = 'pending') as pending,
@@ -60,7 +60,7 @@ router.get('/engineer/:engineerId', authMiddleware, authorize('engineer', 'admin
 router.get('/admin/stats', authMiddleware, authorize('admin'), async (req, res, next) => {
   try {
     // Overall statistics
-    const overallStats = await query(`
+    const overallStats = await db.query(`
       SELECT 
         COUNT(*) as total_issues,
         COUNT(*) FILTER (WHERE status = 'resolved') as resolved_issues,
@@ -72,7 +72,7 @@ router.get('/admin/stats', authMiddleware, authorize('admin'), async (req, res, 
     `);
 
     // Ward-wise statistics
-    const wardStats = await query(`
+    const wardStats = await db.query(`
       SELECT 
         w.id,
         w.name,
@@ -87,7 +87,7 @@ router.get('/admin/stats', authMiddleware, authorize('admin'), async (req, res, 
     `);
 
     // Issue type statistics
-    const typeStats = await query(`
+    const typeStats = await db.query(`
       SELECT 
         type,
         COUNT(*) as count,
@@ -99,7 +99,7 @@ router.get('/admin/stats', authMiddleware, authorize('admin'), async (req, res, 
     `);
 
     // Recent activity
-    const recentActivity = await query(`
+    const recentActivity = await db.query(`
       SELECT 
         il.id,
         il.action,
@@ -172,7 +172,7 @@ router.get('/admin/heatmap', authMiddleware, authorize('admin'), async (req, res
       paramCount++;
     }
 
-    const result = await query(queryStr, params);
+    const result = await db.query(queryStr, params);
 
     // Format for heatmap
     const heatmapData = result.rows.map(issue => ({
@@ -204,7 +204,7 @@ router.get('/ward/:wardId', authMiddleware, async (req, res, next) => {
     }
 
     // Ward statistics
-    const stats = await query(`
+    const stats = await db.query(`
       SELECT 
         COUNT(*) as total_issues,
         COUNT(*) FILTER (WHERE status = 'resolved') as resolved_issues,
@@ -215,7 +215,7 @@ router.get('/ward/:wardId', authMiddleware, async (req, res, next) => {
     `, [wardId]);
 
     // Recent issues in ward
-    const issues = await query(`
+    const issues = await db.query(`
       SELECT i.*, u.name as engineer_name
       FROM issues i
       LEFT JOIN users u ON i.engineer_id = u.id

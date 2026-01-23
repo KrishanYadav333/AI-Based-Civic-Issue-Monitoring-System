@@ -28,7 +28,7 @@ class PushNotificationService {
         return;
       }
 
-      const db = require('../config/database');
+      const db = require('../services/database');
       
       // Get user's FCM tokens
       const result = await db.query(
@@ -134,7 +134,7 @@ class PushNotificationService {
    */
   async sendToRole(role, notification) {
     try {
-      const db = require('../config/database');
+      const db = require('../services/database');
       
       const result = await db.query(
         'SELECT id FROM users WHERE role = $1',
@@ -158,7 +158,7 @@ class PushNotificationService {
    */
   async registerToken(userId, token, deviceId, platform) {
     try {
-      const db = require('../config/database');
+      const db = require('../services/database');
       
       await db.query(
         `INSERT INTO user_devices (user_id, device_id, fcm_token, platform)
@@ -183,7 +183,7 @@ class PushNotificationService {
    */
   async unregisterToken(deviceId) {
     try {
-      const db = require('../config/database');
+      const db = require('../services/database');
       
       await db.query('DELETE FROM user_devices WHERE device_id = $1', [deviceId]);
       logger.info('FCM token unregistered', { deviceId });
