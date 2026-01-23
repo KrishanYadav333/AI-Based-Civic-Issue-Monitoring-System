@@ -1,96 +1,137 @@
+/**
+ * Authentication Routes
+ */
+
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { query } = require('../config/database');
-const logger = require('../utils/logger');
-const { loginLimiter } = require('../middleware/rateLimiter');
-const { validate, validationSchemas } = require('../middleware/validation');
+const authService = require('../services/authService');
+const { authenticate } = require('../middleware/auth');
+const { asyncHandler } = require('../middleware/errorHandler');
+const { validateBody } = require('../middleware/validation');
+const { successResponse, createdResponse } = require('../utils/response');
 
-// POST /api/auth/login
-router.post('/login', loginLimiter, validate(validationSchemas.login), async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
+/**
+ * POST /api/auth/register
+ * Register new user
+ */
+router.post(
+    '/register',
+    validateBody({
+        username: {
+            required: true,
+            type: 'string'
+        },
+        email: {
+            required: true,
+            type: 'string'
+        },
+        password: {
+            required: true,
+            type: 'string'
+        },
+        role: {
+            required: false,
+            type: 'string'
+        },
+        full_name: {
+            required: false,
+            type: 'string'
+        }
+    }),
+    asyncHandler(async (req, res) => {
+        const result = await authService.register(req.body);
+        
+        return createdResponse(res, result, 'User registered successfully');
+    })
+);
 
-    // Find user by email
-    const result = await query(
-      'SELECT id, name, email, password_hash, role, ward_id FROM users WHERE email = $1',
-      [email]
-    );
+/**
+ * POST /api/auth/login
+ * Login user
+ */
+router.post(
+    '/login',
+    validateBody({
+        username: {
+            required: true,
+            type: 'string'
+        },
+        password: {
+            required: true,
+            type: 'string'
+        }
+    }),
+    asyncHandler(async (req, res) => {
+        const result = await authService.login(
+            req.body.username,
+            req.body.password
+        );
+        
+        return successResponse(res, result, 'Login successful');
+    })
+);
 
-    if (result.rows.length === 0) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
+/**
+ * GET /api/auth/me
+ * Get current user
+ */
+router.get(
+    '/me',
+    authenticate,
+    asyncHandler(async (req, res) => {
+        const user = await authService.getUserById(req.user.id);
+        
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+        
+        return successResponse(res, user, 'User retrieved successfully');
+    })
+);
 
-    const user = result.rows[0];
+/**
+ * PATCH /api/auth/me
+ * Update current user
+ */
+router.patch(
+    '/me',
+    authenticate,
+    asyncHandler(async (req, res) => {
+        const updatedUser = await authService.updateUser(req.user.id, req.body);
+        
+        return successResponse(res, updatedUser, 'User updated successfully');
+    })
+);
 
-    // Verify password
-    const isValidPassword = await bcrypt.compare(password, user.password_hash);
-    if (!isValidPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    // Generate JWT token
-    const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        wardId: user.ward_id
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
-    );
-
-    logger.info('User logged in', { userId: user.id, email: user.email });
-
-    res.json({
-      token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        wardId: user.ward_id
-      }
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// POST /api/auth/verify - Verify token validity
-router.post('/verify', async (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'No token provided' });
-    }
-
-    const token = authHeader.substring(7);
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Get fresh user data
-    const result = await query(
-      'SELECT id, name, email, role, ward_id FROM users WHERE id = $1',
-      [decoded.id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(401).json({ error: 'User not found' });
-    }
-
-    res.json({
-      valid: true,
-      user: result.rows[0]
-    });
-  } catch (error) {
-    if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
-      return res.status(401).json({ error: 'Invalid or expired token' });
-    }
-    next(error);
-  }
-});
+/**
+ * POST /api/auth/change-password
+ * Change password
+ */
+router.post(
+    '/change-password',
+    authenticate,
+    validateBody({
+        old_password: {
+            required: true,
+            type: 'string'
+        },
+        new_password: {
+            required: true,
+            type: 'string'
+        }
+    }),
+    asyncHandler(async (req, res) => {
+        await authService.changePassword(
+            req.user.id,
+            req.body.old_password,
+            req.body.new_password
+        );
+        
+        return successResponse(res, null, 'Password changed successfully');
+    })
+);
 
 module.exports = router;

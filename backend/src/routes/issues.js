@@ -1,313 +1,319 @@
+/**
+ * Issues Routes
+ */
+
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const axios = require('axios');
-const Joi = require('joi');
-const { query, transaction } = require('../config/database');
-const { authMiddleware, authorize } = require('../middleware/auth');
-const logger = require('../utils/logger');
+const issueService = require('../services/issueService');
+const workflowService = require('../services/workflowService');
+const { authenticate, authorize } = require('../middleware/auth');
+const { asyncHandler } = require('../middleware/errorHandler');
+const { validateBody } = require('../middleware/validation');
+const { successResponse, createdResponse } = require('../utils/response');
+const { USER_ROLES } = require('../core/constants');
+const { validateCoordinates } = require('../utils/validation');
 
-// Ensure upload directory exists
-const uploadDir = process.env.UPLOAD_DIR || './uploads';
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+/**
+ * POST /api/issues
+ * Submit a new issue
+ */
+router.post(
+    '/',
+    authenticate,
+    validateBody({
+        latitude: {
+            required: true,
+            type: 'number',
+            validate: (val) => validateCoordinates(val, 0).valid || 'Invalid latitude'
+        },
+        longitude: {
+            required: true,
+            type: 'number',
+            validate: (val) => validateCoordinates(0, val).valid || 'Invalid longitude'
+        },
+        image_url: {
+            required: true,
+            type: 'string'
+        },
+        description: {
+            required: false,
+            type: 'string'
+        }
+    }),
+    asyncHandler(async (req, res) => {
+        const data = {
+            ...req.body,
+            submitted_by: req.user.id
+        };
+        
+        const result = await issueService.submitIssue(data);
+        
+        if (result.duplicate) {
+            return successResponse(res, result, result.message);
+        }
+        
+        return createdResponse(res, result.issue, result.message);
+    })
+);
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'issue-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+/**
+ * GET /api/issues
+ * Get all issues with filters
+ */
+router.get(
+    '/',
+    authenticate,
+    asyncHandler(async (req, res) => {
+        const filters = {
+            status: req.query.status,
+            priority: req.query.priority,
+            ward_id: req.query.ward_id,
+            issue_type_id: req.query.issue_type_id,
+            assigned_to: req.query.assigned_to,
+            submitted_by: req.query.submitted_by,
+            sortBy: req.query.sortBy,
+            order: req.query.order
+        };
+        
+        const pagination = {
+            page: req.query.page,
+            limit: req.query.limit
+        };
+        
+        const result = await issueService.getIssues(filters, pagination);
+        
+        return successResponse(res, result, 'Issues retrieved successfully');
+    })
+);
 
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: parseInt(process.env.MAX_FILE_SIZE) || 10485760 }, // 10MB default
-  fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
-    
-    if (mimetype && extname) {
-      return cb(null, true);
-    }
-    cb(new Error('Only JPEG and PNG images are allowed'));
-  }
-});
-
-// Helper function to call AI service
-async function detectIssue(imagePath) {
-  try {
-    const aiServiceUrl = process.env.AI_SERVICE_URL || 'http://localhost:5000';
-    const formData = new FormData();
-    const imageBuffer = fs.readFileSync(imagePath);
-    const blob = new Blob([imageBuffer]);
-    formData.append('image', blob, path.basename(imagePath));
-
-    const response = await axios.post(`${aiServiceUrl}/api/detect`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      timeout: 30000
-    });
-
-    return response.data;
-  } catch (error) {
-    logger.error('AI service error', { error: error.message });
-    // Return default values if AI service fails
-    return {
-      issueType: 'unknown',
-      confidence: 0.0,
-      priority: 'medium'
-    };
-  }
-}
-
-// Helper function to get department by issue type
-async function getDepartmentByIssueType(issueType) {
-  const result = await query(
-    "SELECT name FROM departments WHERE $1 = ANY(issue_types)",
-    [issueType]
-  );
-  return result.rows.length > 0 ? result.rows[0].name : 'General';
-}
-
-// POST /api/issues - Submit new issue
-router.post('/', authMiddleware, authorize('surveyor'), upload.single('image'), async (req, res, next) => {
-  try {
-    // Validate input
-    const schema = Joi.object({
-      latitude: Joi.number().min(-90).max(90).required(),
-      longitude: Joi.number().min(-180).max(180).required()
-    });
-
-    const { error, value } = schema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ error: error.details[0].message });
-    }
-
-    if (!req.file) {
-      return res.status(400).json({ error: 'Image is required' });
-    }
-
-    const { latitude, longitude } = value;
-    const imageUrl = `/uploads/${req.file.filename}`;
-
-    // Perform geo-fencing to find ward
-    const wardResult = await query(
-      'SELECT get_ward_by_coordinates($1, $2) as ward_id',
-      [latitude, longitude]
-    );
-    const wardId = wardResult.rows[0].ward_id;
-
-    if (!wardId) {
-      return res.status(400).json({ error: 'Location is outside service area' });
-    }
-
-    // Call AI service to detect issue
-    const aiResult = await detectIssue(path.join(uploadDir, req.file.filename));
-    const issueType = aiResult.issueType || 'unknown';
-    const confidence = aiResult.confidence || 0.0;
-    const priority = aiResult.priority || 'medium';
-
-    // Get department
-    const department = await getDepartmentByIssueType(issueType);
-
-    // Create issue in database
-    const result = await transaction(async (client) => {
-      // Insert issue
-      const issueResult = await client.query(
-        `INSERT INTO issues 
-        (type, latitude, longitude, ward_id, status, priority, confidence_score, image_url, department)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-        RETURNING *`,
-        [issueType, latitude, longitude, wardId, 'pending', priority, confidence, imageUrl, department]
-      );
-
-      const issue = issueResult.rows[0];
-
-      // Log the creation
-      await client.query(
-        'INSERT INTO issue_logs (issue_id, action, user_id, notes) VALUES ($1, $2, $3, $4)',
-        [issue.id, 'created', req.user.id, `Issue created by surveyor`]
-      );
-
-      return issue;
-    });
-
-    logger.info('Issue created', { issueId: result.id, wardId, issueType });
-
-    res.status(201).json({
-      issueId: result.id,
-      wardId: result.ward_id,
-      issueType: result.type,
-      priority: result.priority,
-      confidence: result.confidence_score,
-      department: result.department,
-      status: result.status
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// GET /api/issues/:id - Get issue details
-router.get('/:id', authMiddleware, async (req, res, next) => {
-  try {
-    const issueId = parseInt(req.params.id);
-    
-    const result = await query(
-      `SELECT i.*, u.name as engineer_name, w.name as ward_name
-       FROM issues i
-       LEFT JOIN users u ON i.engineer_id = u.id
-       LEFT JOIN wards w ON i.ward_id = w.id
-       WHERE i.id = $1`,
-      [issueId]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Issue not found' });
-    }
-
-    const issue = result.rows[0];
-
-    // Check authorization
-    if (req.user.role === 'engineer' && issue.engineer_id !== req.user.id) {
-      return res.status(403).json({ error: 'Access denied' });
-    }
-
-    res.json(issue);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// POST /api/issues/:id/resolve - Upload resolution image
-router.post('/:id/resolve', authMiddleware, authorize('engineer'), upload.single('resolution_image'), async (req, res, next) => {
-  try {
-    const issueId = parseInt(req.params.id);
-
-    if (!req.file) {
-      return res.status(400).json({ error: 'Resolution image is required' });
-    }
-
-    const resolutionImageUrl = `/uploads/${req.file.filename}`;
-
-    // Update issue
-    const result = await transaction(async (client) => {
-      // Check if engineer is assigned to this issue
-      const checkResult = await client.query(
-        'SELECT * FROM issues WHERE id = $1',
-        [issueId]
-      );
-
-      if (checkResult.rows.length === 0) {
-        throw new Error('Issue not found');
-      }
-
-      const issue = checkResult.rows[0];
-
-      // Assign engineer if not already assigned
-      if (!issue.engineer_id) {
-        await client.query(
-          'UPDATE issues SET engineer_id = $1 WHERE id = $2',
-          [req.user.id, issueId]
+/**
+ * GET /api/issues/nearby
+ * Get issues near location
+ */
+router.get(
+    '/nearby',
+    authenticate,
+    asyncHandler(async (req, res) => {
+        const { latitude, longitude, radius } = req.query;
+        
+        if (!latitude || !longitude) {
+            return res.status(400).json({
+                success: false,
+                message: 'Latitude and longitude are required'
+            });
+        }
+        
+        const radiusMeters = parseInt(radius) || 1000;
+        
+        const issues = await issueService.getIssuesNearLocation(
+            parseFloat(latitude),
+            parseFloat(longitude),
+            radiusMeters
         );
-      } else if (issue.engineer_id !== req.user.id && req.user.role !== 'admin') {
-        throw new Error('Not authorized to resolve this issue');
-      }
+        
+        return successResponse(res, issues, 'Nearby issues retrieved successfully');
+    })
+);
 
-      // Update issue status
-      const updateResult = await client.query(
-        `UPDATE issues 
-         SET resolution_image_url = $1, status = 'resolved', resolved_at = NOW()
-         WHERE id = $2
-         RETURNING *`,
-        [resolutionImageUrl, issueId]
-      );
+/**
+ * GET /api/issues/:id
+ * Get issue by ID
+ */
+router.get(
+    '/:id',
+    authenticate,
+    asyncHandler(async (req, res) => {
+        const issue = await issueService.getIssueById(req.params.id);
+        
+        if (!issue) {
+            return res.status(404).json({
+                success: false,
+                message: 'Issue not found'
+            });
+        }
+        
+        return successResponse(res, issue, 'Issue retrieved successfully');
+    })
+);
 
-      // Log resolution
-      await client.query(
-        'INSERT INTO issue_logs (issue_id, action, user_id, notes) VALUES ($1, $2, $3, $4)',
-        [issueId, 'resolved', req.user.id, 'Issue resolved with image']
-      );
+/**
+ * PATCH /api/issues/:id
+ * Update issue details
+ */
+router.patch(
+    '/:id',
+    authenticate,
+    authorize(USER_ROLES.ADMIN, USER_ROLES.ENGINEER),
+    asyncHandler(async (req, res) => {
+        const updatedIssue = await issueService.updateIssue(
+            req.params.id,
+            req.body,
+            req.user.id
+        );
+        
+        return successResponse(res, updatedIssue, 'Issue updated successfully');
+    })
+);
 
-      return updateResult.rows[0];
-    });
+/**
+ * POST /api/issues/:id/assign
+ * Assign issue to engineer
+ */
+router.post(
+    '/:id/assign',
+    authenticate,
+    authorize(USER_ROLES.ADMIN),
+    validateBody({
+        engineer_id: {
+            required: true,
+            type: 'string'
+        }
+    }),
+    asyncHandler(async (req, res) => {
+        const updatedIssue = await workflowService.assignIssue(
+            req.params.id,
+            req.body.engineer_id,
+            req.user.id
+        );
+        
+        return successResponse(res, updatedIssue, 'Issue assigned successfully');
+    })
+);
 
-    logger.info('Issue resolved', { issueId, engineerId: req.user.id });
+/**
+ * POST /api/issues/:id/status
+ * Update issue status
+ */
+router.post(
+    '/:id/status',
+    authenticate,
+    authorize(USER_ROLES.ADMIN, USER_ROLES.ENGINEER),
+    validateBody({
+        status: {
+            required: true,
+            type: 'string'
+        },
+        remarks: {
+            required: false,
+            type: 'string'
+        }
+    }),
+    asyncHandler(async (req, res) => {
+        const updatedIssue = await workflowService.updateIssueStatus(
+            req.params.id,
+            req.body.status,
+            req.user.id,
+            req.body.remarks
+        );
+        
+        return successResponse(res, updatedIssue, 'Issue status updated successfully');
+    })
+);
 
-    res.json({
-      status: 'resolved',
-      issue: result
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+/**
+ * POST /api/issues/:id/resolve
+ * Resolve issue
+ */
+router.post(
+    '/:id/resolve',
+    authenticate,
+    authorize(USER_ROLES.ENGINEER),
+    validateBody({
+        resolution_notes: {
+            required: true,
+            type: 'string'
+        }
+    }),
+    asyncHandler(async (req, res) => {
+        const updatedIssue = await workflowService.resolveIssue(
+            req.params.id,
+            req.user.id,
+            req.body.resolution_notes
+        );
+        
+        return successResponse(res, updatedIssue, 'Issue resolved successfully');
+    })
+);
 
-// GET /api/issues - List issues (with filters)
-router.get('/', authMiddleware, async (req, res, next) => {
-  try {
-    const { status, priority, wardId, engineerId } = req.query;
-    
-    let queryStr = `
-      SELECT i.*, u.name as engineer_name, w.name as ward_name
-      FROM issues i
-      LEFT JOIN users u ON i.engineer_id = u.id
-      LEFT JOIN wards w ON i.ward_id = w.id
-      WHERE 1=1
-    `;
-    
-    const params = [];
-    let paramCount = 1;
+/**
+ * POST /api/issues/:id/reject
+ * Reject issue
+ */
+router.post(
+    '/:id/reject',
+    authenticate,
+    authorize(USER_ROLES.ADMIN),
+    validateBody({
+        reason: {
+            required: true,
+            type: 'string'
+        }
+    }),
+    asyncHandler(async (req, res) => {
+        const updatedIssue = await workflowService.rejectIssue(
+            req.params.id,
+            req.user.id,
+            req.body.reason
+        );
+        
+        return successResponse(res, updatedIssue, 'Issue rejected successfully');
+    })
+);
 
-    if (status) {
-      queryStr += ` AND i.status = $${paramCount}`;
-      params.push(status);
-      paramCount++;
-    }
+/**
+ * POST /api/issues/:id/accept
+ * Engineer accepts assigned issue
+ */
+router.post(
+    '/:id/accept',
+    authenticate,
+    authorize(USER_ROLES.ENGINEER),
+    asyncHandler(async (req, res) => {
+        const updatedIssue = await workflowService.acceptIssue(
+            req.params.id,
+            req.user.id
+        );
+        
+        return successResponse(res, updatedIssue, 'Issue accepted successfully');
+    })
+);
 
-    if (priority) {
-      queryStr += ` AND i.priority = $${paramCount}`;
-      params.push(priority);
-      paramCount++;
-    }
+/**
+ * POST /api/issues/:id/reopen
+ * Reopen closed or rejected issue
+ */
+router.post(
+    '/:id/reopen',
+    authenticate,
+    validateBody({
+        reason: {
+            required: true,
+            type: 'string'
+        }
+    }),
+    asyncHandler(async (req, res) => {
+        const updatedIssue = await workflowService.reopenIssue(
+            req.params.id,
+            req.user.id,
+            req.body.reason
+        );
+        
+        return successResponse(res, updatedIssue, 'Issue reopened successfully');
+    })
+);
 
-    if (wardId) {
-      queryStr += ` AND i.ward_id = $${paramCount}`;
-      params.push(wardId);
-      paramCount++;
-    }
-
-    if (engineerId) {
-      queryStr += ` AND i.engineer_id = $${paramCount}`;
-      params.push(engineerId);
-      paramCount++;
-    }
-
-    // Role-based filtering
-    if (req.user.role === 'engineer') {
-      queryStr += ` AND (i.engineer_id = $${paramCount} OR i.ward_id = $${paramCount + 1})`;
-      params.push(req.user.id, req.user.wardId);
-      paramCount += 2;
-    }
-
-    queryStr += ' ORDER BY i.created_at DESC LIMIT 100';
-
-    const result = await query(queryStr, params);
-
-    res.json({
-      issues: result.rows,
-      count: result.rows.length
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+/**
+ * GET /api/issues/:id/history
+ * Get issue history
+ */
+router.get(
+    '/:id/history',
+    authenticate,
+    asyncHandler(async (req, res) => {
+        const history = await workflowService.getIssueHistory(req.params.id);
+        
+        return successResponse(res, history, 'Issue history retrieved successfully');
+    })
+);
 
 module.exports = router;
