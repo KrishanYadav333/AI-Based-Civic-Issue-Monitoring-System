@@ -332,6 +332,20 @@
             text-align: center;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .robot-stats {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -855,20 +869,6 @@
             alert('Export functionality would generate detailed CSV/PDF reports with all survey data');
         }
         
-        @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-section {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .robot-stats {
-                grid-template-columns: 1fr;
-            }
-        }
-
         // Initialize everything
         document.addEventListener('DOMContentLoaded', function() {
             initMap();
@@ -885,6 +885,26 @@
             if (event.target === modal) {
                 closeModal();
             }
+        }
+        // Add this function in admin.html
+        function updateRobotScansList(surveys) {
+            const container = document.getElementById('robotScansList');
+            
+            if (surveys.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #718096;">No robot scans available</p>';
+                return;
+            }
+            
+            container.innerHTML = surveys.map(survey => `
+                <div class="survey-item">
+                    <div class="survey-info">
+                        <div class="survey-time">${new Date(survey.timestamp).toLocaleString()}</div>
+                        <div class="survey-location">${survey.latitude.toFixed(4)}, ${survey.longitude.toFixed(4)}</div>
+                        <div style="font-size: 0.9rem; color: #4a5568;">${survey.description || 'No description'}</div>
+                    </div>
+                    <div class="survey-issues">${survey.visual_pollution} detections</div>
+                </div>
+            `).join('');
         }
     </script>
 </body>
