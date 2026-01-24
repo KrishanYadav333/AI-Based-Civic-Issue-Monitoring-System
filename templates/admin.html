@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Road Survey System</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #2d3748;
+        }
+
+        .navbar {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: #4299e1;
+            color: white;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .potholes { color: #e53e3e; }
+        .garbage { color: #f56500; }
+        .manholes { color: #9f7aea; }
+        .damaged-roads { color: #ecc94b; }
+        .construction-debris { color: #38b2ac; }
+        .stray-animals { color: #48bb78; }
+        .water-leakage { color: #4299e1; }
+        .visual-pollution { color: #ed64a6; }
+
+        .chart-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+
+        .controls {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #4299e1;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+
+        .btn.secondary {
+            background: #38a169;
+        }
+
+        .btn.danger {
+            background: #e53e3e;
+        }
+
+        #map {
+            height: 500px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .recent-surveys {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .survey-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .survey-info {
+            flex: 1;
+        }
+
+        .survey-time {
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .survey-location {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .survey-issues {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .assign-btn {
+            background: #38a169;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #718096;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 1rem 2rem;
+            background: #f7fafc;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #4a5568;
+        }
+        
+        .tab.active {
+            background: #4299e1;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .robot-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .robot-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Road Survey System</div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/admin" class="active">Dashboard</a>
+                <a href="/robot">Robot Interface</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Administrative Dashboard</h1>
+            <p>Comprehensive analytics and management of road condition surveys</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('overview')">Overview</button>
+            <button class="tab" onclick="switchTab('robot')">Robot Analytics</button>
+        </div>
+        
+        <div id="overviewTab" class="tab-content active">
+            <div class="stats-section" id="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalSurveys">-</div>
+                    <div class="stat-label">Total Surveys</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number potholes" id="totalPotholes">-</div>
+                    <div class="stat-label">Potholes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number garbage" id="totalGarbage">-</div>
+                    <div class="stat-label">Garbage</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number manholes" id="totalManholes">-</div>
+                    <div class="stat-label">Manholes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number damaged-roads" id="totalDamagedRoads">-</div>
+                    <div class="stat-label">Damaged Roads</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number construction-debris" id="totalConstructionDebris">-</div>
+                    <div class="stat-label">Construction Debris</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number stray-animals" id="totalStrayAnimals">-</div>
+                    <div class="stat-label">Stray Animals</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number water-leakage" id="totalWaterLeakage">-</div>
+                    <div class="stat-label">Water Leakage</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number visual-pollution" id="totalVisualPollution">-</div>
+                    <div class="stat-label">Visual Pollution</div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div>
+                    <div class="chart-container">
+                        <div class="chart-title">Issue Distribution</div>
+                        <canvas id="issueChart" width="400" height="200"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-title">Severity Levels</div>
+                        <canvas id="severityChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+                
+                <div class="recent-surveys">
+                    <h3 style="margin-bottom: 1rem;">Recent Surveys</h3>
+                    <div id="recentSurveysList"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="robotTab" class="tab-content">
+            <div class="robot-stats">
+                <div class="robot-card">
+                    <div class="stat-number" id="robotSurveys">-</div>
+                    <div class="stat-label">Robot Surveys</div>
+                </div>
+                <div class="robot-card">
+                    <div class="stat-number" id="robotVisualPollution">-</div>
+                    <div class="stat-label">Visual Pollution Detected</div>
+                </div>
+                <div class="robot-card">
+                    <div class="stat-number" id="robotAvgSeverity">-</div>
+                    <div class="stat-label">Average Severity</div>
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Robot Activity Timeline</div>
+                    <canvas id="robotTimelineChart" width="400" height="200"></canvas>
+                </div>
+                
+                <div class="recent-surveys">
+                    <h3 style="margin-bottom: 1rem;">Recent Robot Scans</h3>
+                    <div id="robotScansList"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="toggleHeatmap()">Toggle Heat Map</button>
+            <button class="btn secondary" onclick="refreshData()">Refresh Data</button>
+            <button class="btn" onclick="exportData()">Export Report</button>
+        </div>
+
+        <div id="map"></div>
+    </div>
+
+    <!-- Worker Assignment Modal -->
+    <div id="assignModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Assign Worker</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="assignForm">
+                <div class="form-group">
+                    <label for="workerName">Worker Name</label>
+                    <input type="text" id="workerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="issueType">Issue Type</label>
+                    <select id="issueType" required>
+                        <option value="">Select issue type...</option>
+                        <option value="potholes">Potholes</option>
+                        <option value="garbage">Garbage</option>
+                        <option value="manholes">Manholes</option>
+                        <option value="damaged_roads">Damaged Roads</option>
+                        <option value="construction_debris">Construction Debris</option>
+                        <option value="stray_animals">Stray Animals</option>
+                        <option value="water_leakage">Water Leakage</option>
+                        <option value="visual_pollution">Visual Pollution</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="priority">Priority</label>
+                    <select id="priority" required>
+                        <option value="Low">Low</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="High">High</option>
+                        <option value="Critical">Critical</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Assign Worker</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let map, heatLayer;
+        let showHeatmap = true;
+        let selectedLocation = null;
+        let issueChart, severityChart, robotTimelineChart;
+        let currentTab = 'overview';
+        
+        // Switch between tabs
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            currentTab = tabName;
+            
+            if (tabName === 'robot') {
+                loadRobotStats();
+            }
+        }
+
+        // Initialize map
+        function initMap() {
+            map = L.map('map').setView([28.6139, 77.2090], 12);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            // Get user's current location for admin dashboard
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        map.setView([lat, lng], 12);
+                    },
+                    function(error) {
+                        console.log('Using default location');
+                    }
+                );
+            }
+        }
+
+        // Load heat map data
+        async function loadHeatmapData() {
+            try {
+                const response = await fetch('/api/heatmap');
+                const data = await response.json();
+                
+                if (heatLayer) {
+                    map.removeLayer(heatLayer);
+                }
+                
+                if (data.length === 0) {
+                    console.log('No heatmap data available');
+                    return;
+                }
+                
+                const heatData = data.map(point => [point.lat, point.lng, point.intensity]);
+                
+                heatLayer = L.heatLayer(heatData, {
+                    radius: 25,
+                    blur: 15,
+                    maxZoom: 17,
+                    gradient: {
+                        0.0: '#22c55e',  // Green - Good
+                        0.3: '#eab308',  // Yellow - Fair  
+                        0.6: '#f97316',  // Orange - Poor
+                        1.0: '#ef4444'   // Red - Critical
+                    }
+                });
+                
+                if (showHeatmap) {
+                    heatLayer.addTo(map);
+                }
+                
+                // Add markers with hover details
+                data.forEach(point => {
+                    const marker = L.circleMarker([point.lat, point.lng], {
+                        radius: 8,
+                        fillColor: point.intensity > 0.6 ? '#ef4444' : point.intensity > 0.3 ? '#f97316' : '#22c55e',
+                        color: '#fff',
+                        weight: 2,
+                        opacity: 0.8,
+                        fillOpacity: 0.6
+                    }).addTo(map);
+                    
+                    // Add hover popup with issue details
+                    marker.bindPopup(`
+                        <div style="font-size: 12px;">
+                            <strong>Location:</strong> ${point.lat.toFixed(4)}, ${point.lng.toFixed(4)}<br>
+                            <strong>Severity:</strong> ${(point.intensity * 10).toFixed(1)}/10<br>
+                            <strong>Status:</strong> ${point.intensity > 0.6 ? 'Critical' : point.intensity > 0.3 ? 'Poor' : 'Good'}
+                        </div>
+                    `);
+                    
+                    marker.on('mouseover', function() {
+                        this.openPopup();
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error loading heatmap:', error);
+            }
+        }
+
+        // Load detailed statistics
+        async function loadDetailedStats() {
+            try {
+                const response = await fetch('/api/detailed-stats');
+                const data = await response.json();
+                
+                // Update stat cards
+                document.getElementById('totalSurveys').textContent = data.total_surveys;
+                document.getElementById('totalPotholes').textContent = data.total_potholes;
+                document.getElementById('totalGarbage').textContent = data.total_garbage;
+                document.getElementById('totalManholes').textContent = data.total_manholes;
+                document.getElementById('totalDamagedRoads').textContent = data.total_damaged_roads;
+                document.getElementById('totalConstructionDebris').textContent = data.total_construction_debris;
+                document.getElementById('totalStrayAnimals').textContent = data.total_stray_animals;
+                document.getElementById('totalWaterLeakage').textContent = data.total_water_leakage;
+                document.getElementById('totalVisualPollution').textContent = data.total_visual_pollution;
+                
+                // Update charts
+                updateIssueChart(data);
+                updateSeverityChart(data.severity_distribution);
+                
+                // Update recent surveys
+                updateRecentSurveys(data.recent_surveys);
+                
+            } catch (error) {
+                console.error('Error loading detailed stats:', error);
+            }
+        }
+
+        // Update issue distribution chart
+        function updateIssueChart(data) {
+            const ctx = document.getElementById('issueChart').getContext('2d');
+            
+            if (issueChart) {
+                issueChart.destroy();
+            }
+            
+            issueChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Potholes', 'Garbage', 'Manholes', 'Damaged Roads', 'Construction Debris', 'Stray Animals', 'Water Leakage', 'Visual Pollution'],
+                    datasets: [{
+                        data: [
+                            data.total_potholes,
+                            data.total_garbage,
+                            data.total_manholes,
+                            data.total_damaged_roads,
+                            data.total_construction_debris,
+                            data.total_stray_animals,
+                            data.total_water_leakage,
+                            data.total_visual_pollution
+                        ],
+                        backgroundColor: [
+                            '#e53e3e', '#f56500', '#9f7aea', '#ecc94b',
+                            '#38b2ac', '#48bb78', '#4299e1', '#ed64a6'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update severity chart
+        function updateSeverityChart(severityData) {
+            const ctx = document.getElementById('severityChart').getContext('2d');
+            
+            if (severityChart) {
+                severityChart.destroy();
+            }
+            
+            const labels = severityData.map(item => item.level);
+            const counts = severityData.map(item => item.count);
+            
+            severityChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Number of Issues',
+                        data: counts,
+                        backgroundColor: ['#22c55e', '#eab308', '#f97316', '#ef4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update recent surveys list
+        function updateRecentSurveys(surveys) {
+            const container = document.getElementById('recentSurveysList');
+            
+            if (surveys.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #718096;">No surveys available</p>';
+                return;
+            }
+            
+            container.innerHTML = surveys.map(survey => `
+                <div class="survey-item">
+                    <div class="survey-info">
+                        <div class="survey-time">${new Date(survey.timestamp).toLocaleString()}</div>
+                        <div class="survey-location">${survey.latitude.toFixed(4)}, ${survey.longitude.toFixed(4)}</div>
+                        <div style="font-size: 0.9rem; color: #4a5568;">${survey.description || 'No description'}</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div class="survey-issues">${survey.total_issues} issues</div>
+                        <button class="assign-btn" onclick="openAssignModal(${survey.latitude}, ${survey.longitude})">Assign Worker</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Open worker assignment modal
+        function openAssignModal(lat, lng) {
+            selectedLocation = { lat, lng };
+            document.getElementById('assignModal').style.display = 'block';
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('assignModal').style.display = 'none';
+            selectedLocation = null;
+        }
+
+        // Handle worker assignment
+        document.getElementById('assignForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!selectedLocation) return;
+            
+            const formData = new FormData(this);
+            const assignmentData = {
+                latitude: selectedLocation.lat,
+                longitude: selectedLocation.lng,
+                worker_name: formData.get('workerName'),
+                issue_type: formData.get('issueType'),
+                priority: formData.get('priority')
+            };
+            
+            try {
+                const response = await fetch('/api/assign-worker', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(assignmentData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(result.message);
+                    closeModal();
+                    this.reset();
+                } else {
+                    alert('Assignment failed');
+                }
+            } catch (error) {
+                alert('Error assigning worker');
+            }
+        });
+
+        // Toggle heat map visibility
+        function toggleHeatmap() {
+            showHeatmap = !showHeatmap;
+            if (showHeatmap && heatLayer) {
+                heatLayer.addTo(map);
+            } else if (heatLayer) {
+                map.removeLayer(heatLayer);
+            }
+        }
+
+        // Refresh all data
+        function refreshData() {
+            loadHeatmapData();
+            loadDetailedStats();
+        }
+
+        // Load robot-specific statistics
+        async function loadRobotStats() {
+            try {
+                const response = await fetch('/api/robot-stats');
+                const data = await response.json();
+                
+                // Update robot stat cards
+                document.getElementById('robotSurveys').textContent = data.total_robot_surveys;
+                document.getElementById('robotVisualPollution').textContent = data.total_visual_pollution;
+                document.getElementById('robotAvgSeverity').textContent = data.avg_severity;
+                
+                // Update robot timeline chart
+                updateRobotTimelineChart(data.recent_surveys);
+                
+                // Update robot scans list
+                updateRobotScansList(data.recent_surveys);
+                
+            } catch (error) {
+                console.error('Error loading robot stats:', error);
+            }
+        }
+        
+        // Update robot timeline chart
+        function updateRobotTimelineChart(surveys) {
+            const ctx = document.getElementById('robotTimelineChart').getContext('2d');
+            
+            if (robotTimelineChart) {
+                robotTimelineChart.destroy();
+            }
+            
+            const labels = surveys.map(s => new Date(s.timestamp).toLocaleDateString());
+            const data = surveys.map(s => s.visual_pollution);
+            
+            robotTimelineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Visual Pollution Detected',
+                        data: data,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Export data
+        function exportData() {
+            alert('Export functionality would generate detailed CSV/PDF reports with all survey data');
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .robot-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+            loadHeatmapData();
+            loadDetailedStats();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(refreshData, 30000);
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('assignModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

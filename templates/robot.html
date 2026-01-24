@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Interface - Road Survey System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+            visibility: visible !important;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .robot-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .status-active {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+        }
+
+        .status-inactive {
+            background: linear-gradient(135deg, #fc8181 0%, #e53e3e 100%);
+            color: white;
+        }
+
+        .status-processing {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+        }
+
+        input[readonly] {
+            background: #f7fafc;
+            color: #4a5568;
+        }
+
+        .coords-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border: 2px dashed #cbd5e0;
+            border-radius: 10px;
+            background: #f7fafc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-input-display:hover {
+            border-color: #1e3c72;
+            background: #edf2f7;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(30, 60, 114, 0.3);
+        }
+
+        .btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.secondary {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+        }
+
+        .btn.danger {
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .activity-log {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 1.5rem;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            border: 1px solid #e2e8f0;
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+        }
+
+        .log-timestamp {
+            color: #718096;
+            font-weight: bold;
+        }
+
+        .log-success {
+            color: #38a169;
+        }
+
+        .log-error {
+            color: #e53e3e;
+        }
+
+        .log-info {
+            color: #3182ce;
+        }
+
+        .robot-animation {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 3000;
+            color: white;
+        }
+        
+        .animation-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            min-width: 400px;
+            padding: 3rem;
+        }
+
+        .robot-svg {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            animation: robotPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes robotPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .scanning-text {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            animation: textFade 1.5s ease-in-out infinite;
+        }
+
+        @keyframes textFade {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #00cc66);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+
+        .image-preview {
+            width: 80px;
+            height: 60px;
+            border-radius: 8px;
+            margin: 0.5rem;
+            border: 2px solid #00ff88;
+            animation: imageGlow 1s ease-in-out;
+        }
+
+        @keyframes imageGlow {
+            0% { box-shadow: 0 0 0 rgba(0, 255, 136, 0); }
+            50% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.8); }
+            100% { box-shadow: 0 0 0 rgba(0, 255, 136, 0); }
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .result-box {
+            background: rgba(0, 255, 136, 0.1);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            animation: resultAppear 0.5s ease-out;
+        }
+
+        @keyframes resultAppear {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .robot-visual {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+        
+        .robot-head {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+        
+        .brain-container {
+            position: absolute;
+            top: 20px;
+            left: 50px;
+            width: 100px;
+            height: 80px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 50px;
+            border: 2px solid #00ff88;
+            overflow: hidden;
+        }
+        
+        .brain-image {
+            width: 30px;
+            height: 20px;
+            background: #00ff88;
+            border-radius: 5px;
+            position: absolute;
+            animation: brainProcess 2s ease-in-out infinite;
+            opacity: 0;
+        }
+        
+        @keyframes brainProcess {
+            0% { opacity: 0; transform: translateY(60px) scale(0.5); }
+            50% { opacity: 1; transform: translateY(30px) scale(1); }
+            100% { opacity: 0; transform: translateY(0px) scale(0.5); }
+        }
+        
+        .thinking-indicator {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            animation: pulse 1s ease-in-out infinite;
+            display: none;
+        }
+        
+        .thinking-indicator.active {
+            display: block;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+        
+        .image-flow {
+            margin: 2rem 0;
+        }
+        
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+        }
+        
+        .flow-step.active {
+            opacity: 1;
+        }
+        
+        .flow-arrow {
+            width: 0;
+            height: 0;
+            border-left: 10px solid #00ff88;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            margin: 0 10px;
+        }
+        
+        .gallery-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            margin-top: 2rem;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .gallery-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .gallery-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        
+        .gallery-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Road Survey System</div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/admin">Dashboard</a>
+                <a href="/robot" class="active">Robot Interface</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Autonomous Survey Robot</h1>
+            <p>Watch the robot process images and generate analysis results</p>
+        </div>
+
+        <div class="main-layout">
+            <div class="robot-card">
+                <div class="status-indicator status-inactive" id="status">
+                    <span id="statusText">Robot Offline</span>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="robotId">Robot Identification</label>
+                        <input type="text" id="robotId" value="ROBOT_001" readonly>
+                    </div>
+
+                    <div class="coords-grid">
+                        <div class="form-group">
+                            <label for="latitude">Current Latitude</label>
+                            <input type="number" id="latitude" step="0.000001" placeholder="28.6139" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="longitude">Current Longitude</label>
+                            <input type="number" id="longitude" step="0.000001" placeholder="77.2090" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imageFile">Image Capture</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="imageFile" accept="image/*" class="file-input">
+                            <div class="file-input-display">
+                                <span>Select image for analysis</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="submitSurvey()" id="submitBtn" class="btn">Submit Survey Data</button>
+                    <button onclick="startSimulation()" id="simulateBtn" class="btn secondary">Start Brain Scan</button>
+
+                    <div class="stats-grid" id="surveyStats" style="display: none;">
+                        <div class="stat-card">
+                            <div class="stat-number" id="visualPollutionCount">0</div>
+                            <div class="stat-label">Issues Found</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalCount">0</div>
+                            <div class="stat-label">Total Processed</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>System Activity Log</label>
+                        <div class="activity-log" id="activityLog">
+                            <div class="log-entry log-info">
+                                <span class="log-timestamp">[SYSTEM]</span> Robot interface initialized
+                            </div>
+                            <div class="log-entry log-info">
+                                <span class="log-timestamp">[GPS]</span> Waiting for location data
+                            </div>
+                            <div class="log-entry log-info">
+                                <span class="log-timestamp">[CAMERA]</span> Ready for image capture
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="robot-visual">
+                <h3>Robot Brain</h3>
+                <div class="robot-head">
+                    <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="100" cy="100" r="80" fill="#e2e8f0" stroke="#4a5568" stroke-width="3"/>
+                        <circle cx="80" cy="80" r="8" fill="#4299e1"/>
+                        <circle cx="120" cy="80" r="8" fill="#4299e1"/>
+                        <rect x="90" y="110" width="20" height="10" rx="5" fill="#4a5568"/>
+                        <path d="M70 130 Q100 150 130 130" stroke="#4a5568" stroke-width="2" fill="none"/>
+                    </svg>
+                    <div class="brain-container" id="brainContainer">
+                        <div class="thinking-indicator" id="thinkingIndicator"></div>
+                    </div>
+                </div>
+                
+                <div class="image-flow">
+                    <div class="flow-step" id="step1">
+                        <span>📷 Image Input</span>
+                        <div class="flow-arrow"></div>
+                    </div>
+                    <div class="flow-step" id="step2">
+                        <span>🧠 Brain Processing</span>
+                        <div class="flow-arrow"></div>
+                    </div>
+                    <div class="flow-step" id="step3">
+                        <span>🔍 AI Analysis</span>
+                        <div class="flow-arrow"></div>
+                    </div>
+                    <div class="flow-step" id="step4">
+                        <span>📊 Results</span>
+                    </div>
+                </div>
+                
+                <div id="currentProcessing" style="margin-top: 1rem; font-size: 0.9rem; color: #4a5568;"></div>
+            </div>
+        </div>
+        
+        <div class="gallery-section">
+            <h3>Processed Images Gallery</h3>
+            <div class="gallery-grid" id="galleryGrid">
+                <div style="text-align: center; color: #718096; grid-column: 1/-1; padding: 2rem;">
+                    No processed images yet. Start brain scan to see results.
+                </div>
+            </div>
+        </div>
+    </div>op Auto Survey</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Robot Animation Overlay -->
+    <div id="robotAnimation" class="robot-animation">
+        <div class="animation-content">
+            <div class="robot-svg">
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="30" r="15" fill="#00ff88" stroke="#fff" stroke-width="2"/>
+                    <rect x="35" y="45" width="30" height="25" rx="5" fill="#00ff88" stroke="#fff" stroke-width="2"/>
+                    <circle cx="42" cy="25" r="3" fill="#fff"/>
+                    <circle cx="58" cy="25" r="3" fill="#fff"/>
+                    <rect x="25" y="50" width="10" height="15" rx="3" fill="#00ff88"/>
+                    <rect x="65" y="50" width="10" height="15" rx="3" fill="#00ff88"/>
+                    <rect x="40" y="75" width="8" height="15" rx="3" fill="#00ff88"/>
+                    <rect x="52" y="75" width="8" height="15" rx="3" fill="#00ff88"/>
+                    <circle cx="50" cy="55" r="2" fill="#fff" opacity="0.8">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="1s" repeatCount="indefinite"/>
+                    </circle>
+                </svg>
+            </div>
+            <div class="scanning-text" id="scanningText">Initializing Robot Scanner...</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div id="currentImage" style="margin: 1rem 0; font-size: 0.9rem; opacity: 0.8;"></div>
+            <div id="imagePreviewContainer" style="display: flex; flex-wrap: wrap; justify-content: center;"></div>
+            <div class="results-grid" id="animationResults"></div>
+            <button onclick="closeAnimation()" style="margin-top: 2rem; background: #e53e3e; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer;">Close</button>
+        </div>
+    </div>
+
+    <script>
+        let autoSurveyInterval = null;
+        let surveyCount = 0;
+
+        // Simulate GPS coordinates
+        function updateGPS() {
+            const baseLat = 28.6139;
+            const baseLng = 77.2090;
+            const randomLat = baseLat + (Math.random() - 0.5) * 0.01;
+            const randomLng = baseLng + (Math.random() - 0.5) * 0.01;
+            
+            document.getElementById('latitude').value = randomLat.toFixed(6);
+            document.getElementById('longitude').value = randomLng.toFixed(6);
+        }
+
+        // Log activity
+        function logActivity(message, type = 'info') {
+            const log = document.getElementById('activityLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const logClass = type === 'success' ? 'log-success' : type === 'error' ? 'log-error' : 'log-info';
+            
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${logClass}`;
+            entry.innerHTML = `<span class="log-timestamp">[${timestamp}]</span> ${message}`;
+            
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // Convert image to base64
+        function imageToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Update file input display
+        document.getElementById('imageFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const display = document.querySelector('.file-input-display');
+            
+            if (file) {
+                display.innerHTML = `<span>Image selected: ${file.name}</span>`;
+            } else {
+                display.innerHTML = '<span>Select image for analysis</span>';
+            }
+        });
+
+        // Submit survey data
+        async function submitSurvey() {
+            const submitBtn = document.getElementById('submitBtn');
+            const imageFile = document.getElementById('imageFile').files[0];
+            const latitude = parseFloat(document.getElementById('latitude').value);
+            const longitude = parseFloat(document.getElementById('longitude').value);
+            const robotId = document.getElementById('robotId').value;
+
+            if (!imageFile || !latitude || !longitude) {
+                logActivity('Missing image or GPS coordinates', 'error');
+                return;
+            }
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Processing...';
+                
+                const status = document.getElementById('status');
+                const statusText = document.getElementById('statusText');
+                status.className = 'status-indicator status-processing';
+                statusText.textContent = 'Processing Survey Data';
+                
+                logActivity('Capturing and analyzing image...', 'info');
+
+                const imageBase64 = await imageToBase64(imageFile);
+                
+                const response = await fetch('/robot/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image: imageBase64,
+                        latitude: latitude,
+                        longitude: longitude,
+                        robot_id: robotId
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    surveyCount++;
+                    logActivity(`Survey #${surveyCount} completed - ${result.total_issues} issues detected`, 'success');
+                    
+                    // Update individual counts
+                    const counts = result.issue_counts || {};
+                    document.getElementById('potholeCount').textContent = counts.potholes || 0;
+                    document.getElementById('garbageCount').textContent = counts.garbage || 0;
+                    document.getElementById('manholeCount').textContent = counts.manholes || 0;
+                    document.getElementById('visualPollutionCount').textContent = counts.visual_pollution || 0;
+                    document.getElementById('totalCount').textContent = result.total_issues;
+                    document.getElementById('surveyStats').style.display = 'grid';
+                    
+                    // Update status
+                    status.className = 'status-indicator status-active';
+                    statusText.textContent = 'Robot Active - Survey Complete';
+                } else {
+                    logActivity('Survey failed: ' + result.error, 'error');
+                    status.className = 'status-indicator status-inactive';
+                    statusText.textContent = 'Robot Error';
+                }
+
+            } catch (error) {
+                logActivity('Error: ' + error.message, 'error');
+                const status = document.getElementById('status');
+                const statusText = document.getElementById('statusText');
+                status.className = 'status-indicator status-inactive';
+                statusText.textContent = 'Robot Error';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Survey Data';
+            }
+        }
+
+        // Start automatic survey
+        function startAutoSurvey() {
+            if (autoSurveyInterval) return;
+            
+            logActivity('Starting automatic survey mode...', 'info');
+            document.getElementById('autoBtn').disabled = true;
+            
+            const status = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+            status.className = 'status-indicator status-active';
+            statusText.textContent = 'Robot Active - Auto Survey Mode';
+            
+            autoSurveyInterval = setInterval(() => {
+                updateGPS();
+                logActivity('GPS updated, ready for next survey...', 'info');
+            }, 10000);
+        }
+
+        // Stop automatic survey
+        function stopAutoSurvey() {
+            if (autoSurveyInterval) {
+                clearInterval(autoSurveyInterval);
+                autoSurveyInterval = null;
+                document.getElementById('autoBtn').disabled = false;
+                logActivity('Automatic survey stopped', 'info');
+                
+                const status = document.getElementById('status');
+                const statusText = document.getElementById('statusText');
+                status.className = 'status-indicator status-inactive';
+                statusText.textContent = 'Robot Standby';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateGPS();
+            logActivity('Robot system online and ready', 'success');
+            
+            // Simulate robot status updates
+            setTimeout(() => {
+                const status = document.getElementById('status');
+                const statusText = document.getElementById('statusText');
+                status.className = 'status-indicator status-active';
+                statusText.textContent = 'Robot Ready - Awaiting Commands';
+            }, 2000);
+        });
+
+        // Start simulation with brain processing visualization
+        async function startSimulation() {
+            const simulateBtn = document.getElementById('simulateBtn');
+            const thinkingIndicator = document.getElementById('thinkingIndicator');
+            const brainContainer = document.getElementById('brainContainer');
+            const currentProcessing = document.getElementById('currentProcessing');
+            
+            try {
+                simulateBtn.disabled = true;
+                simulateBtn.textContent = 'Robot Thinking...';
+                thinkingIndicator.classList.add('active');
+                
+                logActivity('Starting brain scan of test images...', 'info');
+                
+                // Activate flow steps
+                await activateFlowSteps();
+                
+                const response = await fetch('/api/robot-simulate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Process each image with brain animation
+                    for (let i = 0; i < result.results.length; i++) {
+                        const imageResult = result.results[i];
+                        currentProcessing.textContent = `Processing: ${imageResult.image}`;
+                        
+                        // Add brain processing animation
+                        addBrainImage();
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+                        
+                        // Add to gallery
+                        addToGallery(imageResult);
+                        
+                        logActivity(`${imageResult.image}: ${imageResult.visual_pollution_count} issues found`, 'success');
+                    }
+                    
+                    // Update stats
+                    const totalIssues = result.results.reduce((sum, r) => sum + r.visual_pollution_count, 0);
+                    document.getElementById('visualPollutionCount').textContent = totalIssues;
+                    document.getElementById('totalCount').textContent = result.total_scanned;
+                    document.getElementById('surveyStats').style.display = 'grid';
+                    
+                    const status = document.getElementById('status');
+                    const statusText = document.getElementById('statusText');
+                    status.className = 'status-indicator status-active';
+                    statusText.textContent = 'Brain Scan Complete';
+                    
+                    logActivity(`Brain scan complete - ${result.total_scanned} images processed`, 'success');
+                    currentProcessing.textContent = 'All images processed successfully!';
+                    
+                } else {
+                    logActivity('Brain scan failed: ' + result.error, 'error');
+                    currentProcessing.textContent = 'Error: ' + result.error;
+                }
+                
+            } catch (error) {
+                logActivity('Brain scan error: ' + error.message, 'error');
+                currentProcessing.textContent = 'Error: ' + error.message;
+            } finally {
+                simulateBtn.disabled = false;
+                simulateBtn.textContent = 'Start Brain Scan';
+                thinkingIndicator.classList.remove('active');
+                resetFlowSteps();
+            }
+        }
+        
+        // Activate flow steps sequentially
+        async function activateFlowSteps() {
+            const steps = ['step1', 'step2', 'step3', 'step4'];
+            for (let i = 0; i < steps.length; i++) {
+                document.getElementById(steps[i]).classList.add('active');
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+        }
+        
+        // Reset flow steps
+        function resetFlowSteps() {
+            const steps = ['step1', 'step2', 'step3', 'step4'];
+            steps.forEach(step => {
+                document.getElementById(step).classList.remove('active');
+            });
+        }
+        
+        // Add brain processing animation
+        function addBrainImage() {
+            const brainContainer = document.getElementById('brainContainer');
+            const brainImage = document.createElement('div');
+            brainImage.className = 'brain-image';
+            brainImage.style.left = Math.random() * 60 + 'px';
+            brainContainer.appendChild(brainImage);
+            
+            setTimeout(() => {
+                brainContainer.removeChild(brainImage);
+            }, 2000);
+        }
+        
+        // Add processed image to gallery
+        function addToGallery(imageResult) {
+            const galleryGrid = document.getElementById('galleryGrid');
+            
+            // Clear placeholder text on first image
+            if (galleryGrid.children.length === 1 && galleryGrid.children[0].style.gridColumn) {
+                galleryGrid.innerHTML = '';
+            }
+            
+            const galleryItem = document.createElement('div');
+            galleryItem.className = 'gallery-item';
+            
+            if (imageResult.result_image) {
+                galleryItem.innerHTML = `
+                    <img src="${imageResult.result_image}" alt="${imageResult.image}" class="gallery-image" onclick="openImageModal('${imageResult.result_image}', '${imageResult.image}')">
+                    <div class="gallery-info">
+                        <div style="font-weight: bold;">${imageResult.visual_pollution_count} Issues Found</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">
+                            ${imageResult.classes.slice(0, 2).join(', ')}${imageResult.classes.length > 2 ? '...' : ''}
+                        </div>
+                        <div style="font-size: 0.7rem; margin-top: 0.5rem;">
+                            ${imageResult.image}
+                        </div>
+                    </div>
+                `;
+            } else {
+                galleryItem.innerHTML = `
+                    <div style="width: 100%; height: 150px; background: linear-gradient(45deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                        ${imageResult.image}
+                    </div>
+                    <div class="gallery-info">
+                        <div style="font-weight: bold;">${imageResult.visual_pollution_count} Issues Found</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">
+                            ${imageResult.classes.slice(0, 2).join(', ')}${imageResult.classes.length > 2 ? '...' : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            galleryGrid.appendChild(galleryItem);
+        }
+        
+        // Open image in modal
+        function openImageModal(imageSrc, imageName) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 4000;
+                cursor: pointer;
+            `;
+            
+            modal.innerHTML = `
+                <div style="max-width: 90%; max-height: 90%; text-align: center;">
+                    <img src="${imageSrc}" style="max-width: 100%; max-height: 80vh; border-radius: 10px;">
+                    <div style="color: white; margin-top: 1rem; font-size: 1.2rem;">${imageName}</div>
+                    <div style="color: #ccc; margin-top: 0.5rem;">Click anywhere to close</div>
+                </div>
+            `;
+            
+            modal.onclick = () => document.body.removeChild(modal);
+            document.body.appendChild(modal);
+        }
+        
+        // Simulate scanning process with animations
+        async function simulateScanning() {
+            const scanningText = document.getElementById('scanningText');
+            const progressFill = document.getElementById('progressFill');
+            const currentImage = document.getElementById('currentImage');
+            const imageContainer = document.getElementById('imagePreviewContainer');
+            
+            const steps = [
+                'Connecting to test images folder...',
+                'Loading AI visual pollution model...',
+                'Scanning image 1 of 5...',
+                'Analyzing visual elements...',
+                'Detecting pollution markers...',
+                'Processing results...',
+                'Scan complete!'
+            ];
+            
+            for (let i = 0; i < steps.length; i++) {
+                scanningText.textContent = steps[i];
+                progressFill.style.width = `${(i + 1) / steps.length * 100}%`;
+                
+                if (i >= 2 && i <= 5) {
+                    // Simulate image processing
+                    const imgDiv = document.createElement('div');
+                    imgDiv.className = 'image-preview';
+                    imgDiv.style.background = `linear-gradient(45deg, #00ff88, #00cc66)`;
+                    imgDiv.innerHTML = `<div style="padding: 20px; font-size: 10px;">IMG ${i-1}</div>`;
+                    imageContainer.appendChild(imgDiv);
+                    
+                    currentImage.textContent = `Processing: test_image_${i-1}.jpg`;
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        }
+        
+        // Show final results in animation
+        function showFinalResults(result) {
+            const resultsGrid = document.getElementById('animationResults');
+            const scanningText = document.getElementById('scanningText');
+            
+            scanningText.textContent = `Analysis Complete! Found ${result.results.reduce((sum, r) => sum + r.visual_pollution_count, 0)} visual pollution issues`;
+            
+            result.results.forEach((r, index) => {
+                setTimeout(() => {
+                    const resultBox = document.createElement('div');
+                    resultBox.className = 'result-box';
+                    resultBox.innerHTML = `
+                        <div style="font-size: 0.9rem; font-weight: bold;">${r.image}</div>
+                        <div style="font-size: 1.2rem; color: #00ff88; margin: 0.5rem 0;">${r.visual_pollution_count}</div>
+                        <div style="font-size: 0.8rem;">Issues Found</div>
+                        <div style="font-size: 0.7rem; margin-top: 0.5rem;">
+                            ${r.classes.slice(0, 2).join(', ')}${r.classes.length > 2 ? '...' : ''}
+                        </div>
+                    `;
+                    resultsGrid.appendChild(resultBox);
+                }, index * 300);
+            });
+        }
+        
+        // Close animation overlay
+        function closeAnimation() {
+            document.getElementById('robotAnimation').style.display = 'none';
+            document.getElementById('imagePreviewContainer').innerHTML = '';
+            document.getElementById('animationResults').innerHTML = '';
+            document.getElementById('progressFill').style.width = '0%';
+        }
+    </script>
+</body>
+</html>
