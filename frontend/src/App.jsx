@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useDispatch, useSelector } from './store/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { restoreAuth } from './store/authSlice';
 import ProtectedRoute from './pages/ProtectedRoute';
 import MainLayout from './pages/MainLayout';
