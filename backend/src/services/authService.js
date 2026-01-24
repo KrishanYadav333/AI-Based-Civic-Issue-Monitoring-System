@@ -5,7 +5,7 @@
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const db = require('./database');
+const User = require('../models/User');
 const logger = require('../utils/logger');
 const { USER_ROLES, ERROR_MESSAGES } = require('../core/constants');
 const { validateEmail, validateUsername, validatePassword } = require('../utils/validation');
@@ -91,34 +91,34 @@ async function register(data) {
         
         // Validate inputs
         if (!validateUsername(username)) {
-            throw new Error('Invalid username format');
+            throw new ValidationError('Invalid username format');
         }
         
         if (!validateEmail(email)) {
-            throw new Error('Invalid email format');
+            throw new ValidationError('Invalid email format');
         }
         
         const passwordValidation = validatePassword(password);
         if (!passwordValidation.valid) {
-            throw new Error(passwordValidation.error);
+            throw new ValidationError(passwordValidation.error);
         }
         
         // Check if user already exists
-        const existingUser = await db.findOne('users', { username });
+        const existingUser = await User.findOne({ username });
         if (existingUser) {
-            throw new Error('Username already exists');
+            throw new ConflictError('Username already exists');
         }
         
-        const existingEmail = await db.findOne('users', { email });
+        const existingEmail = await User.findOne({ email });
         if (existingEmail) {
-            throw new Error('Email already exists');
+            throw new ConflictError('Email already exists');
         }
         
         // Hash password
         const password_hash = await hashPassword(password);
         
         // Create user
-        const user = await db.insert('users', {
+        const user = await User.create({
             username,
             email,
             password_hash,
@@ -127,16 +127,19 @@ async function register(data) {
             full_name: full_name || null
         });
         
+        // Convert to plain object
+        const userObj = user.toObject();
+        
         // Generate token
-        const token = generateToken(user);
+        const token = generateToken(userObj);
         
         // Remove password hash from response
-        delete user.password_hash;
+        delete userObj.password_hash;
         
-        logger.info(`User registered: ${username} (${user.role})`);
+        logger.info(`User registered: ${username} (${userObj.role})`);
         
         return {
-            user,
+            user: userObj,
             token
         };
         
@@ -159,18 +162,16 @@ async function login(username, password) {
         }
         
         // Find user by username or email
-        const result = await db.query(
-            `SELECT * FROM users 
-             WHERE username = $1 OR email = $1
-             LIMIT 1`,
-            [username]
-        );
+        const user = await User.findOne({
+            $or: [
+                { username: username },
+                { email: username }
+            ]
+        });
         
-        if (result.rows.length === 0) {
+        if (!user) {
             throw new AuthenticationError(ERROR_MESSAGES.INVALID_CREDENTIALS);
         }
-        
-        const user = result.rows[0];
         
         // Verify password
         const isValidPassword = await comparePassword(password, user.password_hash);
@@ -179,16 +180,19 @@ async function login(username, password) {
             throw new AuthenticationError(ERROR_MESSAGES.INVALID_CREDENTIALS);
         }
         
+        // Convert to plain object
+        const userObj = user.toObject();
+        
         // Generate token
-        const token = generateToken(user);
+        const token = generateToken(userObj);
         
         // Remove password hash from response
-        delete user.password_hash;
+        delete userObj.password_hash;
         
-        logger.info(`User logged in: ${user.username}`);
+        logger.info(`User logged in: ${userObj.username}`);
         
         return {
-            user,
+            user: userObj,
             token
         };
         
@@ -205,25 +209,12 @@ async function login(username, password) {
  */
 async function getUserById(userId) {
     try {
-        const result = await db.query(
-            `SELECT 
-                u.id,
-                u.username,
-                u.email,
-                u.role,
-                u.ward_id,
-                u.full_name,
-                u.created_at,
-                u.updated_at,
-                w.ward_number,
-                w.ward_name
-             FROM users u
-             LEFT JOIN wards w ON u.ward_id = w.id
-             WHERE u.id = $1`,
-            [userId]
-        );
+        const user = await User.findById(userId)
+            .populate('ward_id', 'ward_number ward_name')
+            .select('-password_hash')
+            .lean();
         
-        return result.rows[0] || null;
+        return user;
         
     } catch (error) {
         logger.error('Error getting user by ID:', error);
@@ -238,41 +229,23 @@ async function getUserById(userId) {
  */
 async function getUsers(filters = {}) {
     try {
-        let sql = `
-            SELECT 
-                u.id,
-                u.username,
-                u.email,
-                u.role,
-                u.ward_id,
-                u.full_name,
-                u.created_at,
-                w.ward_number,
-                w.ward_name
-            FROM users u
-            LEFT JOIN wards w ON u.ward_id = w.id
-            WHERE 1=1
-        `;
-        
-        const params = [];
-        let paramIndex = 1;
+        const query = {};
         
         if (filters.role) {
-            sql += ` AND u.role = $${paramIndex}`;
-            params.push(filters.role);
-            paramIndex++;
+            query.role = filters.role;
         }
         
         if (filters.ward_id) {
-            sql += ` AND u.ward_id = $${paramIndex}`;
-            params.push(filters.ward_id);
-            paramIndex++;
+            query.ward_id = filters.ward_id;
         }
         
-        sql += ' ORDER BY u.created_at DESC';
+        const users = await User.find(query)
+            .populate('ward_id', 'ward_number ward_name')
+            .select('-password_hash')
+            .sort({ createdAt: -1 })
+            .lean();
         
-        const result = await db.query(sql, params);
-        return result.rows;
+        return users;
         
     } catch (error) {
         logger.error('Error getting users:', error);
@@ -300,25 +273,26 @@ async function updateUser(userId, data) {
         if (data.password) {
             const passwordValidation = validatePassword(data.password);
             if (!passwordValidation.valid) {
-                throw new Error(passwordValidation.error);
+                throw new ValidationError(passwordValidation.error);
             }
             updateData.password_hash = await hashPassword(data.password);
         }
         
         if (Object.keys(updateData).length === 0) {
-            throw new Error('No valid fields to update');
+            throw new ValidationError('No valid fields to update');
         }
         
-        updateData.updated_at = new Date();
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        )
+        .select('-password_hash')
+        .lean();
         
-        const result = await db.update('users', updateData, { id: userId });
-        
-        if (result.length === 0) {
+        if (!user) {
             throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
         }
-        
-        const user = result[0];
-        delete user.password_hash;
         
         logger.info(`User updated: ${userId}`);
         
@@ -340,7 +314,7 @@ async function updateUser(userId, data) {
 async function changePassword(userId, oldPassword, newPassword) {
     try {
         // Get user
-        const user = await db.findOne('users', { id: userId });
+        const user = await User.findById(userId);
         
         if (!user) {
             throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
@@ -350,20 +324,21 @@ async function changePassword(userId, oldPassword, newPassword) {
         const isValidPassword = await comparePassword(oldPassword, user.password_hash);
         
         if (!isValidPassword) {
-            throw new Error('Current password is incorrect');
+            throw new AuthenticationError('Current password is incorrect');
         }
         
         // Validate new password
         const passwordValidation = validatePassword(newPassword);
         if (!passwordValidation.valid) {
-            throw new Error(passwordValidation.error);
+            throw new ValidationError(passwordValidation.error);
         }
         
         // Hash new password
         const password_hash = await hashPassword(newPassword);
         
         // Update password
-        await db.update('users', { password_hash }, { id: userId });
+        user.password_hash = password_hash;
+        await user.save();
         
         logger.info(`Password changed for user: ${userId}`);
         

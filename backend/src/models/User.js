@@ -12,19 +12,25 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         trim: true
     },
-    password: {
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
+    },
+    password_hash: {
         type: String,
         required: true
     },
-    name: {
+    full_name: {
         type: String,
-        required: true,
         trim: true
     },
     role: {
         type: String,
         enum: ['surveyor', 'engineer', 'admin'],
-        required: true
+        required: true,
+        default: 'surveyor'
     },
     ward_id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -45,6 +51,7 @@ const userSchema = new mongoose.Schema({
 
 // Indexes
 userSchema.index({ email: 1 });
+userSchema.index({ username: 1 });
 userSchema.index({ role: 1 });
 userSchema.index({ ward_id: 1 });
 

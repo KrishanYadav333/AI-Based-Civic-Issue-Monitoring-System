@@ -3,9 +3,9 @@
  * Creates default admin, engineer, and surveyor users
  */
 
-require('dotenv').config();
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+require('../backend/node_modules/dotenv').config({ path: '../backend/.env' });
+const mongoose = require('../backend/node_modules/mongoose');
+const bcrypt = require('../backend/node_modules/bcrypt');
 const User = require('../backend/src/models/User');
 const Ward = require('../backend/src/models/Ward');
 const IssueType = require('../backend/src/models/IssueType');
@@ -94,20 +94,22 @@ async function seedDatabase() {
         // Create Admin User
         const admin = await User.create({
             email: 'admin@civic.com',
-            password: hashedPassword,
-            name: 'System Admin',
+            username: 'admin@civic.com',
+            password_hash: hashedPassword,
+            full_name: 'System Admin',
             role: 'admin',
             phone: '+91-1234567890',
             is_active: true
         });
-        console.log('Created admin user:', admin.email);
+        console.log(`Created admin user: ${admin.email}`);
 
         // Create Engineers (one for each ward)
         for (let i = 0; i < 5; i++) {
             await User.create({
                 email: `engineer${i + 1}@civic.com`,
-                password: hashedPassword,
-                name: `Engineer ${i + 1}`,
+                username: `engineer${i + 1}@civic.com`,
+                password_hash: hashedPassword,
+                full_name: `Engineer ${i + 1}`,
                 role: 'engineer',
                 ward_id: createdWards[i]._id,
                 phone: `+91-987654321${i}`,
@@ -120,8 +122,9 @@ async function seedDatabase() {
         for (let i = 0; i < 3; i++) {
             await User.create({
                 email: `surveyor${i + 1}@civic.com`,
-                password: hashedPassword,
-                name: `Surveyor ${i + 1}`,
+                username: `surveyor${i + 1}@civic.com`,
+                password_hash: hashedPassword,
+                full_name: `Surveyor ${i + 1}`,
                 role: 'surveyor',
                 phone: `+91-876543210${i}`,
                 is_active: true
