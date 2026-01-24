@@ -541,18 +541,67 @@
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
             
-            // Get user's current location for admin dashboard
+            // Auto-detect user's current location for admin dashboard
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     function(position) {
                         const lat = position.coords.latitude;
                         const lng = position.coords.longitude;
-                        map.setView([lat, lng], 12);
+                        map.setView([lat, lng], 13);
+                        
+                        // Add marker at current location
+                        L.marker([lat, lng], {
+                            icon: L.icon({
+                                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                                iconSize: [25, 41],
+                                iconAnchor: [12, 41],
+                                popupAnchor: [1, -34],
+                                shadowSize: [41, 41]
+                            })
+                        }).addTo(map)
+                          .bindPopup('📍 Your Current Location')
+                          .openPopup();
+                        
+                        console.log('✅ Location detected:', lat, lng);
                     },
                     function(error) {
-                        console.log('Using default location');
+                        let errorMessage = 'Location access denied or unavailable. Using default location (Delhi).';
+                        
+                        if (error.code === 1) {
+                            errorMessage = '⚠️ Location permission denied. Please:\n' +
+                                          '1. Access via http://localhost:5000 (not IP address)\n' +
+                                          '2. Or click the lock icon 🔒 and allow location access\n' +
+                                          'Using default location (Delhi) for now.';
+                        } else if (error.code === 2) {
+                            errorMessage = '⚠️ Location unavailable. Check your device settings.';
+                        } else if (error.code === 3) {
+                            errorMessage = '⚠️ Location request timeout. Using default location.';
+                        }
+                        
+                        console.error(errorMessage);
+                        alert(errorMessage);
+                        
+                        // Add default location marker
+                        L.marker([28.6139, 77.2090]).addTo(map)
+                          .bindPopup('📍 Default Location (New Delhi)')
+                          .openPopup();
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
                     }
                 );
+            } else {
+                const errorMsg = '⚠️ Geolocation not supported by this browser. Using default location.';
+                console.log(errorMsg);
+                alert(errorMsg);
+                
+                // Add default location marker
+                L.marker([28.6139, 77.2090]).addTo(map)
+                  .bindPopup('📍 Default Location (New Delhi)')
+                  .openPopup();
             }
         }
 

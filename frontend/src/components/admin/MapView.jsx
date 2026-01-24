@@ -87,9 +87,46 @@ const MapView = () => {
 
         console.log('Tile layer added');
 
+        // Auto-detect user's current location
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            function(position) {
+              const lat = position.coords.latitude;
+              const lng = position.coords.longitude;
+              mapInstance.setView([lat, lng], 13);
+              
+              // Add marker at current location
+              L.marker([lat, lng], {
+                icon: L.icon({
+                  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                  iconSize: [25, 41],
+                  iconAnchor: [12, 41],
+                  popupAnchor: [1, -34],
+                  shadowSize: [41, 41]
+                })
+              }).addTo(mapInstance)
+                .bindPopup('📍 Your Current Location')
+                .openPopup();
+              
+              console.log('✅ Location detected:', lat, lng);
+            },
+            function(error) {
+              console.log('⚠️ Location access denied or unavailable. Using Vadodara coordinates.');
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 5000,
+              maximumAge: 0
+            }
+          );
+        }
+
         // Force map to recalculate size
-        mapInstance.invalidateSize();
-        console.log('Map size invalidated');
+        setTimeout(() => {
+          mapInstance.invalidateSize();
+          console.log('Map size invalidated');
+        }, 100);
         
         mapInstanceRef.current = mapInstance;
         console.log('Map initialization complete');
@@ -320,7 +357,6 @@ const MapView = () => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2, duration: 0.5 }}
-        whileHover={{ scale: 1.005, transition: { duration: 0.3 } }}
         className="glass-card rounded-2xl shadow-2xl overflow-hidden p-4"
         style={{ 
           width: '100%',
@@ -336,7 +372,8 @@ const MapView = () => {
             height: '100%',
             borderRadius: '12px',
             position: 'relative',
-            zIndex: 1
+            zIndex: 1,
+            backgroundColor: '#e0e7ff'
           }} 
         />
         {filteredIssues.length > 0 && (
