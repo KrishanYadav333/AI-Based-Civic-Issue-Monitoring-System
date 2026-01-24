@@ -6,53 +6,19 @@
   @apply transition-colors duration-200;
 }
 
-/* Glassmorphism Gradient Background - Navy Blue Theme */
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #0c1e3f 0%, #1e3a8a 25%, #2563eb 50%, #3b82f6 75%, #60a5fa 100%) !important;
-  background-size: 400% 400% !important;
-  animation: gradientShift 15s ease infinite !important;
-  min-height: 100vh;
-  background-attachment: fixed !important;
+  @apply bg-white;
+  font-family: 'Inter', sans-serif;
 }
 
-#root {
-  min-height: 100vh;
-  background: transparent !important;
+/* Glass morphism */
+.glass {
+  @apply bg-white/30 backdrop-blur-lg border border-white/20;
 }
 
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Glassmorphism Card */
-.glass-card {
-  background: rgba(255, 255, 255, 0.25) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.4) !important;
-  box-shadow: 0 8px 32px 0 rgba(12, 30, 63, 0.6) !important;
-}
-
-.glass-card-strong {
-  background: rgba(255, 255, 255, 0.40) !important;
-  backdrop-filter: blur(25px) !important;
-  -webkit-backdrop-filter: blur(25px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.5) !important;
-  box-shadow: 0 12px 40px 0 rgba(12, 30, 63, 0.7) !important;
-}
-
-.glass-card-light {
-  background: rgba(255, 255, 255, 0.18) !important;
-  backdrop-filter: blur(15px) !important;
-  -webkit-backdrop-filter: blur(15px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  box-shadow: 0 4px 16px 0 rgba(12, 30, 63, 0.4) !important;
+/* Soft shadows */
+.shadow-soft {
+  @apply shadow-sm;
 }
 
 /* Custom scrollbar with glassmorphism */
@@ -70,25 +36,21 @@ body {
   background: rgba(37, 99, 235, 0.5);
   border-radius: 10px;
   border: 2px solid rgba(255, 255, 255, 0.1);
+}*/
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 rounded;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(37, 99, 235, 0.7);
-}
-
-/* Gradient Text - Navy Blue Theme */
-.gradient-text {
-  background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Metallic Text Effect */
-.metallic-text {
-  background: linear-gradient(145deg, #e0e0e0 0%, #ffffff 30%, #c0c0c0 50%, #ffffff 70%, #e0e0e0 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  @apply bg-gray-500nt;
   background-clip: text;
   text-shadow: 
     0 1px 0 rgba(255, 255, 255, 0.8),
