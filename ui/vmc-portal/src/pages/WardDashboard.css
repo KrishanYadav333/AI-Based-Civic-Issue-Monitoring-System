@@ -1,0 +1,419 @@
+/* Ward Dashboard Page Styles */
+.ward-dashboard-page {
+    min-height: 100vh;
+}
+
+/* Hero Banner */
+.ward-hero {
+    background: linear-gradient(135deg, #0a2647 0%, #144272 100%);
+    padding: 60px 0;
+    color: #ffffff;
+}
+
+.ward-hero-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ward-hero-text h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.ward-hero-text p {
+    font-size: 1.05rem;
+    opacity: 0.9;
+}
+
+.ward-selector-hero {
+    text-align: right;
+}
+
+.ward-selector-hero label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    opacity: 0.8;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ward-select {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 4px;
+    padding: 12px 42px 12px 16px;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    appearance: none;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    min-width: 160px;
+}
+
+.ward-select option {
+    background: #0a2647;
+    color: #ffffff;
+}
+
+/* Stats Section */
+.ward-stats-section {
+    padding: 35px 0;
+    background: #ffffff;
+}
+
+.ward-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+}
+
+.ward-stat-card-main {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 28px;
+    text-align: center;
+    border-left: 4px solid #144272;
+    transition: all 0.25s ease;
+}
+
+.ward-stat-card-main:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-3px);
+}
+
+.ward-stat-card-main.green {
+    border-left-color: #27ae60;
+}
+
+.ward-stat-card-main.orange {
+    border-left-color: #e67e22;
+}
+
+.ward-stat-card-main.blue {
+    border-left-color: #3498db;
+}
+
+.ward-stat-card-main .stat-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+.ward-stat-card-main .stat-value {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #0a2647;
+}
+
+.ward-stat-card-main.green .stat-value {
+    color: #27ae60;
+}
+
+.ward-stat-card-main.orange .stat-value {
+    color: #e67e22;
+}
+
+.ward-stat-card-main.blue .stat-value {
+    color: #3498db;
+}
+
+/* Content Section */
+.ward-content-section {
+    padding: 40px 0 55px;
+    background: #f8fafc;
+}
+
+.ward-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+.ward-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 28px;
+    border: 1px solid #e5e7eb;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0a2647;
+    margin-bottom: 22px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Issue Distribution */
+.distribution-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.distribution-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.distribution-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.distribution-icon {
+    flex-shrink: 0;
+}
+
+.distribution-icon svg {
+    width: 26px;
+    height: 26px;
+}
+
+.distribution-type {
+    flex: 1;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.distribution-count {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0a2647;
+}
+
+.distribution-bar {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.distribution-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* Map Card */
+.map-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.map-placeholder {
+    flex: 1;
+    background: linear-gradient(135deg, #e8f4f8, #f0f8ff);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 250px;
+}
+
+.map-content {
+    text-align: center;
+    color: #144272;
+}
+
+.map-content svg {
+    margin-bottom: 14px;
+    opacity: 0.6;
+}
+
+.map-content p {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.map-content span {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+/* Recent Issues Table */
+.recent-issues {
+    padding: 28px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.card-header .card-title {
+    margin: 0;
+    border: 0;
+    padding: 0;
+}
+
+.download-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #144272;
+    color: #ffffff;
+    padding: 10px 18px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.download-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.download-btn:hover {
+    background: #0a2647;
+}
+
+/* Table */
+.table-container {
+    overflow-x: auto;
+}
+
+.issues-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.issues-table th,
+.issues-table td {
+    padding: 14px 16px;
+    text-align: left;
+}
+
+.issues-table th {
+    background: #f8fafc;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.issues-table td {
+    border-top: 1px solid #f3f4f6;
+    font-size: 0.9rem;
+    color: #374151;
+}
+
+.issues-table tr:hover td {
+    background: #f8fafc;
+}
+
+.complaint-id {
+    font-weight: 600;
+    color: #144272;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: 12px;
+}
+
+.status-badge.resolved {
+    background: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+}
+
+.status-badge.in-progress {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+}
+
+.status-badge.pending {
+    background: rgba(230, 126, 34, 0.1);
+    color: #e67e22;
+}
+
+.status-badge.assigned {
+    background: rgba(155, 89, 182, 0.1);
+    color: #9b59b6;
+}
+
+.view-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: transparent;
+    color: #144272;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.view-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.view-btn:hover {
+    background: #144272;
+    color: #ffffff;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .ward-hero-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 22px;
+    }
+
+    .ward-selector-hero {
+        text-align: center;
+    }
+
+    .ward-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .ward-content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .ward-hero-text h1 {
+        font-size: 1.7rem;
+    }
+
+    .ward-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-header {
+        flex-direction: column;
+        gap: 14px;
+        align-items: flex-start;
+    }
+}

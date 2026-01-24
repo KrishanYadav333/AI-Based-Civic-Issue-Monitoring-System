@@ -23,7 +23,20 @@ import {
   AreaChart,
   Area
 } from 'recharts';
-import backgroundImage from '../../assets/images/Background_image.jpg';
+
+// VMC Government Colors
+const VMC_COLORS = {
+  primary: '#0a2647',
+  primaryBlue: '#144272',
+  primaryLight: '#205295',
+  accent: '#2c74b3',
+  orange: '#e67e22',
+  green: '#27ae60',
+  red: '#e74c3c',
+  yellow: '#f39c12',
+  purple: '#9b59b6',
+  teal: '#1abc9c'
+};
 
 const PerformanceDashboard = () => {
   const dispatch = useDispatch();
@@ -96,34 +109,32 @@ const PerformanceDashboard = () => {
 
   // Status distribution
   const statusDistribution = [
-    { name: 'Resolved', value: resolved, color: '#10b981' },
-    { name: 'In Progress', value: inProgress, color: '#3b82f6' },
-    { name: 'Assigned', value: assigned, color: '#f59e0b' },
-    { name: 'Pending', value: pending, color: '#ef4444' }
+    { name: 'Resolved', value: resolved, color: VMC_COLORS.green },
+    { name: 'In Progress', value: inProgress, color: VMC_COLORS.primaryBlue },
+    { name: 'Assigned', value: assigned, color: VMC_COLORS.orange },
+    { name: 'Pending', value: pending, color: VMC_COLORS.red }
   ];
 
-  const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
-
-  const StatCard = memo(({ icon: Icon, label, value, subtext, bgGradient, trend }) => (
+  const StatCard = memo(({ icon: Icon, label, value, subtext, borderColor, bgColor, trend }) => (
     <motion.div
       initial={{ opacity: 0, y: 10, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      whileHover={{ scale: 1.05, y: -8 }}
+      whileHover={{ scale: 1.02, y: -4 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="glass-card-strong rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer border border-white/20"
+      className={`bg-white rounded-lg border-l-4 ${borderColor} p-6 shadow-md hover:shadow-xl transition-all cursor-pointer`}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="text-sm font-semibold text-white/90 uppercase tracking-wider mb-1">{label}</motion.p>
-          <motion.p initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, type: 'spring' }} className="text-3xl font-bold text-white">{value}</motion.p>
-          {subtext && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="text-xs text-white/70 mt-2">{subtext}</motion.p>}
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="text-sm font-medium text-gray-600 uppercase tracking-wider mb-1">{label}</motion.p>
+          <motion.p initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, type: 'spring' }} className="text-3xl font-bold text-gray-900">{value}</motion.p>
+          {subtext && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="text-xs text-gray-500 mt-2">{subtext}</motion.p>}
           {trend !== undefined && (
-            <motion.p initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }} className={`text-sm font-medium mt-2 ${trend >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+            <motion.p initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }} className={`text-sm font-medium mt-2 ${trend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {trend >= 0 ? '↑' : '↓'} {Math.abs(trend)}% from last month
             </motion.p>
           )}
         </div>
-        <motion.div whileHover={{ rotate: 10, scale: 1.1 }} className="bg-white/10 p-3 rounded-xl backdrop-blur-sm">
+        <motion.div whileHover={{ rotate: 10, scale: 1.1 }} className={`${bgColor} p-3 rounded-lg`}>
           <Icon className="w-6 h-6 text-white" />
         </motion.div>
       </div>
@@ -131,23 +142,242 @@ const PerformanceDashboard = () => {
   ));
 
   return (
-    <div 
-      className="min-h-screen relative"
-      style={{
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed'
-      }}
-    >
-      {/* Navy blue gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-blue-800/30 to-blue-600/35 pointer-events-none"></div>
-      
-      <div className="relative z-10 p-8 space-y-6">
+    <div className="min-h-screen bg-gray-50">
+      <div className="p-6 md:p-8 space-y-6">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-4xl font-bold metallic-text">Performance Dashboard</h1>
+        <h1 className="text-3xl font-bold text-[#0a2647]">Performance Dashboard</h1>
+        <p className="text-gray-600 mt-2 text-base">Your resolution metrics and progress</p>
+      </motion.div>
+
+      {/* Key Metrics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          icon={CheckCircle}
+          label="Issues Resolved"
+          value={resolved}
+          subtext="This month"
+          borderColor="border-[#27ae60]"
+          bgColor="bg-[#27ae60]"
+          trend={15}
+        />
+        <StatCard
+          icon={Zap}
+          label="In Progress"
+          value={inProgress}
+          subtext="Active work"
+          borderColor="border-[#144272]"
+          bgColor="bg-[#144272]"
+          trend={8}
+        />
+        <StatCard
+          icon={Clock}
+          label="Avg Resolution"
+          value={`${avgResolutionTime}d`}
+          subtext="Days per issue"
+          borderColor="border-[#e67e22]"
+          bgColor="bg-[#e67e22]"
+          trend={-5}
+        />
+        <StatCard
+          icon={Target}
+          label="Completion Rate"
+          value={`${completionRate}%`}
+          subtext="Of assigned issues"
+          borderColor="border-[#9b59b6]"
+          bgColor="bg-[#9b59b6]"
+          trend={12}
+        />
+      </div>
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Weekly Trend Chart */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          whileHover={{ scale: 1.01 }}
+          className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all p-6"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-lg font-semibold text-[#0a2647]">Weekly Trend</h3>
+              <p className="text-sm text-gray-600 mt-1">Issues resolved & assigned</p>
+            </div>
+            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <Download className="w-5 h-5 text-gray-600" />
+            </button>
+          </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={weeklyTrend}>
+              <defs>
+                <linearGradient id="colorResolved" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={VMC_COLORS.green} stopOpacity={0.8} />
+                  <stop offset="95%" stopColor={VMC_COLORS.green} stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="colorAssigned" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={VMC_COLORS.primaryBlue} stopOpacity={0.8} />
+                  <stop offset="95%" stopColor={VMC_COLORS.primaryBlue} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="day" stroke="#6b7280" />
+              <YAxis stroke="#6b7280" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px'
+                }}
+              />
+              <Legend />
+              <Area
+                type="monotone"
+                dataKey="resolved"
+                stroke={VMC_COLORS.green}
+                fillOpacity={1}
+                fill="url(#colorResolved)"
+                name="Resolved"
+              />
+              <Area
+                type="monotone"
+                dataKey="assigned"
+                stroke={VMC_COLORS.primaryBlue}
+                fillOpacity={1}
+                fill="url(#colorAssigned)"
+                name="Assigned"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </motion.div>
+
+        {/* Status Distribution */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          whileHover={{ scale: 1.01 }}
+          className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all p-6"
+        >
+          <h3 className="text-lg font-semibold text-[#0a2647] mb-6">Status Distribution</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={statusDistribution}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, value }) => `${name}: ${value}`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {statusDistribution.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value) => `${value} issues`} />
+            </PieChart>
+          </ResponsiveContainer>
+          <div className="mt-6 space-y-2">
+            {statusDistribution.map((item, idx) => (
+              <div key={idx} className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                  <span className="text-sm text-gray-700">{item.name}</span>
+                </div>
+                <span className="font-semibold text-gray-900">{item.value}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Second Row of Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Issue Type Distribution */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          whileHover={{ scale: 1.01 }}
+          className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all p-6"
+        >
+          <h3 className="text-lg font-semibold text-[#0a2647] mb-6">Issue Types</h3>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={typeDistribution}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="name" stroke="#6b7280" />
+              <YAxis stroke="#6b7280" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px'
+                }}
+              />
+              <Bar dataKey="value" fill={VMC_COLORS.primaryBlue} radius={[8, 8, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </motion.div>
+
+        {/* Priority Distribution */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          whileHover={{ scale: 1.01 }}
+          className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all p-6"
+        >
+          <h3 className="text-lg font-semibold text-[#0a2647] mb-6">Priority Levels</h3>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={priorityDistribution} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis type="number" stroke="#6b7280" />
+              <YAxis dataKey="priority" type="category" stroke="#6b7280" width={80} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px'
+                }}
+              />
+              <Bar dataKey="count" fill={VMC_COLORS.purple} radius={[0, 8, 8, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </motion.div>
+      </div>
+
+      {/* Summary Stats */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ scale: 1.01 }}
+        className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all p-6"
+      >
+        <h3 className="text-lg font-semibold text-[#0a2647] mb-4">Monthly Summary</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <p className="text-sm text-gray-600 mb-1 font-medium">Resolution Rate</p>
+            <p className="text-2xl font-bold text-[#27ae60]">{resolutionRate}%</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600 mb-1 font-medium">Total Issues</p>
+            <p className="text-2xl font-bold text-[#144272]">{total}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600 mb-1 font-medium">Completion Rate</p>
+            <p className="text-2xl font-bold text-[#9b59b6]">{completionRate}%</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600 mb-1 font-medium">Pending Issues</p>
+            <p className="text-2xl font-bold text-[#e67e22]">{pending}</p>
+          </div>
+        </div>
+      </motion.div>
+      </div>
+    </div>
+  );
+};
+
+export default memo(PerformanceDashboard);
         <p className="text-white mt-2 text-base font-semibold drop-shadow-lg">Your resolution metrics and progress</p>
       </motion.div>
 

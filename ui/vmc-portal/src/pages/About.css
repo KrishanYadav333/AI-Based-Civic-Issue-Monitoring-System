@@ -1,0 +1,259 @@
+/* About Page Styles */
+.about-page {
+    min-height: 100vh;
+}
+
+/* Hero Banner */
+.about-hero {
+    background: linear-gradient(135deg, #0a2647 0%, #144272 100%);
+    padding: 70px 0;
+    text-align: center;
+    color: #ffffff;
+}
+
+.about-hero h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.about-hero p {
+    font-size: 1.15rem;
+    opacity: 0.9;
+}
+
+/* Introduction */
+.about-intro {
+    padding: 55px 0;
+    background: #ffffff;
+}
+
+.intro-content {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 45px;
+    align-items: center;
+}
+
+.intro-text p {
+    font-size: 1rem;
+    color: #6b7280;
+    line-height: 1.8;
+    margin-bottom: 18px;
+}
+
+.intro-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.intro-stat-card {
+    background: linear-gradient(135deg, #0a2647, #144272);
+    border-radius: 10px;
+    padding: 28px;
+    text-align: center;
+    color: #ffffff;
+    transition: transform 0.25s ease;
+}
+
+.intro-stat-card:hover {
+    transform: translateY(-4px);
+}
+
+.intro-stat-card .stat-value {
+    display: block;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.intro-stat-card .stat-label {
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+/* Features */
+.about-features {
+    padding: 55px 0;
+    background: #f8fafc;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.feature-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 32px 28px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+    transition: all 0.25s ease;
+}
+
+.feature-card:hover {
+    border-color: #144272;
+    box-shadow: 0 10px 30px rgba(20, 66, 114, 0.1);
+    transform: translateY(-4px);
+}
+
+.feature-icon {
+    margin-bottom: 18px;
+    color: #144272;
+    display: flex;
+    justify-content: center;
+}
+
+.feature-icon svg {
+    width: 48px;
+    height: 48px;
+}
+
+.feature-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0a2647;
+    margin-bottom: 12px;
+}
+
+.feature-card p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    line-height: 1.7;
+}
+
+/* Process */
+.about-process {
+    padding: 55px 0;
+    background: #ffffff;
+}
+
+.process-steps {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.process-step {
+    flex: 1;
+    text-align: center;
+    padding: 0 18px;
+}
+
+.step-number {
+    width: 55px;
+    height: 55px;
+    background: linear-gradient(135deg, #144272, #2c74b3);
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 auto 18px;
+}
+
+.process-step h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0a2647;
+    margin-bottom: 10px;
+}
+
+.process-step p {
+    font-size: 0.85rem;
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+.process-connector {
+    width: 70px;
+    height: 3px;
+    background: linear-gradient(90deg, #144272, #2c74b3);
+    margin-top: 28px;
+    flex-shrink: 0;
+}
+
+/* CTA Section */
+.about-cta {
+    padding: 70px 0;
+    background: linear-gradient(135deg, #0a2647 0%, #144272 100%);
+    text-align: center;
+    color: #ffffff;
+}
+
+.about-cta h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.about-cta p {
+    font-size: 1.05rem;
+    opacity: 0.9;
+    margin-bottom: 28px;
+}
+
+.btn-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    color: #0a2647;
+    padding: 14px 36px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.btn-cta:hover {
+    background: #e67e22;
+    color: #ffffff;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .intro-content {
+        grid-template-columns: 1fr;
+    }
+
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .process-steps {
+        flex-wrap: wrap;
+        gap: 25px;
+    }
+
+    .process-step {
+        flex: 0 0 45%;
+    }
+
+    .process-connector {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .about-hero h1 {
+        font-size: 1.8rem;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .process-step {
+        flex: 0 0 100%;
+    }
+
+    .intro-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

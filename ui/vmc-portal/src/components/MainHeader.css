@@ -1,0 +1,114 @@
+.main-header {
+    background: #ffffff;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.main-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.vmc-emblem {
+    flex-shrink: 0;
+}
+
+.vmc-emblem svg {
+    display: block;
+}
+
+.header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.header-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #0a2647;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+}
+
+.header-subtitle {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-weight: 400;
+}
+
+.header-badges {
+    display: flex;
+    gap: 10px;
+}
+
+.badge {
+    padding: 8px 16px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-city {
+    background: #ffffff;
+    color: #144272;
+    border: 1.5px solid #144272;
+}
+
+.badge-digital {
+    background: #144272;
+    color: #ffffff;
+    border: 1.5px solid #144272;
+}
+
+.badge-vmc {
+    background: #e67e22;
+    color: #ffffff;
+    border: 1.5px solid #e67e22;
+}
+
+@media (max-width: 992px) {
+    .main-header-content {
+        flex-direction: column;
+        gap: 14px;
+        text-align: center;
+    }
+
+    .header-left {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .header-text {
+        text-align: center;
+    }
+
+    .header-title {
+        font-size: 1.15rem;
+    }
+
+    .header-badges {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .header-title {
+        font-size: 1rem;
+    }
+
+    .badge {
+        padding: 6px 12px;
+        font-size: 0.65rem;
+    }
+}

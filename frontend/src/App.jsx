@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from './store/authSlice';
 import { restoreAuth } from './store/authSlice';
 import ProtectedRoute from './pages/ProtectedRoute';
 import MainLayout from './pages/MainLayout';
+import Homepage from './pages/Homepage';
 import Login from './pages/Login';
 import EngineerDashboard from './pages/EngineerDashboard';
 import EngineerIssues from './pages/EngineerIssues';
@@ -32,6 +33,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* Public routes */}
+        <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
 
         {/* Protected routes */}

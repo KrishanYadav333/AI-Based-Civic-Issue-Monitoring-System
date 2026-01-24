@@ -2,15 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../store/authSlice';
+import TopHeader from '../components/common/TopHeader';
+import MainHeader from '../components/common/MainHeader';
+import PublicNavbar from '../components/common/PublicNavbar';
+import { Card, Button, Input } from '../components/common/FormElements';
+import { Alert } from '../components/common/Alerts';
 import { motion } from 'framer-motion';
-import loginImage from '../assets/images/Login_page_image.jpg';
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error, isAuthenticated, user } = useSelector(state => state.auth);
-  const [email, setEmail] = useState('admin@example.com');
-  const [password, setPassword] = useState('password');
+  const [email, setEmail] = useState('admin@civic.com');
+  const [password, setPassword] = useState('admin123');
 
   // Redirect after successful login
   useEffect(() => {
@@ -26,96 +30,83 @@ const Login = () => {
   };
 
   return (
-    <div 
-      className="min-h-screen flex items-center justify-center p-6 relative"
-      style={{
-        backgroundImage: `url(${loginImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed'
-      }}
-    >
-      {/* Navy blue gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-blue-800/30 to-blue-600/35"></div>
+    <div className="min-h-screen bg-gray-50">
+      <TopHeader />
+      <MainHeader />
+      <PublicNavbar />
       
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-        className="w-full max-w-md relative z-10"
-      >
-        <div className="glass-card-strong p-8 rounded-3xl shadow-2xl">
-          <div className="text-center mb-8">
-            <h1 className="text-5xl font-bold mb-2 metallic-text">
-              CivicLens
-            </h1>
-            <p className="text-lg font-medium metallic-text-secondary">
-              Admin & Engineer Dashboard
-            </p>
+      {/* Hero Section */}
+      <div className="bg-gradient-to-br from-[#144272] to-[#0a2647] py-12">
+        <div className="container mx-auto px-5">
+          <div className="text-center text-white">
+            <h1 className="text-3xl font-bold mb-2">Staff Login Portal</h1>
+            <p className="text-white/80">Access your administrative dashboard</p>
           </div>
+        </div>
+      </div>
 
-          {error && (
-            <div className="glass-card bg-red-500/20 border-red-400/50 text-white px-4 py-3 rounded-xl text-sm backdrop-blur-md mb-4">
-              {error}
+      {/* Login Form */}
+      <div className="container mx-auto px-5 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="max-w-md mx-auto"
+        >
+          <Card className="p-8 shadow-lg">
+            <div className="text-center mb-8">
+              <div className="inline-block p-4 bg-[#144272] rounded-full mb-4">
+                <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-[#0a2647]">Welcome Back</h2>
+              <p className="text-gray-600 mt-2">
+                Sign in to manage civic issues
+              </p>
             </div>
-          )}
 
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div>
-              <label className="block text-sm font-semibold text-white/90 mb-2">
-                Email
-              </label>
-              <input
+            {error && <Alert type="error" message={error} className="mb-4" />}
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              <Input
+                label="Email Address"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@example.com"
-                className="w-full px-4 py-3 glass-card-light text-white placeholder-white/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 transition-all border border-white/20"
+                placeholder="admin@civic.com"
                 required
               />
-            </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-white/90 mb-2">
-                Password
-              </label>
-              <input
+              <Input
+                label="Password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-4 py-3 glass-card-light text-white placeholder-white/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 transition-all border border-white/20"
+                placeholder="Enter your password"
                 required
               />
+
+              <Button
+                type="submit"
+                variant="primary"
+                loading={loading}
+                className="w-full bg-[#144272] hover:bg-[#0a2647] text-white py-3 rounded-lg font-semibold transition-colors"
+              >
+                {loading ? 'Signing in...' : 'Sign In'}
+              </Button>
+            </form>
+
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="font-semibold text-[#144272] mb-2 text-sm">Demo Credentials:</p>
+              <div className="text-sm text-gray-700 space-y-1">
+                <p><span className="font-semibold">Admin:</span> admin@civic.com / admin123</p>
+                <p><span className="font-semibold">Engineer:</span> engineer@civic.com / engineer123</p>
+              </div>
             </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-600 transition-all disabled:opacity-50 shadow-lg transform hover:scale-105 duration-200 mt-6"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Logging in...
-                </span>
-              ) : (
-                'Login'
-              )}
-            </button>
-          </form>
-
-          <div className="mt-6 p-4 glass-card-light rounded-xl text-sm text-white/90">
-            <p className="font-semibold mb-2">Demo Credentials:</p>
-            <p><strong>Admin:</strong> admin@example.com / password</p>
-            <p><strong>Engineer:</strong> engineer1@example.com / password</p>
-          </div>
-        </div>
-      </motion.div>
+          </Card>
+        </motion.div>
+      </div>
     </div>
   );
 };

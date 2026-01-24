@@ -1,0 +1,270 @@
+/* Services Page Styles */
+.services-page {
+    min-height: 100vh;
+}
+
+/* Hero Banner */
+.services-hero {
+    background: linear-gradient(135deg, #0a2647 0%, #144272 100%);
+    padding: 70px 0;
+    text-align: center;
+    color: #ffffff;
+}
+
+.services-hero h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.services-hero p {
+    font-size: 1.15rem;
+    opacity: 0.9;
+}
+
+/* Online Services */
+.online-services {
+    padding: 35px 0;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.online-services-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.online-service-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 22px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+}
+
+.online-service-card:hover {
+    background: #144272;
+    color: #ffffff;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(20, 66, 114, 0.15);
+}
+
+.online-service-card .service-icon {
+    color: #144272;
+}
+
+.online-service-card .service-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.online-service-card:hover .service-icon {
+    color: #ffffff;
+}
+
+.online-service-card .service-title {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.online-service-card svg:last-child {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+}
+
+/* All Services */
+.all-services {
+    padding: 55px 0;
+    background: #f8fafc;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+.service-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 28px;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.25s ease;
+}
+
+.service-card:hover {
+    border-color: #144272;
+    box-shadow: 0 10px 30px rgba(20, 66, 114, 0.1);
+    transform: translateY(-4px);
+}
+
+.service-card-icon {
+    color: #144272;
+    margin-bottom: 18px;
+}
+
+.service-card-icon svg {
+    width: 36px;
+    height: 36px;
+}
+
+.service-card-content h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0a2647;
+    margin-bottom: 8px;
+}
+
+.service-card-content p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 14px;
+}
+
+.service-priority {
+    display: inline-block;
+    padding: 5px 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: 12px;
+    text-transform: uppercase;
+}
+
+.service-priority.high {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+}
+
+.service-priority.medium {
+    background: rgba(230, 126, 34, 0.1);
+    color: #e67e22;
+}
+
+.service-priority.emergency {
+    background: #e74c3c;
+    color: #ffffff;
+}
+
+.service-action {
+    margin-top: auto;
+    padding-top: 18px;
+    color: #144272;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.service-action svg {
+    width: 14px;
+    height: 14px;
+}
+
+.service-action:hover {
+    color: #e67e22;
+}
+
+/* Help Section */
+.services-help {
+    padding: 55px 0;
+    background: #ffffff;
+}
+
+.help-content {
+    background: linear-gradient(135deg, #0a2647, #144272);
+    border-radius: 12px;
+    padding: 45px;
+    color: #ffffff;
+}
+
+.help-text h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.help-text p {
+    font-size: 1.05rem;
+    opacity: 0.9;
+    margin-bottom: 28px;
+}
+
+.help-contact {
+    display: flex;
+    gap: 35px;
+}
+
+.help-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.help-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.help-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.help-item .label {
+    display: block;
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-bottom: 3px;
+}
+
+.help-item .value {
+    display: block;
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .online-services-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .help-contact {
+        flex-direction: column;
+        gap: 18px;
+    }
+}
+
+@media (max-width: 576px) {
+    .services-hero h1 {
+        font-size: 1.8rem;
+    }
+
+    .online-services-grid,
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .help-content {
+        padding: 28px;
+    }
+}

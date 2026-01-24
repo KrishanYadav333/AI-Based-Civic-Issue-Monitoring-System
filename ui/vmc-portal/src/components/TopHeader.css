@@ -1,0 +1,125 @@
+.top-header {
+    background: #1a1a2e;
+    padding: 8px 0;
+    font-size: 0.8rem;
+}
+
+.top-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-header-left {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.org-name {
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.language-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.language-selector svg {
+    width: 14px;
+    height: 14px;
+}
+
+.lang-active {
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.lang-divider {
+    opacity: 0.5;
+}
+
+.lang-option {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.lang-option:hover {
+    color: #ffffff;
+}
+
+.top-header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.accessibility-btn {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 5px 8px;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.accessibility-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.accessibility-btn.font-size-btn span {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.accessibility-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.top-link {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.8rem;
+    transition: color 0.2s ease;
+}
+
+.top-link:hover {
+    color: #ffffff;
+}
+
+.login-btn {
+    background: transparent;
+    color: #ffffff;
+    padding: 6px 16px;
+    border: 1px solid #ffffff;
+    border-radius: 3px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+    background: #ffffff;
+    color: #1a1a2e;
+}
+
+@media (max-width: 768px) {
+    .top-header-content {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .top-header-left,
+    .top-header-right {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
