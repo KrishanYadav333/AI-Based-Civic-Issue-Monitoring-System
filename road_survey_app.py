@@ -37,8 +37,7 @@ MODELS = {
 def init_db():
     conn = sqlite3.connect('road_survey.db')
     c = conn.cursor()
-    c.execute('DROP TABLE IF EXISTS surveys')
-    c.execute('''CREATE TABLE surveys
+    c.execute('''CREATE TABLE IF NOT EXISTS surveys
                  (id INTEGER PRIMARY KEY, timestamp TEXT, latitude REAL, longitude REAL,
                   potholes INTEGER, garbage INTEGER, manholes INTEGER, damaged_roads INTEGER,
                   construction_debris INTEGER, stray_animals INTEGER, water_leakage INTEGER,
