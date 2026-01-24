@@ -5,7 +5,21 @@ import { Card, Button } from '../common/FormElements';
 import { Download, BarChart3, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { exportToCSV } from '../../utils/helpers';
 import { motion } from 'framer-motion';
-import backgroundImage from '../../assets/images/Background_image.jpg';
+
+// VMC Colors
+const VMC_COLORS = {
+  primaryDark: '#0a2647',
+  primaryBlue: '#144272',
+  primaryLight: '#205295',
+  accentBlue: '#2c74b3',
+  orange: '#e67e22',
+  green: '#27ae60',
+  red: '#e74c3c',
+  yellow: '#f39c12',
+  purple: '#9b59b6',
+  teal: '#1abc9c',
+  gray: '#6b7280',
+};
 
 // Animation variants
 const headerVariants = {
@@ -157,65 +171,55 @@ const Analytics = () => {
     exportToCSV(csvData, 'issues_report');
   };
 
-  const StatCard = ({ label, value, trend, icon: Icon, color, iconBg }) => (
+  const StatCard = ({ label, value, trend, icon: Icon, color, borderColor }) => (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.05, y: -8, transition: { duration: 0.3 } }}
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="glass-card-strong rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer"
+      className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-500 cursor-pointer border-l-4"
+      style={{ borderLeftColor: borderColor }}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-white/90 text-xs font-semibold uppercase tracking-wider transition-colors duration-300">{label}</p>
-          <p className="text-3xl font-bold text-white mt-2 transition-all duration-300">{value}</p>
+          <p className="text-gray-600 text-xs font-semibold uppercase tracking-wider transition-colors duration-300">{label}</p>
+          <p className="text-3xl font-bold mt-2 transition-all duration-300" style={{ color: VMC_COLORS.primaryDark }}>{value}</p>
           {trend !== undefined && (
-            <div className={`flex items-center gap-1 mt-2 text-sm font-medium transition-all duration-300 ${trend >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+            <div className={`flex items-center gap-1 mt-2 text-sm font-medium transition-all duration-300 ${trend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {trend >= 0 ? <ArrowUpRight className="w-4 h-4 transition-transform duration-300" /> : <ArrowDownRight className="w-4 h-4 transition-transform duration-300" />}
               {Math.abs(trend)}% from last period
             </div>
           )}
         </div>
-        <div className={`${iconBg} p-3 rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-110`}>
-          <Icon className="w-6 h-6 text-white transition-transform duration-300 hover:rotate-12" />
+        <div className="p-3 rounded-xl transition-all duration-300 hover:scale-110" style={{ backgroundColor: `${color}20` }}>
+          <Icon className="w-6 h-6 transition-transform duration-300 hover:rotate-12" style={{ color }} />
         </div>
       </div>
     </motion.div>
   );
 
   return (
-    <div 
-      className="min-h-screen relative"
-      style={{
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed'
-      }}
-    >
-      {/* Navy blue gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-blue-800/30 to-blue-600/35 pointer-events-none"></div>
-      
-      <div className="relative z-10 space-y-6 p-8">
+    <div className="min-h-screen bg-gray-50">
+      <div className="space-y-6 p-8">
       {/* Header */}
       <motion.div variants={headerVariants} initial="hidden" animate="visible">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+            <div className="p-3 rounded-xl shadow-lg" style={{ backgroundColor: VMC_COLORS.primaryBlue }}>
               <BarChart3 className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold metallic-text">Analytics & Reports</h1>
-              <p className="text-white/80 text-sm mt-1 font-medium">Comprehensive insights and performance metrics</p>
+              <h1 className="text-4xl font-bold" style={{ color: VMC_COLORS.primaryDark }}>Analytics & Reports</h1>
+              <p className="text-gray-600 text-sm mt-1 font-medium">Comprehensive insights and performance metrics</p>
             </div>
           </div>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleExportCSV}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-5 py-3 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 font-medium"
+            className="flex items-center gap-2 text-white px-5 py-3 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 font-medium"
+            style={{ backgroundColor: VMC_COLORS.primaryBlue }}
           >
             <Download className="w-4 h-4" />
             Export CSV
@@ -231,19 +235,19 @@ const Analytics = () => {
         animate="visible"
       >
         <motion.div variants={itemVariants}>
-          <StatCard icon={BarChart3} label="Total Issues" value={metrics.totalIssues} trend={12} iconBg="bg-blue-500/30" />
+          <StatCard icon={BarChart3} label="Total Issues" value={metrics.totalIssues} trend={12} color={VMC_COLORS.primaryBlue} borderColor={VMC_COLORS.primaryBlue} />
         </motion.div>
         <motion.div variants={itemVariants}>
-          <StatCard icon={TrendingUp} label="Resolution Rate" value={`${metrics.resolutionRate}%`} trend={8} iconBg="bg-emerald-500/30" />
+          <StatCard icon={TrendingUp} label="Resolution Rate" value={`${metrics.resolutionRate}%`} trend={8} color={VMC_COLORS.green} borderColor={VMC_COLORS.green} />
         </motion.div>
         <motion.div variants={itemVariants}>
-          <StatCard icon={TrendingDown} label="Avg Time (Days)" value={metrics.avgResolutionTime} trend={-5} iconBg="bg-purple-500/30" />
+          <StatCard icon={TrendingDown} label="Avg Time (Days)" value={metrics.avgResolutionTime} trend={-5} color={VMC_COLORS.purple} borderColor={VMC_COLORS.purple} />
         </motion.div>
         <motion.div variants={itemVariants}>
-          <StatCard icon={BarChart3} label="Critical Issues" value={metrics.criticalIssues} trend={-3} iconBg="bg-red-500/30" />
+          <StatCard icon={BarChart3} label="Critical Issues" value={metrics.criticalIssues} trend={-3} color={VMC_COLORS.red} borderColor={VMC_COLORS.red} />
         </motion.div>
         <motion.div variants={itemVariants}>
-          <StatCard icon={BarChart3} label="Wards Covered" value={metrics.wardCount} trend={2} iconBg="bg-orange-500/30" />
+          <StatCard icon={BarChart3} label="Wards Covered" value={metrics.wardCount} trend={2} color={VMC_COLORS.orange} borderColor={VMC_COLORS.orange} />
         </motion.div>
       </motion.div>
 
