@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 // Get API URL from environment variables or use default
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK === 'true' || true; // Set to false when backend is ready
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK === 'true'; // Set to false when backend is ready
 
 // Create axios instance with defaults
 const api = axios.create({
@@ -40,22 +40,33 @@ api.interceptors.response.use(
 
 // Authentication Service
 export const authService = {
-  login: async (email, password) => {
+  login: async (emailOrUsername, password) => {
     try {
       if (USE_MOCK_DATA) {
         // Mock login for development
         await new Promise(resolve => setTimeout(resolve, 500));
         const mockUser = {
-          id: email === 'admin@example.com' ? '1' : '2',
-          email,
-          role: email === 'admin@example.com' ? 'admin' : 'engineer',
-          name: email === 'admin@example.com' ? 'Admin User' : 'Engineer User',
+          id: emailOrUsername === 'admin@example.com' ? '1' : '2',
+          email: emailOrUsername,
+          role: emailOrUsername === 'admin@example.com' ? 'admin' : 'engineer',
+          name: emailOrUsername === 'admin@example.com' ? 'Admin User' : 'Engineer User',
           token: `mock-token-${Date.now()}`,
         };
         return mockUser;
       }
       
-      const response = await api.post('/auth/login', { email, password });
+      // Backend uses 'username' field for login
+      const response = await api.post('/auth/login', { 
+        username: emailOrUsername, 
+        password 
+      });
+      
+      // Extract data from backend response format
+      if (response.data && response.data.success) {
+        const { user, token } = response.data.data;
+        return { ...user, token };
+      }
+      
       return response.data;
     } catch (error) {
       throw error;
@@ -306,33 +317,38 @@ export const analyticsService = {
   },
 };
 
-// Export default api instance for custom requests
-export default api;
-
-export const analyticsService = {
-  getDashboardMetrics: async () => {
+// Dashboard Service
+export const dashboardService = {
+  getAdminStats: async () => {
     try {
-      const response = await api.get('/analytics/dashboard');
+      const response = await api.get('/dashboard/admin/stats');
       return response.data;
     } catch (error) {
       throw error;
     }
   },
 
-  getIssueAnalytics: async (filters = {}) => {
+  getEngineerDashboard: async (engineerId) => {
     try {
-      const response = await api.get('/analytics/issues', { params: filters });
+      const response = await api.get(`/dashboard/engineer/${engineerId}`);
       return response.data;
     } catch (error) {
       throw error;
     }
   },
 
-  exportReport: async (format = 'csv') => {
+  getHeatmapData: async () => {
     try {
-      const response = await api.get(`/analytics/export/${format}`, {
-        responseType: format === 'pdf' ? 'blob' : 'text',
-      });
+      const response = await api.get('/dashboard/admin/heatmap');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getWardPerformance: async () => {
+    try {
+      const response = await api.get('/dashboard/admin/ward-performance');
       return response.data;
     } catch (error) {
       throw error;
@@ -340,4 +356,5 @@ export const analyticsService = {
   },
 };
 
+// Export default api instance for custom requests
 export default api;
