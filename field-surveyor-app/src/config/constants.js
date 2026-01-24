@@ -5,16 +5,14 @@ export const API_CONFIG = {
 };
 
 export const ISSUE_TYPES = [
-  { value: 'pothole', label: 'Pothole', icon: '🕳️' },
-  { value: 'streetlight', label: 'Street Light', icon: '💡' },
+  { value: 'potholes', label: 'Potholes', icon: '🕳️' },
   { value: 'garbage', label: 'Garbage', icon: '🗑️' },
-  { value: 'drainage', label: 'Drainage', icon: '🚰' },
-  { value: 'road_damage', label: 'Road Damage', icon: '🛣️' },
-  { value: 'water_leak', label: 'Water Leak', icon: '💧' },
-  { value: 'tree_fall', label: 'Fallen Tree', icon: '🌳' },
-  { value: 'traffic_signal', label: 'Traffic Signal', icon: '🚦' },
-  { value: 'footpath', label: 'Footpath Damage', icon: '🚶' },
-  { value: 'other', label: 'Other', icon: '📝' },
+  { value: 'manhole', label: 'Manhole', icon: '⚠️' },
+  { value: 'damaged_roads', label: 'Damaged Roads', icon: '🛣️' },
+  { value: 'construction_debris', label: 'Construction Debris', icon: '🏗️' },
+  { value: 'stray_animals', label: 'Stray Animals', icon: '🐕' },
+  { value: 'water_leakage', label: 'Water Leakage', icon: '💧' },
+  { value: 'visual_pollution', label: 'Visual Pollution', icon: '🚯' },
 ];
 
 export const PRIORITIES = [
