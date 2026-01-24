@@ -39,7 +39,7 @@ const wardSchema = new mongoose.Schema({
 
 // Geospatial index for boundary queries
 wardSchema.index({ boundary: '2dsphere' });
-wardSchema.index({ ward_number: 1 });
+// ward_number already indexed via unique:true
 
 // Method to check if a point is within this ward
 wardSchema.methods.containsPoint = function(longitude, latitude) {

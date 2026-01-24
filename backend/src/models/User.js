@@ -49,9 +49,7 @@ const userSchema = new mongoose.Schema({
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
-// Indexes
-userSchema.index({ email: 1 });
-userSchema.index({ username: 1 });
+// Indexes (email and username already indexed via unique:true)
 userSchema.index({ role: 1 });
 userSchema.index({ ward_id: 1 });
 

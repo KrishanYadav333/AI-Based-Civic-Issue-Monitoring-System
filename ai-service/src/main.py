@@ -110,24 +110,18 @@ async def health_check():
     """Health check endpoint"""
     try:
         # Check model
-        if model_handler is not None:
-            model_info = model_handler.get_model_info()
-        else:
-            model_info = {'loaded': False, 'device': None, 'confidence_threshold': None}
-
+        model_info = model_handler.get_model_info()
+        
         # Check cache
-        if cache is not None:
-            cache_stats = cache.get_stats()
-        else:
-            cache_stats = {'enabled': False, 'connected': False}
-
+        cache_stats = cache.get_stats()
+        
         return {
             "status": "healthy",
             "timestamp": datetime.utcnow().isoformat(),
             "model": {
-                "loaded": model_info.get('loaded', False),
-                "device": model_info.get('device', None),
-                "confidence_threshold": model_info.get('confidence_threshold', None)
+                "loaded": model_info['loaded'],
+                "device": model_info['device'],
+                "confidence_threshold": model_info['confidence_threshold']
             },
             "cache": {
                 "enabled": cache_stats.get('enabled', False),

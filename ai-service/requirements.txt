@@ -1,9 +1,8 @@
-# AI Service - Lightweight Rule-Based Classifier
-# Optimized for small deployment size (<200MB)
-
+# AI Service - CNN MobileNetV2 Classification (TensorFlow/Keras)
+# Python 3.9+
 flask==3.0.0
-gunicorn==21.2.0
-pillow>=10.1.0
-numpy>=1.26.0
-python-dotenv>=1.0.0
-requests>=2.31.0
+flask-cors==4.0.0
+tensorflow==2.15.0
+pillow==10.1.0
+numpy==1.26.2
+python-dotenv==1.0.0

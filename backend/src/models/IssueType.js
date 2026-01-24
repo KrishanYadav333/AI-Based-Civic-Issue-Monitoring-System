@@ -32,8 +32,7 @@ const issueTypeSchema = new mongoose.Schema({
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
-// Indexes
-issueTypeSchema.index({ name: 1 });
+// Indexes (name already indexed via unique:true)
 issueTypeSchema.index({ is_active: 1 });
 
 module.exports = mongoose.model('IssueType', issueTypeSchema);

@@ -1,17 +1,8 @@
-node_modules/
-uploads/
-!uploads/.gitkeep
-logs/
-!logs/.gitkeep
-# Keep models directory for deployment (trained models)
-# models/ - REMOVED to include trained models
-runs/
-dataset_yolo/
-training_data/
+__pycache__/
+*.py[cod]
 .env
+.venv/
+venv/
+models/*.pt
 *.log
-*.log.*
-coverage/
-dist/
-build/
 .DS_Store
