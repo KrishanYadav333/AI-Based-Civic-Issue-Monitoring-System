@@ -103,104 +103,50 @@ async function submitIssue(data) {
             processedClassification.issueType,
             processedClassification.confidence,
             {
-                wardId: ward.id,
+                wardId: ward._id,
                 timeOfDay: new Date().getHours()
             }
         );
 
-        // Create issue in transaction
-        const issue = await db.transaction(async (client) => {
-            // Generate issue number (format: VMC-YYYYMMDD-XXXX)
-            const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-            const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-            const issueNumber = `VMC-${dateStr}-${randomSuffix}`;
+        // Generate issue number (format: VMC-YYYYMMDD-XXXX)
+        const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+        const issueNumber = `VMC-${dateStr}-${randomSuffix}`;
 
-            // Insert issue
-            const insertResult = await client.query(
-                `INSERT INTO issues (
-                    issue_number,
-                    latitude,
-                    longitude,
-                    ward_id,
-                    issue_type_id,
-                    issue_type_code,
-                    department,
-                    priority,
-                    status,
-                    image_url,
-                    description,
-                    surveyor_id,
-                    ai_confidence
-                ) VALUES (
-                    $1,
-                    $2,
-                    $3,
-                    $4,
-                    $5,
-                    $6,
-                    $7,
-                    $8,
-                    $9,
-                    $10,
-                    $11,
-                    $12,
-                    $13
-                ) RETURNING *`,
-                [
-                    issueNumber,
-                    latitude,
-                    longitude,
-                    ward.id,
-                    issueType.id,
-                    issueType.code,
-                    issueType.department || 'General',
-                    priority,
-                    ISSUE_STATUS.PENDING,
-                    image_url,
-                    description || null,
-                    surveyor_id,
-                    processedClassification.confidence
-                ]
-            );
-
-            const newIssue = insertResult.rows[0];
-
-            // Record initial history
-            await client.query(
-                `INSERT INTO issue_history (issue_id, status, changed_by, remarks)
-                 VALUES ($1, $2, $3, $4)`,
-                [
-                    newIssue.id,
-                    ISSUE_STATUS.PENDING,
-                    surveyor_id,
-                    'Issue submitted'
-                ]
-            );
-
-            // Create notification for admin
-            await client.query(
-                `INSERT INTO notifications (user_id, issue_id, type, message)
-                 SELECT 
-                    u.id,
-                    $1,
-                    'issue_submitted',
-                    $2
-                 FROM users u
-                 WHERE u.role = 'admin'`,
-                [
-                    newIssue.id,
-                    `New ${issueType.name} issue reported in Ward ${ward.ward_number}`
-                ]
-            );
-
-            return newIssue;
+        // Create issue
+        const newIssue = await Issue.create({
+            issue_number: issueNumber,
+            latitude,
+            longitude,
+            location: {
+                type: 'Point',
+                coordinates: [longitude, latitude]
+            },
+            ward_id: ward._id,
+            issue_type: issueType.name,
+            department: issueType.department || 'General',
+            priority,
+            status: ISSUE_STATUS.PENDING,
+            image_url,
+            description: description || null,
+            reporter_id: surveyor_id,
+            ai_confidence: processedClassification.confidence
         });
 
-        logger.info(`Issue created successfully: ${issue.issue_number}`);
+        // Record initial log
+        await IssueLog.create({
+            issue_id: newIssue._id,
+            action: 'created',
+            status: ISSUE_STATUS.PENDING,
+            changed_by: surveyor_id,
+            remarks: 'Issue submitted'
+        });
+
+        logger.info(`Issue created successfully: ${newIssue.issue_number}`);
 
         return {
             duplicate: false,
-            issue,
+            issue: newIssue.toObject(),
             ward,
             issue_type: issueType,
             classification: processedClassification,
@@ -220,39 +166,26 @@ async function submitIssue(data) {
  */
 async function getIssueById(issueId) {
     try {
-        const result = await db.query(
-            `SELECT 
-                i.*,
-                it.name as issue_type_name,
-                it.code as issue_type_code,
-                it.department,
-                w.ward_number,
-                w.ward_name,
-                u_sub.username as submitted_by_username,
-                u_sub.email as submitted_by_email,
-                u_asn.username as assigned_to_username,
-                u_asn.email as assigned_to_email
-             FROM issues i
-             LEFT JOIN issue_types it ON i.issue_type_id = it.id
-             LEFT JOIN wards w ON i.ward_id = w.id
-             LEFT JOIN users u_sub ON i.surveyor_id = u_sub.id
-             LEFT JOIN users u_asn ON i.engineer_id = u_asn.id
-             WHERE i.id = $1`,
-            [issueId]
-        );
+        const issue = await Issue.findById(issueId)
+            .populate('ward_id', 'ward_number ward_name')
+            .populate('reporter_id', 'username email')
+            .populate('assigned_to', 'username email')
+            .lean();
 
-        if (result.rows.length === 0) {
+        if (!issue) {
             return null;
         }
 
-        const issue = result.rows[0];
-
-        // Get history
-        issue.history = await workflowService.getIssueHistory(issueId);
+        // Get history logs
+        const logs = await IssueLog.find({ issue_id: issueId })
+            .populate('changed_by', 'username')
+            .sort({ created_at: -1 })
+            .lean();
+        issue.history = logs;
 
         // Calculate SLA status
         issue.sla_breached = isSLABreached(
-            issue.submitted_at,
+            issue.created_at,
             issue.priority,
             issue.status
         );
@@ -278,87 +211,55 @@ async function getIssues(filters = {}, pagination = {}) {
             pagination.limit
         );
 
-        const offset = (page - 1) * limit;
+        const skip = (page - 1) * limit;
 
         // Build query
-        let sql = `
-            SELECT 
-                i.*,
-                it.name as issue_type_name,
-                it.code as issue_type_code,
-                it.department,
-                w.ward_number,
-                w.ward_name,
-                u_sub.username as submitted_by_username,
-                u_asn.username as assigned_to_username
-            FROM issues i
-            LEFT JOIN issue_types it ON i.issue_type_id = it.id
-            LEFT JOIN wards w ON i.ward_id = w.id
-            LEFT JOIN users u_sub ON i.surveyor_id = u_sub.id
-            LEFT JOIN users u_asn ON i.engineer_id = u_asn.id
-            WHERE 1=1
-        `;
-
-        const params = [];
-        let paramIndex = 1;
+        const query = {};
 
         // Apply filters
         if (filters.status) {
-            sql += ` AND i.status = $${paramIndex}`;
-            params.push(filters.status);
-            paramIndex++;
+            query.status = filters.status;
         }
 
         if (filters.priority) {
-            sql += ` AND i.priority = $${paramIndex}`;
-            params.push(filters.priority);
-            paramIndex++;
+            query.priority = filters.priority;
         }
 
         if (filters.ward_id) {
-            sql += ` AND i.ward_id = $${paramIndex}`;
-            params.push(filters.ward_id);
-            paramIndex++;
+            query.ward_id = filters.ward_id;
         }
 
-        if (filters.issue_type_id) {
-            sql += ` AND i.issue_type_id = $${paramIndex}`;
-            params.push(filters.issue_type_id);
-            paramIndex++;
+        if (filters.issue_type) {
+            query.issue_type = filters.issue_type;
         }
 
         if (filters.assigned_to) {
-            sql += ` AND i.engineer_id = $${paramIndex}`;
-            params.push(filters.assigned_to);
-            paramIndex++;
+            query.assigned_to = filters.assigned_to;
         }
 
         if (filters.submitted_by) {
-            sql += ` AND i.surveyor_id = $${paramIndex}`;
-            params.push(filters.submitted_by);
-            paramIndex++;
+            query.reporter_id = filters.submitted_by;
         }
 
         // Count total
-        const countSql = sql.replace(
-            /SELECT.*FROM/s,
-            'SELECT COUNT(*) FROM'
-        );
-        const countResult = await db.query(countSql, params);
-        const total = parseInt(countResult.rows[0].count);
+        const total = await Issue.countDocuments(query);
 
-        // Add sorting
-        const sortBy = filters.sortBy || 'submitted_at';
+        // Build sort
+        const sortBy = filters.sortBy || 'created_at';
         const order = filters.order || 'DESC';
-        sql += ` ORDER BY i.${sortBy} ${order}`;
+        const sort = { [sortBy]: order === 'DESC' ? -1 : 1 };
 
-        // Add pagination
-        sql += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
-        params.push(limit, offset);
+        // Execute query
+        const issues = await Issue.find(query)
+            .populate('ward_id', 'ward_number ward_name')
+            .populate('reporter_id', 'username email')
+            .populate('assigned_to', 'username email')
+            .sort(sort)
+            .skip(skip)
+            .limit(limit)
+            .lean();
 
-        const result = await db.query(sql, params);
-
-        return formatPaginatedResponse(result.rows, page, limit, total);
+        return formatPaginatedResponse(issues, page, limit, total);
 
     } catch (error) {
         logger.error('Error getting issues:', error);
@@ -400,7 +301,7 @@ async function getIssuesNearLocation(latitude, longitude, radiusMeters = 1000, f
  */
 async function updateIssue(issueId, data, userId) {
     try {
-        const allowedFields = ['description', 'priority'];
+        const allowedFields = ['description', 'priority', 'status'];
         const updateData = {};
 
         allowedFields.forEach(field => {
@@ -413,17 +314,28 @@ async function updateIssue(issueId, data, userId) {
             throw new Error('No valid fields to update');
         }
 
-        updateData.updated_at = new Date();
+        const issue = await Issue.findByIdAndUpdate(
+            issueId,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        ).lean();
 
-        const result = await db.update('issues', updateData, { id: issueId });
-
-        if (result.length === 0) {
+        if (!issue) {
             throw new Error(ERROR_MESSAGES.ISSUE_NOT_FOUND);
         }
 
+        // Log the update
+        await IssueLog.create({
+            issue_id: issueId,
+            action: 'updated',
+            status: issue.status,
+            changed_by: userId,
+            remarks: `Updated: ${Object.keys(updateData).join(', ')}`
+        });
+
         logger.info(`Issue ${issueId} updated by user ${userId}`);
 
-        return result[0];
+        return issue;
 
     } catch (error) {
         logger.error('Error updating issue:', error);
@@ -440,47 +352,51 @@ async function getDashboardStats(filters = {}) {
     try {
         const stats = {};
 
+        // Build base query from filters
+        const matchQuery = {};
+        if (filters.ward_id) matchQuery.ward_id = filters.ward_id;
+        if (filters.assigned_to) matchQuery.assigned_to = filters.assigned_to;
+
         // Total issues
-        stats.total_issues = await db.count('issues', filters);
+        stats.total_issues = await Issue.countDocuments(matchQuery);
 
         // Issues by status
-        const statusResult = await db.query(
-            `SELECT status, COUNT(*) as count
-             FROM issues
-             GROUP BY status`
-        );
-        stats.by_status = statusResult.rows.reduce((acc, row) => {
-            acc[row.status] = parseInt(row.count);
+        const statusAgg = await Issue.aggregate([
+            { $match: matchQuery },
+            { $group: { _id: '$status', count: { $sum: 1 } } }
+        ]);
+        stats.by_status = statusAgg.reduce((acc, item) => {
+            acc[item._id] = item.count;
             return acc;
         }, {});
 
         // Issues by priority
-        const priorityResult = await db.query(
-            `SELECT priority, COUNT(*) as count
-             FROM issues
-             GROUP BY priority`
-        );
-        stats.by_priority = priorityResult.rows.reduce((acc, row) => {
-            acc[row.priority] = parseInt(row.count);
+        const priorityAgg = await Issue.aggregate([
+            { $match: matchQuery },
+            { $group: { _id: '$priority', count: { $sum: 1 } } }
+        ]);
+        stats.by_priority = priorityAgg.reduce((acc, item) => {
+            acc[item._id] = item.count;
             return acc;
         }, {});
 
-        // SLA compliance
-        const slaResult = await db.query(
-            `SELECT 
-                COUNT(*) FILTER (WHERE sla_breached = false) as compliant,
-                COUNT(*) FILTER (WHERE sla_breached = true) as breached
-             FROM issue_metrics`
-        );
-        stats.sla_compliance = slaResult.rows[0] || { compliant: 0, breached: 0 };
+        // SLA compliance (simplified - calculate based on creation date vs current date)
+        const allIssues = await Issue.find(matchQuery, 'created_at priority status').lean();
+        let compliant = 0;
+        let breached = 0;
+        allIssues.forEach(issue => {
+            const slaBreached = isSLABreached(issue.created_at, issue.priority, issue.status);
+            if (slaBreached) breached++;
+            else compliant++;
+        });
+        stats.sla_compliance = { compliant, breached };
 
         // Recent issues (last 24 hours)
-        const recentResult = await db.query(
-            `SELECT COUNT(*) as count
-             FROM issues
-             WHERE submitted_at >= NOW() - INTERVAL '24 hours'`
-        );
-        stats.recent_24h = parseInt(recentResult.rows[0].count);
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        stats.recent_24h = await Issue.countDocuments({
+            ...matchQuery,
+            created_at: { $gte: oneDayAgo }
+        });
 
         return stats;
 

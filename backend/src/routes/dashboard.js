@@ -1,55 +1,48 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../services/database');
+const Issue = require('../models/Issue');
+const Ward = require('../models/Ward');
+const User = require('../models/User');
 const { authenticate, authorize } = require('../middleware/auth');
+const { successResponse } = require('../utils/response');
 
 // GET /api/dashboard/engineer/:engineerId - Get assigned issues for engineer
 router.get('/engineer/:engineerId', authenticate, authorize('engineer', 'admin'), async (req, res, next) => {
   try {
-    const engineerId = parseInt(req.params.engineerId);
-    const { priority } = req.query;
+    const engineerId = req.params.engineerId;
 
     // Authorization check
-    if (req.user.role === 'engineer' && req.user.id !== engineerId) {
-      return res.status(403).json({ error: 'Access denied' });
+    if (req.user.role === 'engineer' && req.user._id.toString() !== engineerId) {
+      return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
-    let queryStr = `
-      SELECT i.*, w.ward_name
-      FROM issues i
-      LEFT JOIN wards w ON i.ward_id = w.id
-      WHERE i.engineer_id = $1
-    `;
+    const { priority } = req.query;
+    const query = { assigned_to: engineerId };
+    if (priority) query.priority = priority;
 
-    const params = [engineerId];
-
-    if (priority) {
-      queryStr += ` AND i.priority = $2`;
-      params.push(priority);
-    }
-
-    queryStr += ' ORDER BY i.priority DESC, i.created_at DESC';
-
-    const result = await db.query(queryStr, params);
+    const issues = await Issue.find(query)
+      .populate('ward_id', 'ward_name ward_number')
+      .sort({ priority: -1, created_at: -1 })
+      .lean();
 
     // Get statistics
-    const statsResult = await db.query(
-      `SELECT 
-        COUNT(*) as total,
-        COUNT(*) FILTER (WHERE status = 'pending') as pending,
-        COUNT(*) FILTER (WHERE status = 'assigned') as assigned,
-        COUNT(*) FILTER (WHERE status = 'resolved') as resolved,
-        COUNT(*) FILTER (WHERE priority = 'high') as high_priority,
-        COUNT(*) FILTER (WHERE priority = 'medium') as medium_priority,
-        COUNT(*) FILTER (WHERE priority = 'low') as low_priority
-       FROM issues
-       WHERE engineer_id = $1`,
-      [engineerId]
-    );
+    const allIssues = await Issue.find({ assigned_to: engineerId }).lean();
+    const statistics = {
+      total_issues: allIssues.length,
+      pending_issues: allIssues.filter(i => i.status === 'pending').length,
+      assigned_issues: allIssues.filter(i => i.status === 'assigned').length,
+      resolved_issues: allIssues.filter(i => i.status === 'resolved').length,
+      high_priority_count: allIssues.filter(i => i.priority === 'high').length,
+      medium_priority_count: allIssues.filter(i => i.priority === 'medium').length,
+      low_priority_count: allIssues.filter(i => i.priority === 'low').length
+    };
 
     res.json({
-      issues: result.rows,
-      statistics: statsResult.rows[0]
+      success: true,
+      data: {
+        issues,
+        statistics
+      }
     });
   } catch (error) {
     next(error);
@@ -60,67 +53,90 @@ router.get('/engineer/:engineerId', authenticate, authorize('engineer', 'admin')
 router.get('/admin/stats', authenticate, authorize('admin'), async (req, res, next) => {
   try {
     // Overall statistics
-    const overallStats = await db.query(`
-      SELECT 
-        COUNT(*) as total_issues,
-        COUNT(*) FILTER (WHERE status = 'resolved') as resolved_issues,
-        COUNT(*) FILTER (WHERE status = 'pending') as pending_issues,
-        COUNT(*) FILTER (WHERE status = 'assigned') as assigned_issues,
-        COUNT(*) FILTER (WHERE priority = 'high') as high_priority_issues,
-        AVG(EXTRACT(EPOCH FROM (resolved_at - created_at))/3600) FILTER (WHERE status = 'resolved') as avg_resolution_time_hours
-      FROM issues
-    `);
+    const allIssues = await Issue.find({}).lean();
+    const resolvedIssues = allIssues.filter(i => i.status === 'resolved');
+    
+    const avgResolutionTime = resolvedIssues.length > 0
+      ? resolvedIssues.reduce((sum, issue) => {
+          const hours = issue.resolved_at 
+            ? (new Date(issue.resolved_at) - new Date(issue.created_at)) / (1000 * 60 * 60)
+            : 0;
+          return sum + hours;
+        }, 0) / resolvedIssues.length
+      : null;
+
+    const overallStats = {
+      total_issues: allIssues.length,
+      resolved_issues: allIssues.filter(i => i.status === 'resolved').length,
+      pending_issues: allIssues.filter(i => i.status === 'pending').length,
+      assigned_issues: allIssues.filter(i => i.status === 'assigned').length,
+      high_priority_issues: allIssues.filter(i => i.priority === 'high').length,
+      avg_resolution_time_hours: avgResolutionTime
+    };
 
     // Ward-wise statistics
-    const wardStats = await db.query(`
-      SELECT 
-        w.id,
-        w.ward_name as name,
-        COUNT(i.id) as total_issues,
-        COUNT(i.id) FILTER (WHERE i.status = 'resolved') as resolved_issues,
-        COUNT(i.id) FILTER (WHERE i.status = 'pending') as pending_issues,
-        COUNT(i.id) FILTER (WHERE i.priority = 'high') as high_priority_issues
-      FROM wards w
-      LEFT JOIN issues i ON w.id = i.ward_id
-      GROUP BY w.id, w.ward_name
-      ORDER BY w.id
-    `);
+    const wards = await Ward.find({}).sort({ ward_number: 1 }).lean();
+    const wardStats = await Promise.all(wards.map(async (ward) => {
+      const wardIssues = await Issue.find({ ward_id: ward._id }).lean();
+      return {
+        id: ward._id,
+        name: ward.ward_name,
+        total_issues: wardIssues.length,
+        resolved_issues: wardIssues.filter(i => i.status === 'resolved').length,
+        pending_issues: wardIssues.filter(i => i.status === 'pending').length,
+        high_priority_issues: wardIssues.filter(i => i.priority === 'high').length
+      };
+    }));
 
     // Issue type statistics
-    const typeStats = await db.query(`
-      SELECT 
-        type,
-        COUNT(*) as count,
-        COUNT(*) FILTER (WHERE status = 'resolved') as resolved,
-        AVG(confidence_score) as avg_confidence
-      FROM issues
-      GROUP BY type
-      ORDER BY count DESC
-    `);
+    const typeStats = await Issue.aggregate([
+      {
+        $group: {
+          _id: '$issue_type',
+          count: { $sum: 1 },
+          resolved: {
+            $sum: { $cond: [{ $eq: ['$status', 'resolved'] }, 1, 0] }
+          },
+          avg_confidence: { $avg: '$ai_confidence' }
+        }
+      },
+      { $sort: { count: -1 } },
+      {
+        $project: {
+          _id: 0,
+          type: '$_id',
+          count: 1,
+          resolved: 1,
+          avg_confidence: 1
+        }
+      }
+    ]);
 
-    // Recent activity
-    const recentActivity = await db.query(`
-      SELECT 
-        il.id,
-        il.action,
-        il.created_at as timestamp,
-        il.notes,
-        u.name as user_name,
-        i.id as issue_id,
-        i.type as issue_type
-      FROM issue_logs il
-      JOIN users u ON il.user_id = u.id
-      JOIN issues i ON il.issue_id = i.id
-      ORDER BY il.created_at DESC
-      LIMIT 50
-    `);
+    // Recent activity from IssueLog
+    const IssueLog = require('../models/IssueLog');
+    const recentActivity = await IssueLog.find({})
+      .sort({ timestamp: -1 })
+      .limit(50)
+      .populate('changed_by', 'full_name')
+      .populate('issue_id', 'issue_type issue_number')
+      .lean();
 
-    res.json({
-      overall: overallStats.rows[0],
-      wardStats: wardStats.rows,
-      typeStats: typeStats.rows,
-      recentActivity: recentActivity.rows
-    });
+    const formattedActivity = recentActivity.map(log => ({
+      id: log._id,
+      action: log.action,
+      timestamp: log.timestamp,
+      notes: log.remarks,
+      user_name: log.changed_by?.full_name,
+      issue_id: log.issue_id?._id,
+      issue_type: log.issue_id?.issue_type
+    }));
+
+    return successResponse(res, {
+      overall: overallStats,
+      wardStats,
+      typeStats,
+      recentActivity: formattedActivity
+    }, 'Admin statistics retrieved successfully');
   } catch (error) {
     next(error);
   }
@@ -131,63 +147,40 @@ router.get('/admin/heatmap', authenticate, authorize('admin'), async (req, res, 
   try {
     const { status, type, startDate, endDate } = req.query;
 
-    let queryStr = `
-      SELECT 
-        id,
-        type,
-        latitude,
-        longitude,
-        priority,
-        status,
-        created_at,
-        ward_id
-      FROM issues
-      WHERE 1=1
-    `;
-
-    const params = [];
-    let paramCount = 1;
+    const query = {};
 
     if (status) {
-      queryStr += ` AND status = $${paramCount}`;
-      params.push(status);
-      paramCount++;
+      query.status = status;
     }
 
     if (type) {
-      queryStr += ` AND type = $${paramCount}`;
-      params.push(type);
-      paramCount++;
+      query.issue_type = type;
     }
 
-    if (startDate) {
-      queryStr += ` AND created_at >= $${paramCount}`;
-      params.push(startDate);
-      paramCount++;
+    if (startDate || endDate) {
+      query.created_at = {};
+      if (startDate) query.created_at.$gte = new Date(startDate);
+      if (endDate) query.created_at.$lte = new Date(endDate);
     }
 
-    if (endDate) {
-      queryStr += ` AND created_at <= $${paramCount}`;
-      params.push(endDate);
-      paramCount++;
-    }
-
-    const result = await db.query(queryStr, params);
+    const issues = await Issue.find(query)
+      .select('issue_type latitude longitude priority status created_at ward_id')
+      .lean();
 
     // Format for heatmap
-    const heatmapData = result.rows.map(issue => ({
+    const heatmapData = issues.map(issue => ({
       lat: parseFloat(issue.latitude),
       lng: parseFloat(issue.longitude),
       intensity: issue.priority === 'high' ? 3 : issue.priority === 'medium' ? 2 : 1,
-      type: issue.type,
+      type: issue.issue_type,
       status: issue.status,
-      issueId: issue.id
+      issueId: issue._id
     }));
 
-    res.json({
+    return successResponse(res, {
       points: heatmapData,
       count: heatmapData.length
-    });
+    }, 'Heatmap data retrieved successfully');
   } catch (error) {
     next(error);
   }
@@ -196,38 +189,38 @@ router.get('/admin/heatmap', authenticate, authorize('admin'), async (req, res, 
 // GET /api/dashboard/ward/:wardId - Get ward-specific dashboard
 router.get('/ward/:wardId', authenticate, async (req, res, next) => {
   try {
-    const wardId = parseInt(req.params.wardId);
+    const wardId = req.params.wardId;
 
     // Authorization check for engineers
-    if (req.user.role === 'engineer' && req.user.wardId !== wardId) {
-      return res.status(403).json({ error: 'Access denied' });
+    if (req.user.role === 'engineer' && req.user.ward_id?.toString() !== wardId) {
+      return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
     // Ward statistics
-    const stats = await db.query(`
-      SELECT 
-        COUNT(*) as total_issues,
-        COUNT(*) FILTER (WHERE status = 'resolved') as resolved_issues,
-        COUNT(*) FILTER (WHERE status = 'pending') as pending_issues,
-        COUNT(*) FILTER (WHERE priority = 'high') as high_priority_issues
-      FROM issues
-      WHERE ward_id = $1
-    `, [wardId]);
+    const wardIssues = await Issue.find({ ward_id: wardId }).lean();
+    const stats = {
+      total_issues: wardIssues.length,
+      resolved_issues: wardIssues.filter(i => i.status === 'resolved').length,
+      pending_issues: wardIssues.filter(i => i.status === 'pending').length,
+      high_priority_issues: wardIssues.filter(i => i.priority === 'high').length
+    };
 
     // Recent issues in ward
-    const issues = await db.query(`
-      SELECT i.*, u.name as engineer_name
-      FROM issues i
-      LEFT JOIN users u ON i.engineer_id = u.id
-      WHERE i.ward_id = $1
-      ORDER BY i.created_at DESC
-      LIMIT 50
-    `, [wardId]);
+    const issues = await Issue.find({ ward_id: wardId })
+      .populate('assigned_to', 'full_name')
+      .sort({ created_at: -1 })
+      .limit(50)
+      .lean();
 
-    res.json({
-      statistics: stats.rows[0],
-      issues: issues.rows
-    });
+    const formattedIssues = issues.map(issue => ({
+      ...issue,
+      engineer_name: issue.assigned_to?.full_name
+    }));
+
+    return successResponse(res, {
+      statistics: stats,
+      issues: formattedIssues
+    }, 'Ward dashboard data retrieved successfully');
   } catch (error) {
     next(error);
   }
