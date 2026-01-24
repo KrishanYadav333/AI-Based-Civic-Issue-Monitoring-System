@@ -248,6 +248,43 @@ def detect():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route("/save-test-image", methods=["POST"])
+def save_test_image():
+    """Save uploaded images to test_images folder for direct Flask app access"""
+    if "image" not in request.files:
+        return jsonify({"error": "Missing image"}), 400
+    
+    file = request.files["image"]
+    issue_type = request.form.get('issueType', 'civic_issue')
+    
+    if file.filename == "":
+        return jsonify({"error": "Invalid file"}), 400
+    
+    try:
+        # Create test_images directory if it doesn't exist
+        test_images_dir = "test_images"
+        os.makedirs(test_images_dir, exist_ok=True)
+        
+        # Generate filename with issue type and timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"{issue_type}_{timestamp}.jpg"
+        image_path = os.path.join(test_images_dir, filename)
+        
+        # Save image
+        img = Image.open(file)
+        if img.mode in ('RGBA', 'LA', 'P'):
+            img = img.convert('RGB')
+        img.save(image_path, 'JPEG', quality=95)
+        
+        return jsonify({
+            "success": True,
+            "filename": filename,
+            "path": image_path
+        })
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route("/api/detailed-stats")
 def get_detailed_stats():
     conn = sqlite3.connect('road_survey.db')

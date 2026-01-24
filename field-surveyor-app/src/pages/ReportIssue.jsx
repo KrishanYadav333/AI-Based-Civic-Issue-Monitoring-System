@@ -266,6 +266,20 @@ export default function ReportIssue() {
           await offlineStorage.markAsSynced(savedIssue.localId, result.data.id);
           dispatch(updateIssue({ localId: savedIssue.localId, synced: true, serverId: result.data.id }));
           
+          // Save image to test_images folder for Flask app access
+          try {
+            const testImageFormData = new FormData();
+            testImageFormData.append('image', tempImage);
+            testImageFormData.append('issueType', tempFormData.issueType);
+            
+            await fetch('http://localhost:5000/save-test-image', {
+              method: 'POST',
+              body: testImageFormData,
+            });
+          } catch (err) {
+            console.log('Could not save to test_images folder:', err);
+          }
+          
           setSuccessMessage('✅ Issue reported and synced successfully!');
           setShowSuccessPopup(true);
         } catch (syncError) {
