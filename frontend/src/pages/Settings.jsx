@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
 import { Settings as SettingsIcon, Save, Lock, Bell, Eye, EyeOff, Check, Moon, Sun, Download, Trash2, Shield } from 'lucide-react';
 import { logout } from '../store/authSlice';
+import backgroundImage from '../assets/images/Background_image.jpg';
 
 export default function Settings() {
   const dispatch = useDispatch();
@@ -110,24 +111,36 @@ export default function Settings() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div 
+      className="min-h-screen py-8 px-4 relative"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Navy blue gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-blue-800/30 to-blue-600/35 pointer-events-none"></div>
+      
+      <div className="relative z-10 max-w-4xl mx-auto">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <SettingsIcon className="w-8 h-8 text-blue-600" />
-            <h1 className="text-4xl font-bold text-gray-900">Settings</h1>
+            <SettingsIcon className="w-8 h-8 text-white drop-shadow-lg" />
+            <h1 className="text-4xl font-bold text-white drop-shadow-lg bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent" style={{textShadow: '0 2px 10px rgba(0,0,0,0.3), 0 0 30px rgba(255,255,255,0.3), 0 0 40px rgba(59,130,246,0.5)'}}>Settings</h1>
           </div>
-          <p className="text-gray-600">Manage your account preferences and settings</p>
+          <p className="text-white font-semibold drop-shadow-lg">Manage your account preferences and settings</p>
         </motion.div>
 
         {saveSuccess && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
-            <Check className="w-5 h-5 text-green-600" />
-            <span className="text-green-800">Settings saved successfully!</span>
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6 p-4 glass-card border border-green-400/30 rounded-lg flex items-center gap-2">
+            <Check className="w-5 h-5 text-green-300" />
+            <span className="text-white font-semibold drop-shadow-lg">Settings saved successfully!</span>
           </motion.div>
         )}
 
-        <div className="flex gap-2 mb-6 border-b border-gray-200 bg-white rounded-t-lg p-4 overflow-x-auto">
+        <div className="flex gap-2 mb-6 glass-card-strong rounded-t-lg p-4 overflow-x-auto">
           {tabs.map((tab, idx) => {
             const Icon = tab.icon;
             return (
@@ -139,8 +152,8 @@ export default function Settings() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${
-                  activeTab === tab.id ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-gray-900'
+                className={`flex items-center gap-2 px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap drop-shadow-md ${
+                  activeTab === tab.id ? 'text-white border-b-2 border-blue-400' : 'text-white/70 hover:text-white'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -150,29 +163,29 @@ export default function Settings() {
           })}
         </div>
 
-        <motion.div key={activeTab} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white rounded-b-lg shadow-md p-6">
+        <motion.div key={activeTab} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card rounded-b-lg shadow-2xl p-6">
           {activeTab === 'profile' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ staggerChildren: 0.05, delayChildren: 0.1 }} className="space-y-6">
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <motion.div whileHover={{ y: -2 }} className="">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                  <motion.input whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)' }} type="text" name="name" value={formData.name} onChange={handleProfileChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+                  <label className="block text-sm font-semibold text-white drop-shadow-lg mb-2">Full Name</label>
+                  <motion.input whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.3)' }} type="text" name="name" value={formData.name} onChange={handleProfileChange} className="w-full px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all text-white placeholder-white/60 font-medium" />
                 </motion.div>
                 <motion.div whileHover={{ y: -2 }} className="">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                  <motion.input whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)' }} type="email" name="email" value={formData.email} onChange={handleProfileChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+                  <label className="block text-sm font-semibold text-white drop-shadow-lg mb-2">Email Address</label>
+                  <motion.input whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.3)' }} type="email" name="email" value={formData.email} onChange={handleProfileChange} className="w-full px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all text-white placeholder-white/60 font-medium" />
                 </motion.div>
                 <motion.div whileHover={{ y: -2 }} className="">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Ward / Zone</label>
-                  <motion.input whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)' }} type="text" name="ward" value={formData.ward} onChange={handleProfileChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+                  <label className="block text-sm font-semibold text-white drop-shadow-lg mb-2">Ward / Zone</label>
+                  <motion.input whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.3)' }} type="text" name="ward" value={formData.ward} onChange={handleProfileChange} className="w-full px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all text-white placeholder-white/60 font-medium" />
                 </motion.div>
                 <motion.div whileHover={{ y: -2 }} className="">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                  <motion.input whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)' }} type="tel" name="phone" value={formData.phone} onChange={handleProfileChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+                  <label className="block text-sm font-semibold text-white drop-shadow-lg mb-2">Phone Number</label>
+                  <motion.input whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.3)' }} type="tel" name="phone" value={formData.phone} onChange={handleProfileChange} className="w-full px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all text-white placeholder-white/60 font-medium" />
                 </motion.div>
               </motion.div>
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-gray-600"><span className="font-medium">Current Role:</span> {user?.role || 'Engineer'}</p>
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card-light border border-blue-400/30 rounded-lg p-4">
+                <p className="text-sm text-white font-semibold drop-shadow-lg"><span className="font-bold">Current Role:</span> {user?.role || 'Engineer'}</p>
               </motion.div>
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex gap-3">
                 <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleSaveProfile} className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
@@ -186,24 +199,24 @@ export default function Settings() {
           {activeTab === 'security' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ staggerChildren: 0.05, delayChildren: 0.1 }} className="space-y-6">
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Change Password</h3>
+                <h3 className="text-lg font-bold text-white drop-shadow-lg mb-4">Change Password</h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                    <label className="block text-sm font-semibold text-white drop-shadow-lg mb-2">Current Password</label>
                     <div className="relative">
-                      <input type={showPassword ? 'text' : 'password'} name="currentPassword" value={passwordData.currentPassword} onChange={handlePasswordChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                      <input type={showPassword ? 'text' : 'password'} name="currentPassword" value={passwordData.currentPassword} onChange={handlePasswordChange} className="w-full px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white placeholder-white/60 font-medium" />
                       <button onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-2.5 text-gray-500">
                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
-                    <input type="password" name="newPassword" value={passwordData.newPassword} onChange={handlePasswordChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    <label className="block text-sm font-semibold text-white drop-shadow-lg mb-2">New Password</label>
+                    <input type="password" name="newPassword" value={passwordData.newPassword} onChange={handlePasswordChange} className="w-full px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white placeholder-white/60 font-medium" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
-                    <input type="password" name="confirmPassword" value={passwordData.confirmPassword} onChange={handlePasswordChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    <label className="block text-sm font-semibold text-white drop-shadow-lg mb-2">Confirm New Password</label>
+                    <input type="password" name="confirmPassword" value={passwordData.confirmPassword} onChange={handlePasswordChange} className="w-full px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white placeholder-white/60 font-medium" />
                   </div>
                 </div>
                 <div className="flex gap-3 mt-6">
@@ -214,9 +227,9 @@ export default function Settings() {
                 </div>
               </motion.div>
 
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Two-Factor Authentication</h3>
-                <p className="text-gray-600 mb-4">Add an extra layer of security to your account.</p>
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="border-t border-white/20 pt-6">
+                <h3 className="text-lg font-bold text-white drop-shadow-lg mb-4">Two-Factor Authentication</h3>
+                <p className="text-white/90 font-medium drop-shadow-md mb-4">Add an extra layer of security to your account.</p>
                 <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="px-6 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium">Enable 2FA</motion.button>
               </motion.div>
 
@@ -230,23 +243,23 @@ export default function Settings() {
 
           {activeTab === 'notifications' && (
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-gray-900">Notification Preferences</h3>
+              <h3 className="text-lg font-bold text-white drop-shadow-lg">Notification Preferences</h3>
 
-              <div className="space-y-4 pb-6 border-b">
-                <h4 className="font-medium text-gray-900">Issues</h4>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="space-y-4 pb-6 border-b border-white/20">
+                <h4 className="font-bold text-white drop-shadow-lg">Issues</h4>
+                <div className="flex items-center justify-between p-4 glass-card-light rounded-lg">
                   <div>
-                    <p className="font-medium text-gray-900">Issue Assigned</p>
-                    <p className="text-sm text-gray-600">Notify when a new issue is assigned to you</p>
+                    <p className="font-semibold text-white drop-shadow-md">Issue Assigned</p>
+                    <p className="text-sm text-white/80 font-medium drop-shadow-sm">Notify when a new issue is assigned to you</p>
                   </div>
                   <button onClick={() => handleNotificationToggle('issueAssigned')} className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${notifications.issueAssigned ? 'bg-blue-600' : 'bg-gray-300'}`}>
                     <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${notifications.issueAssigned ? 'translate-x-7' : 'translate-x-1'}`} />
                   </button>
                 </div>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-4 glass-card-light rounded-lg">
                   <div>
-                    <p className="font-medium text-gray-900">Issue Resolved</p>
-                    <p className="text-sm text-gray-600">Notify when an issue is marked as resolved</p>
+                    <p className="font-semibold text-white drop-shadow-md">Issue Resolved</p>
+                    <p className="text-sm text-white/80 font-medium drop-shadow-sm">Notify when an issue is marked as resolved</p>
                   </div>
                   <button onClick={() => handleNotificationToggle('issueResolved')} className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${notifications.issueResolved ? 'bg-blue-600' : 'bg-gray-300'}`}>
                     <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${notifications.issueResolved ? 'translate-x-7' : 'translate-x-1'}`} />
@@ -254,21 +267,21 @@ export default function Settings() {
                 </div>
               </div>
 
-              <div className="space-y-4 pb-6 border-b">
-                <h4 className="font-medium text-gray-900">Reports</h4>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="space-y-4 pb-6 border-b border-white/20">
+                <h4 className="font-bold text-white drop-shadow-lg">Reports</h4>
+                <div className="flex items-center justify-between p-4 glass-card-light rounded-lg">
                   <div>
-                    <p className="font-medium text-gray-900">Daily Summary</p>
-                    <p className="text-sm text-gray-600">Daily summary of issues and activities</p>
+                    <p className="font-semibold text-white drop-shadow-md">Daily Summary</p>
+                    <p className="text-sm text-white/80 font-medium drop-shadow-sm">Daily summary of issues and activities</p>
                   </div>
                   <button onClick={() => handleNotificationToggle('dailySummary')} className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${notifications.dailySummary ? 'bg-blue-600' : 'bg-gray-300'}`}>
                     <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${notifications.dailySummary ? 'translate-x-7' : 'translate-x-1'}`} />
                   </button>
                 </div>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-4 glass-card-light rounded-lg">
                   <div>
-                    <p className="font-medium text-gray-900">Weekly Report</p>
-                    <p className="text-sm text-gray-600">Weekly performance and resolution report</p>
+                    <p className="font-semibold text-white drop-shadow-md">Weekly Report</p>
+                    <p className="text-sm text-white/80 font-medium drop-shadow-sm">Weekly performance and resolution report</p>
                   </div>
                   <button onClick={() => handleNotificationToggle('weeklyReport')} className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${notifications.weeklyReport ? 'bg-blue-600' : 'bg-gray-300'}`}>
                     <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${notifications.weeklyReport ? 'translate-x-7' : 'translate-x-1'}`} />
@@ -277,20 +290,20 @@ export default function Settings() {
               </div>
 
               <div className="space-y-4">
-                <h4 className="font-medium text-gray-900">Notification Channels</h4>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <h4 className="font-bold text-white drop-shadow-lg">Notification Channels</h4>
+                <div className="flex items-center justify-between p-4 glass-card-light rounded-lg">
                   <div>
-                    <p className="font-medium text-gray-900">Email Notifications</p>
-                    <p className="text-sm text-gray-600">Receive notifications via email</p>
+                    <p className="font-semibold text-white drop-shadow-md">Email Notifications</p>
+                    <p className="text-sm text-white/80 font-medium drop-shadow-sm">Receive notifications via email</p>
                   </div>
                   <button onClick={() => handleNotificationToggle('email')} className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${notifications.email ? 'bg-blue-600' : 'bg-gray-300'}`}>
                     <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${notifications.email ? 'translate-x-7' : 'translate-x-1'}`} />
                   </button>
                 </div>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-4 glass-card-light rounded-lg">
                   <div>
-                    <p className="font-medium text-gray-900">In-App Notifications</p>
-                    <p className="text-sm text-gray-600">Receive notifications in the application</p>
+                    <p className="font-semibold text-white drop-shadow-md">In-App Notifications</p>
+                    <p className="text-sm text-white/80 font-medium drop-shadow-sm">Receive notifications in the application</p>
                   </div>
                   <button onClick={() => handleNotificationToggle('inApp')} className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${notifications.inApp ? 'bg-blue-600' : 'bg-gray-300'}`}>
                     <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${notifications.inApp ? 'translate-x-7' : 'translate-x-1'}`} />
@@ -309,11 +322,11 @@ export default function Settings() {
 
           {activeTab === 'privacy' && (
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-gray-900">Privacy & Data Management</h3>
+              <h3 className="text-lg font-bold text-white drop-shadow-lg">Privacy & Data Management</h3>
 
-              <div className="space-y-4 pb-6 border-b">
-                <h4 className="font-medium text-gray-900">Appearance</h4>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="space-y-4 pb-6 border-b border-white/20">
+                <h4 className="font-bold text-white drop-shadow-lg">Appearance</h4>
+                <div className="flex items-center justify-between p-4 glass-card-light rounded-lg">
                   <div className="flex items-center gap-3">
                     {preferences.darkMode ? (
                       <Moon className="w-5 h-5 text-blue-600" />
@@ -321,8 +334,8 @@ export default function Settings() {
                       <Sun className="w-5 h-5 text-yellow-500" />
                     )}
                     <div>
-                      <p className="font-medium text-gray-900">Dark Mode</p>
-                      <p className="text-sm text-gray-600">Use dark theme for easier viewing</p>
+                      <p className="font-semibold text-white drop-shadow-md">Dark Mode</p>
+                      <p className="text-sm text-white/80 font-medium drop-shadow-sm">Use dark theme for easier viewing</p>
                     </div>
                   </div>
                   <button onClick={() => handlePreferenceToggle('darkMode')} className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${preferences.darkMode ? 'bg-blue-600' : 'bg-gray-300'}`}>
@@ -331,30 +344,30 @@ export default function Settings() {
                 </div>
               </div>
 
-              <div className="space-y-4 pb-6 border-b">
-                <h4 className="font-medium text-gray-900">Data & Privacy</h4>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="space-y-4 pb-6 border-b border-white/20">
+                <h4 className="font-bold text-white drop-shadow-lg">Data & Privacy</h4>
+                <div className="flex items-center justify-between p-4 glass-card-light rounded-lg">
                   <div>
-                    <p className="font-medium text-gray-900">Share Analytics Data</p>
-                    <p className="text-sm text-gray-600">Help improve the app by sharing anonymous usage data</p>
+                    <p className="font-semibold text-white drop-shadow-md">Share Analytics Data</p>
+                    <p className="text-sm text-white/80 font-medium drop-shadow-sm">Help improve the app by sharing anonymous usage data</p>
                   </div>
                   <button onClick={() => handlePreferenceToggle('shareData')} className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${preferences.shareData ? 'bg-blue-600' : 'bg-gray-300'}`}>
                     <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${preferences.shareData ? 'translate-x-7' : 'translate-x-1'}`} />
                   </button>
                 </div>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-4 glass-card-light rounded-lg">
                   <div>
-                    <p className="font-medium text-gray-900">Marketing Emails</p>
-                    <p className="text-sm text-gray-600">Receive emails about new features and updates</p>
+                    <p className="font-semibold text-white drop-shadow-md">Marketing Emails</p>
+                    <p className="text-sm text-white/80 font-medium drop-shadow-sm">Receive emails about new features and updates</p>
                   </div>
                   <button onClick={() => handlePreferenceToggle('marketingEmails')} className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${preferences.marketingEmails ? 'bg-blue-600' : 'bg-gray-300'}`}>
                     <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${preferences.marketingEmails ? 'translate-x-7' : 'translate-x-1'}`} />
                   </button>
                 </div>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-4 glass-card-light rounded-lg">
                   <div>
-                    <p className="font-medium text-gray-900">Show Activity Status</p>
-                    <p className="text-sm text-gray-600">Let others see when you're active in the system</p>
+                    <p className="font-semibold text-white drop-shadow-md">Show Activity Status</p>
+                    <p className="text-sm text-white/80 font-medium drop-shadow-sm">Let others see when you're active in the system</p>
                   </div>
                   <button onClick={() => handlePreferenceToggle('showActivity')} className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${preferences.showActivity ? 'bg-blue-600' : 'bg-gray-300'}`}>
                     <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${preferences.showActivity ? 'translate-x-7' : 'translate-x-1'}`} />
@@ -362,10 +375,10 @@ export default function Settings() {
                 </div>
               </div>
 
-              <div className="space-y-4 pb-6 border-b">
-                <h4 className="font-medium text-gray-900">Data Management</h4>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-blue-900">Your data is securely stored and can be downloaded or deleted at any time.</p>
+              <div className="space-y-4 pb-6 border-b border-white/20">
+                <h4 className="font-bold text-white drop-shadow-lg">Data Management</h4>
+                <div className="glass-card-light border border-blue-400/30 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-white font-semibold drop-shadow-md">Your data is securely stored and can be downloaded or deleted at any time.</p>
                 </div>
                 <div className="flex gap-3">
                   <button onClick={handleDownloadData} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
@@ -376,12 +389,12 @@ export default function Settings() {
               </div>
 
               <div className="space-y-4">
-                <h4 className="font-medium text-gray-900">Account Actions</h4>
-                <button onClick={handleDeleteAccount} className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
+                <h4 className="font-bold text-white drop-shadow-lg">Account Actions</h4>
+                <button onClick={handleDeleteAccount} className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all hover:scale-105 font-semibold shadow-lg">
                   <Trash2 className="w-4 h-4" />
                   Delete Account
                 </button>
-                <p className="text-sm text-gray-600">Permanently delete your account and all associated data</p>
+                <p className="text-sm text-white/80 font-medium drop-shadow-sm">Permanently delete your account and all associated data</p>
               </div>
 
               <div className="flex gap-3 pt-6">

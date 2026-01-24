@@ -125,7 +125,7 @@ const App: React.FC = () => {
           </p>
           <div className="flex gap-4 flex-wrap">
             <a
-              href="http://localhost:5173/"
+              href="http://localhost:5174/report"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-[#003366] text-white px-8 py-3 font-bold hover:bg-blue-900 transition-colors shadow-lg inline-block"
@@ -133,7 +133,7 @@ const App: React.FC = () => {
               Report Issue
             </a>
             <a
-              href="http://localhost:5174/"
+              href="http://localhost:5173/"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-white text-[#003366] border-2 border-[#003366] px-8 py-3 font-bold hover:bg-slate-50 transition-colors inline-block"
