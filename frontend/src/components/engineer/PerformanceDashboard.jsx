@@ -23,6 +23,7 @@ import {
   AreaChart,
   Area
 } from 'recharts';
+import backgroundImage from '../../assets/images/Background_image.jpg';
 
 const PerformanceDashboard = () => {
   const dispatch = useDispatch();
@@ -107,34 +108,47 @@ const PerformanceDashboard = () => {
     <motion.div
       initial={{ opacity: 0, y: 10, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      whileHover={{ scale: 1.03, y: -4 }}
+      whileHover={{ scale: 1.05, y: -8 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className={`${bgGradient} rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer border border-white/50`}
+      className="glass-card-strong rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer border border-white/20"
     >
       <div className="flex items-start justify-between">
-        <div>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="text-sm font-medium text-gray-600 mb-1">{label}</motion.p>
-          <motion.p initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, type: 'spring' }} className="text-3xl font-bold text-gray-900">{value}</motion.p>
-          {subtext && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="text-xs text-gray-500 mt-2">{subtext}</motion.p>}
+        <div className="flex-1">
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="text-sm font-semibold text-white/90 uppercase tracking-wider mb-1">{label}</motion.p>
+          <motion.p initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, type: 'spring' }} className="text-3xl font-bold text-white">{value}</motion.p>
+          {subtext && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="text-xs text-white/70 mt-2">{subtext}</motion.p>}
           {trend !== undefined && (
-            <motion.p initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }} className={`text-sm font-medium mt-2 ${trend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <motion.p initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }} className={`text-sm font-medium mt-2 ${trend >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
               {trend >= 0 ? '↑' : '↓'} {Math.abs(trend)}% from last month
             </motion.p>
           )}
         </div>
-        <motion.div whileHover={{ rotate: 10, scale: 1.1 }} className="bg-white/50 p-3 rounded-xl">
-          <Icon className="w-6 h-6 text-gray-700" />
+        <motion.div whileHover={{ rotate: 10, scale: 1.1 }} className="bg-white/10 p-3 rounded-xl backdrop-blur-sm">
+          <Icon className="w-6 h-6 text-white" />
         </motion.div>
       </div>
     </motion.div>
   ));
 
   return (
-    <div className="space-y-6">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Navy blue gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-blue-800/30 to-blue-600/35 pointer-events-none"></div>
+      
+      <div className="relative z-10 p-8 space-y-6">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-4xl font-bold text-gray-900">Performance Dashboard</h1>
-        <p className="text-gray-500 mt-1">Your resolution metrics and progress</p>
+        <h1 className="text-4xl font-bold metallic-text">Performance Dashboard</h1>
+        <p className="text-white mt-2 text-base font-semibold drop-shadow-lg">Your resolution metrics and progress</p>
       </motion.div>
 
       {/* Key Metrics Cards */}
@@ -179,15 +193,16 @@ const PerformanceDashboard = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6"
+          whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
+          className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">Weekly Trend</h3>
-              <p className="text-sm text-gray-500 mt-1">Issues resolved & assigned</p>
+              <h3 className="text-lg font-semibold text-white">Weekly Trend</h3>
+              <p className="text-sm text-white/70 mt-1">Issues resolved & assigned</p>
             </div>
-            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <Download className="w-5 h-5 text-gray-600" />
+            <button className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+              <Download className="w-5 h-5 text-white/80" />
             </button>
           </div>
           <ResponsiveContainer width="100%" height={300}>
@@ -237,9 +252,10 @@ const PerformanceDashboard = () => {
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6"
+          whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
+          className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
         >
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Status Distribution</h3>
+          <h3 className="text-lg font-semibold text-white mb-6">Status Distribution</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -264,9 +280,9 @@ const PerformanceDashboard = () => {
               <div key={idx} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                  <span className="text-sm text-gray-600">{item.name}</span>
+                  <span className="text-sm text-white/80">{item.name}</span>
                 </div>
-                <span className="font-semibold text-gray-900">{item.value}</span>
+                <span className="font-semibold text-white">{item.value}</span>
               </div>
             ))}
           </div>
@@ -279,9 +295,10 @@ const PerformanceDashboard = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6"
+          whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
+          className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
         >
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Issue Types</h3>
+          <h3 className="text-lg font-semibold text-white mb-6">Issue Types</h3>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={typeDistribution}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -303,9 +320,10 @@ const PerformanceDashboard = () => {
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6"
+          whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
+          className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
         >
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Priority Levels</h3>
+          <h3 className="text-lg font-semibold text-white mb-6">Priority Levels</h3>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={priorityDistribution} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -328,28 +346,30 @@ const PerformanceDashboard = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-emerald-50 to-cyan-50 rounded-2xl border border-emerald-200 p-6"
+        whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
+        className="glass-card-light rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6 border border-white/20"
       >
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Summary</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">Monthly Summary</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <p className="text-sm text-gray-600 mb-1">Resolution Rate</p>
-            <p className="text-2xl font-bold text-emerald-600">{resolutionRate}%</p>
+            <p className="text-sm text-white/80 mb-1 font-medium">Resolution Rate</p>
+            <p className="text-2xl font-bold text-emerald-300">{resolutionRate}%</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 mb-1">Total Issues</p>
-            <p className="text-2xl font-bold text-emerald-600">{total}</p>
+            <p className="text-sm text-white/80 mb-1 font-medium">Total Issues</p>
+            <p className="text-2xl font-bold text-blue-300">{total}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 mb-1">Completion Rate</p>
-            <p className="text-2xl font-bold text-emerald-600">{completionRate}%</p>
+            <p className="text-sm text-white/80 mb-1 font-medium">Completion Rate</p>
+            <p className="text-2xl font-bold text-purple-300">{completionRate}%</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 mb-1">Pending Issues</p>
-            <p className="text-2xl font-bold text-emerald-600">{pending}</p>
+            <p className="text-sm text-white/80 mb-1 font-medium">Pending Issues</p>
+            <p className="text-2xl font-bold text-orange-300">{pending}</p>
           </div>
         </div>
       </motion.div>
+      </div>
     </div>
   );
 };
