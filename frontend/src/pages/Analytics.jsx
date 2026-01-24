@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Analytics from '../components/admin/Analytics';
 import ReportGenerator from '../components/admin/ReportGenerator';
 import { BarChart3, FileText } from 'lucide-react';
+import backgroundImage from '../assets/images/Background_image.jpg';
 
 const AnalyticsPage = () => {
   const [activeTab, setActiveTab] = useState('analytics');
@@ -13,18 +14,31 @@ const AnalyticsPage = () => {
   };
 
   return (
-    <div>
+    <div
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Navy blue gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-blue-800/30 to-blue-600/35 pointer-events-none"></div>
+      
+      <div className="relative z-10 p-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-4xl font-bold metallic-text">
           Analytics & Reports
         </h1>
-        <div className="flex gap-2 bg-gray-100 rounded-lg p-1">
+        <div className="flex gap-2 glass-card-strong rounded-xl p-1 shadow-lg">
           <button
             onClick={() => setActiveTab('analytics')}
-            className={`px-4 py-2 rounded-md font-medium transition-all ${
+            className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
               activeTab === 'analytics'
-                ? 'bg-white text-blue-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg'
+                : 'text-white/90 hover:bg-white/10'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -34,10 +48,10 @@ const AnalyticsPage = () => {
           </button>
           <button
             onClick={() => setActiveTab('reports')}
-            className={`px-4 py-2 rounded-md font-medium transition-all ${
+            className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
               activeTab === 'reports'
-                ? 'bg-white text-blue-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg'
+                : 'text-white/90 hover:bg-white/10'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -71,6 +85,7 @@ const AnalyticsPage = () => {
       >
         <ReportGenerator />
       </motion.div>
+      </div>
     </div>
   );
 };

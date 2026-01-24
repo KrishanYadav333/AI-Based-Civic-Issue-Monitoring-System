@@ -5,6 +5,7 @@ import { Card, MetricCard, Button } from '../common/FormElements';
 import { LoadingSpinner, CardSkeleton } from '../common/Loaders';
 import { CheckCircle, AlertCircle, Clock, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
+import backgroundImage from '../../assets/images/Background_image.jpg';
 
 // Animation variants
 const containerVariants = {
@@ -59,10 +60,24 @@ const EngineerDashboard = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Navy blue gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-blue-800/30 to-blue-600/35 pointer-events-none"></div>
+      
+      <div className="relative z-10 p-8 space-y-6">
       {/* Header */}
       <motion.div variants={headerVariants} initial="hidden" animate="visible">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Performance</h2>
+        <h1 className="text-4xl font-bold metallic-text mb-2">Your Performance</h1>
+        <p className="text-white/80 text-sm font-medium">Track your progress and manage assigned issues</p>
       </motion.div>
 
       {/* Key Metrics */}
@@ -72,41 +87,61 @@ const EngineerDashboard = () => {
         initial="hidden"
         animate="visible"
       >
-        <motion.div variants={itemVariants}>
-          <MetricCard
-            label="Issues Resolved"
-            value={resolvedCount}
-            subtext="This month"
-            icon={CheckCircle}
-            color="success"
-          />
+        <motion.div variants={itemVariants} whileHover={{ scale: 1.05, y: -8, transition: { duration: 0.3 } }}>
+          <div className="glass-card-strong rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-white/90 text-xs font-semibold uppercase tracking-wider">Issues Resolved</p>
+                <p className="text-3xl font-bold text-white mt-2">{resolvedCount}</p>
+                <p className="text-sm text-white/70 mt-1">This month</p>
+              </div>
+              <div className="bg-emerald-500/30 p-3 rounded-xl backdrop-blur-sm">
+                <CheckCircle className="w-6 h-6 text-white" />
+              </div>
+            </div>
+          </div>
         </motion.div>
-        <motion.div variants={itemVariants}>
-          <MetricCard
-            label="In Progress"
-            value={inProgressCount}
-            subtext="Active issues"
-            icon={Clock}
-            color="warning"
-          />
+        <motion.div variants={itemVariants} whileHover={{ scale: 1.05, y: -8, transition: { duration: 0.3 } }}>
+          <div className="glass-card-strong rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-white/90 text-xs font-semibold uppercase tracking-wider">In Progress</p>
+                <p className="text-3xl font-bold text-white mt-2">{inProgressCount}</p>
+                <p className="text-sm text-white/70 mt-1">Active issues</p>
+              </div>
+              <div className="bg-orange-500/30 p-3 rounded-xl backdrop-blur-sm">
+                <Clock className="w-6 h-6 text-white" />
+              </div>
+            </div>
+          </div>
         </motion.div>
-        <motion.div variants={itemVariants}>
-          <MetricCard
-            label="Avg Resolution Time"
-            value={`${avgResolutionTime}d`}
-            subtext="Days to resolve"
-            icon={TrendingUp}
-            color="primary"
-          />
+        <motion.div variants={itemVariants} whileHover={{ scale: 1.05, y: -8, transition: { duration: 0.3 } }}>
+          <div className="glass-card-strong rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-white/90 text-xs font-semibold uppercase tracking-wider">Avg Resolution Time</p>
+                <p className="text-3xl font-bold text-white mt-2">{avgResolutionTime === Infinity || isNaN(avgResolutionTime) ? 'N/A' : `${avgResolutionTime}d`}</p>
+                <p className="text-sm text-white/70 mt-1">Days to resolve</p>
+              </div>
+              <div className="bg-blue-500/30 p-3 rounded-xl backdrop-blur-sm">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+            </div>
+          </div>
         </motion.div>
-        <motion.div variants={itemVariants}>
-          <MetricCard
-            label="Resolution Rate"
-            value={`${resolutionRate}%`}
-            subtext="Success rate"
-            icon={TrendingUp}
-            color="primary"
-          />
+        <motion.div variants={itemVariants} whileHover={{ scale: 1.05, y: -8, transition: { duration: 0.3 } }}>
+          <div className="glass-card-strong rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-white/90 text-xs font-semibold uppercase tracking-wider">Resolution Rate</p>
+                <p className="text-3xl font-bold text-white mt-2">{resolutionRate}%</p>
+                <p className="text-sm text-white/70 mt-1">Success rate</p>
+              </div>
+              <div className="bg-purple-500/30 p-3 rounded-xl backdrop-blur-sm">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+            </div>
+          </div>
         </motion.div>
       </motion.div>
 
@@ -114,14 +149,15 @@ const EngineerDashboard = () => {
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
+        whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
         transition={{ delay: 0.3, duration: 0.5 }}
+        className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
       >
-        <Card>
           <motion.h3 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="text-lg font-semibold text-gray-900 mb-4"
+            className="text-lg font-semibold text-white mb-6"
           >
             Issue Breakdown
           </motion.h3>
@@ -131,47 +167,47 @@ const EngineerDashboard = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.45 }}
             whileHover={{ scale: 1.05 }}
-            className="text-center cursor-pointer"
+            className="text-center cursor-pointer p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300"
           >
-            <p className="text-2xl font-bold text-blue-600">{assignedIssues.length}</p>
-            <p className="text-sm text-gray-600">Total Assigned</p>
+            <p className="text-3xl font-bold text-blue-300">{assignedIssues.length}</p>
+            <p className="text-sm text-white/80 mt-1">Total Assigned</p>
           </motion.div>
           <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5 }}
             whileHover={{ scale: 1.05 }}
-            className="text-center cursor-pointer"
+            className="text-center cursor-pointer p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300"
           >
-            <p className="text-2xl font-bold text-orange-600">{inProgressCount}</p>
-            <p className="text-sm text-gray-600">In Progress</p>
+            <p className="text-3xl font-bold text-orange-300">{inProgressCount}</p>
+            <p className="text-sm text-white/80 mt-1">In Progress</p>
           </motion.div>
           <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.55 }}
             whileHover={{ scale: 1.05 }}
-            className="text-center cursor-pointer"
+            className="text-center cursor-pointer p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300"
           >
-            <p className="text-2xl font-bold text-green-600">{resolvedCount}</p>
-            <p className="text-sm text-gray-600">Completed</p>
+            <p className="text-3xl font-bold text-green-300">{resolvedCount}</p>
+            <p className="text-sm text-white/80 mt-1">Completed</p>
           </motion.div>
         </div>
-        </Card>
       </motion.div>
 
       {/* Recent Activity */}
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
+        whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
         transition={{ delay: 0.4, duration: 0.5 }}
+        className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
       >
-        <Card>
           <motion.h3 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-lg font-semibold text-gray-900 mb-4"
+            className="text-lg font-semibold text-white mb-4"
           >
             Recent Issues
           </motion.h3>
@@ -186,23 +222,23 @@ const EngineerDashboard = () => {
               key={issue.id}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              whileHover={{ scale: 1.02, backgroundColor: '#f9fafb' }}
+              whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.1)' }}
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.3 }}
-              className="flex items-start justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition cursor-pointer"
+              className="flex items-start justify-between p-4 border border-white/20 rounded-xl hover:bg-white/10 transition-all duration-300 cursor-pointer"
             >
               <div className="flex-1">
-                <p className="font-medium text-gray-900">{issue.title}</p>
-                <p className="text-xs text-gray-500">{issue.ward}</p>
+                <p className="font-semibold text-white">{issue.title}</p>
+                <p className="text-xs text-white/70 mt-1">{issue.ward}</p>
               </div>
               <motion.span 
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.55 + index * 0.08, type: 'spring', stiffness: 200 }}
-                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  issue.status === 'resolved' ? 'bg-green-100 text-green-800' :
-                  issue.status === 'assigned' ? 'bg-orange-100 text-orange-800' :
-                  'bg-blue-100 text-blue-800'
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold backdrop-blur-sm ${
+                  issue.status === 'resolved' ? 'bg-emerald-500/30 text-emerald-200 border border-emerald-400/30' :
+                  issue.status === 'assigned' ? 'bg-orange-500/30 text-orange-200 border border-orange-400/30' :
+                  'bg-blue-500/30 text-blue-200 border border-blue-400/30'
                 }`}
               >
                 {issue.status}
@@ -210,8 +246,8 @@ const EngineerDashboard = () => {
             </motion.div>
           ))}
         </motion.div>
-      </Card>
       </motion.div>
+      </div>
     </div>
   );
 };

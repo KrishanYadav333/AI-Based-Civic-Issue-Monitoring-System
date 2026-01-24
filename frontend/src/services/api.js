@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Get API URL from environment variables or use default
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK === 'true'; // Set to false when backend is ready
+const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK === 'true' || false; // Using real backend
 
 // Create axios instance with defaults
 const api = axios.create({
@@ -40,33 +40,22 @@ api.interceptors.response.use(
 
 // Authentication Service
 export const authService = {
-  login: async (emailOrUsername, password) => {
+  login: async (email, password) => {
     try {
       if (USE_MOCK_DATA) {
         // Mock login for development
         await new Promise(resolve => setTimeout(resolve, 500));
         const mockUser = {
-          id: emailOrUsername === 'admin@example.com' ? '1' : '2',
-          email: emailOrUsername,
-          role: emailOrUsername === 'admin@example.com' ? 'admin' : 'engineer',
-          name: emailOrUsername === 'admin@example.com' ? 'Admin User' : 'Engineer User',
+          id: email === 'admin@example.com' ? '1' : '2',
+          email,
+          role: email === 'admin@example.com' ? 'admin' : 'engineer',
+          name: email === 'admin@example.com' ? 'Admin User' : 'Engineer User',
           token: `mock-token-${Date.now()}`,
         };
         return mockUser;
       }
       
-      // Backend uses 'username' field for login
-      const response = await api.post('/auth/login', { 
-        username: emailOrUsername, 
-        password 
-      });
-      
-      // Extract data from backend response format
-      if (response.data && response.data.success) {
-        const { user, token } = response.data.data;
-        return { ...user, token };
-      }
-      
+      const response = await api.post('/auth/login', { email, password });
       return response.data;
     } catch (error) {
       throw error;
@@ -317,38 +306,33 @@ export const analyticsService = {
   },
 };
 
-// Dashboard Service
-export const dashboardService = {
-  getAdminStats: async () => {
+// Export default api instance for custom requests
+export default api;
+
+export const analyticsService = {
+  getDashboardMetrics: async () => {
     try {
-      const response = await api.get('/dashboard/admin/stats');
+      const response = await api.get('/analytics/dashboard');
       return response.data;
     } catch (error) {
       throw error;
     }
   },
 
-  getEngineerDashboard: async (engineerId) => {
+  getIssueAnalytics: async (filters = {}) => {
     try {
-      const response = await api.get(`/dashboard/engineer/${engineerId}`);
+      const response = await api.get('/analytics/issues', { params: filters });
       return response.data;
     } catch (error) {
       throw error;
     }
   },
 
-  getHeatmapData: async () => {
+  exportReport: async (format = 'csv') => {
     try {
-      const response = await api.get('/dashboard/admin/heatmap');
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  getWardPerformance: async () => {
-    try {
-      const response = await api.get('/dashboard/admin/ward-performance');
+      const response = await api.get(`/analytics/export/${format}`, {
+        responseType: format === 'pdf' ? 'blob' : 'text',
+      });
       return response.data;
     } catch (error) {
       throw error;
@@ -356,5 +340,4 @@ export const dashboardService = {
   },
 };
 
-// Export default api instance for custom requests
 export default api;

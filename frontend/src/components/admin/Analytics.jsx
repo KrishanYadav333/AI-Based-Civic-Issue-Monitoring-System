@@ -5,6 +5,7 @@ import { Card, Button } from '../common/FormElements';
 import { Download, BarChart3, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { exportToCSV } from '../../utils/helpers';
 import { motion } from 'framer-motion';
+import backgroundImage from '../../assets/images/Background_image.jpg';
 
 // Animation variants
 const headerVariants = {
@@ -156,44 +157,69 @@ const Analytics = () => {
     exportToCSV(csvData, 'issues_report');
   };
 
-  const StatCard = ({ label, value, trend, icon: Icon, color }) => (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
+  const StatCard = ({ label, value, trend, icon: Icon, color, iconBg }) => (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.05, y: -8, transition: { duration: 0.3 } }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
+      className="glass-card-strong rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer"
+    >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-gray-600 text-xs font-medium uppercase tracking-wider">{label}</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
+          <p className="text-white/90 text-xs font-semibold uppercase tracking-wider transition-colors duration-300">{label}</p>
+          <p className="text-3xl font-bold text-white mt-2 transition-all duration-300">{value}</p>
           {trend !== undefined && (
-            <div className={`flex items-center gap-1 mt-2 text-sm font-medium ${trend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {trend >= 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+            <div className={`flex items-center gap-1 mt-2 text-sm font-medium transition-all duration-300 ${trend >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+              {trend >= 0 ? <ArrowUpRight className="w-4 h-4 transition-transform duration-300" /> : <ArrowDownRight className="w-4 h-4 transition-transform duration-300" />}
               {Math.abs(trend)}% from last period
             </div>
           )}
         </div>
-        <div className={`p-3 rounded-lg ${color}`}>
-          <Icon className="w-6 h-6 text-white" />
+        <div className={`${iconBg} p-3 rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-110`}>
+          <Icon className="w-6 h-6 text-white transition-transform duration-300 hover:rotate-12" />
         </div>
       </div>
     </motion.div>
   );
 
   return (
-    <div className="space-y-6">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Navy blue gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-blue-800/30 to-blue-600/35 pointer-events-none"></div>
+      
+      <div className="relative z-10 space-y-6 p-8">
       {/* Header */}
       <motion.div variants={headerVariants} initial="hidden" animate="visible">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <BarChart3 className="w-8 h-8 text-blue-600" />
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+              <BarChart3 className="w-6 h-6 text-white" />
+            </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Analytics & Reports</h1>
-              <p className="text-gray-600 text-sm">Comprehensive insights and performance metrics</p>
+              <h1 className="text-4xl font-bold metallic-text">Analytics & Reports</h1>
+              <p className="text-white/80 text-sm mt-1 font-medium">Comprehensive insights and performance metrics</p>
             </div>
           </div>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button onClick={handleExportCSV} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-              <Download className="w-4 h-4" />
-              Export CSV
-            </Button>
-          </motion.div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleExportCSV}
+            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-5 py-3 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 font-medium"
+          >
+            <Download className="w-4 h-4" />
+            Export CSV
+          </motion.button>
         </div>
       </motion.div>
 
@@ -205,31 +231,38 @@ const Analytics = () => {
         animate="visible"
       >
         <motion.div variants={itemVariants}>
-          <StatCard icon={BarChart3} label="Total Issues" value={metrics.totalIssues} trend={12} color="bg-blue-600" />
+          <StatCard icon={BarChart3} label="Total Issues" value={metrics.totalIssues} trend={12} iconBg="bg-blue-500/30" />
         </motion.div>
         <motion.div variants={itemVariants}>
-          <StatCard icon={TrendingUp} label="Resolution Rate" value={`${metrics.resolutionRate}%`} trend={8} color="bg-green-600" />
+          <StatCard icon={TrendingUp} label="Resolution Rate" value={`${metrics.resolutionRate}%`} trend={8} iconBg="bg-emerald-500/30" />
         </motion.div>
         <motion.div variants={itemVariants}>
-          <StatCard icon={TrendingDown} label="Avg Time (Days)" value={metrics.avgResolutionTime} trend={-5} color="bg-purple-600" />
+          <StatCard icon={TrendingDown} label="Avg Time (Days)" value={metrics.avgResolutionTime} trend={-5} iconBg="bg-purple-500/30" />
         </motion.div>
         <motion.div variants={itemVariants}>
-          <StatCard icon={BarChart3} label="Critical Issues" value={metrics.criticalIssues} trend={-3} color="bg-red-600" />
+          <StatCard icon={BarChart3} label="Critical Issues" value={metrics.criticalIssues} trend={-3} iconBg="bg-red-500/30" />
         </motion.div>
         <motion.div variants={itemVariants}>
-          <StatCard icon={BarChart3} label="Wards Covered" value={metrics.wardCount} trend={2} color="bg-orange-600" />
+          <StatCard icon={BarChart3} label="Wards Covered" value={metrics.wardCount} trend={2} iconBg="bg-orange-500/30" />
         </motion.div>
       </motion.div>
 
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Issue Type Distribution */}
-        <motion.div variants={chartVariants} initial="hidden" animate="visible" transition={{ delay: 0.2 }} className="bg-white rounded-lg border border-gray-200 p-6">
+        <motion.div
+          variants={chartVariants}
+          initial="hidden"
+          animate="visible"
+          transition={{ delay: 0.2 }}
+          whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
+          className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
+        >
           <motion.h3 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-lg font-semibold text-gray-900 mb-4"
+            className="text-lg font-semibold text-white mb-4 transition-colors duration-300"
           >
             Issue Type Distribution
           </motion.h3>
@@ -257,12 +290,19 @@ const Analytics = () => {
         </motion.div>
 
         {/* Priority Breakdown */}
-        <motion.div variants={chartVariants} initial="hidden" animate="visible" transition={{ delay: 0.3 }} className="bg-white rounded-lg border border-gray-200 p-6">
+        <motion.div
+          variants={chartVariants}
+          initial="hidden"
+          animate="visible"
+          transition={{ delay: 0.3 }}
+          whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
+          className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
+        >
           <motion.h3 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="text-lg font-semibold text-gray-900 mb-4"
+            className="text-lg font-semibold text-white mb-4 transition-colors duration-300"
           >
             Priority Breakdown
           </motion.h3>
@@ -285,12 +325,19 @@ const Analytics = () => {
       {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Trend Line */}
-        <motion.div variants={chartVariants} initial="hidden" animate="visible" transition={{ delay: 0.4 }} className="bg-white rounded-lg border border-gray-200 p-6">
+        <motion.div
+          variants={chartVariants}
+          initial="hidden"
+          animate="visible"
+          transition={{ delay: 0.4 }}
+          whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
+          className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
+        >
           <motion.h3 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-lg font-semibold text-gray-900 mb-4"
+            className="text-lg font-semibold text-white mb-4 transition-colors duration-300"
           >
             Issues Trend
           </motion.h3>
@@ -308,12 +355,19 @@ const Analytics = () => {
         </motion.div>
 
         {/* Status Distribution */}
-        <motion.div variants={chartVariants} initial="hidden" animate="visible" transition={{ delay: 0.5 }} className="bg-white rounded-lg border border-gray-200 p-6">
+        <motion.div
+          variants={chartVariants}
+          initial="hidden"
+          animate="visible"
+          transition={{ delay: 0.5 }}
+          whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
+          className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
+        >
           <motion.h3 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="text-lg font-semibold text-gray-900 mb-4"
+            className="text-lg font-semibold text-white mb-4 transition-colors duration-300"
           >
             Status Distribution
           </motion.h3>
@@ -334,8 +388,15 @@ const Analytics = () => {
       </div>
 
       {/* Ward Performance */}
-      <motion.div variants={chartVariants} initial="hidden" animate="visible" transition={{ delay: 0.6 }} className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Ward Performance Overview</h3>
+      <motion.div
+        variants={chartVariants}
+        initial="hidden"
+        animate="visible"
+        transition={{ delay: 0.6 }}
+        whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
+        className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
+      >
+        <h3 className="text-lg font-semibold text-white mb-4 transition-colors duration-300">Ward Performance Overview</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={wardData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -351,36 +412,43 @@ const Analytics = () => {
       </motion.div>
 
       {/* Summary Statistics */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Summary Insights</h3>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.7 }}
+        whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
+        className="glass-card-light rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6 border border-white/20"
+      >
+        <h3 className="text-lg font-semibold text-white mb-4">Summary Insights</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <p className="text-gray-600 text-sm">Highest Priority Type</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">
+            <p className="text-white/80 text-sm font-medium">Highest Priority Type</p>
+            <p className="text-2xl font-bold text-white mt-1">
               {typeData.length > 0 ? typeData[0].name : 'N/A'}
             </p>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-white/70 mt-1">
               {typeData.length > 0 ? `${typeData[0].value} issues` : ''}
             </p>
           </div>
           <div>
-            <p className="text-gray-600 text-sm">Most Issues Ward</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">
+            <p className="text-white/80 text-sm font-medium">Most Issues Ward</p>
+            <p className="text-2xl font-bold text-white mt-1">
               {wardData.length > 0 ? wardData.reduce((a, b) => a.total > b.total ? a : b).ward : 'N/A'}
             </p>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-white/70 mt-1">
               {wardData.length > 0 ? `${wardData.reduce((a, b) => a.total > b.total ? a : b).total} issues` : ''}
             </p>
           </div>
           <div>
-            <p className="text-gray-600 text-sm">Pending Action</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">
+            <p className="text-white/80 text-sm font-medium">Pending Action</p>
+            <p className="text-2xl font-bold text-white mt-1">
               {issues.filter(i => i.status === 'Pending').length}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Issues awaiting assignment</p>
+            <p className="text-sm text-white/70 mt-1">Issues awaiting assignment</p>
           </div>
         </div>
       </motion.div>
+    </div>
     </div>
   );
 };
