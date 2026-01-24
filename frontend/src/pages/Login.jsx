@@ -15,6 +15,22 @@ const Login = () => {
   const { loading, error, isAuthenticated, user } = useSelector(state => state.auth);
   const [email, setEmail] = useState('admin@civic.com');
   const [password, setPassword] = useState('admin123');
+  
+  // Demo users for quick login
+  const demoUsers = [
+    { label: 'Admin User', email: 'admin@civic.com', password: 'admin123' },
+    { label: 'Engineer User', email: 'engineer@civic.com', password: 'engineer123' },
+    { label: 'Surveyor User', email: 'surveyor@civic.com', password: 'surveyor123' },
+  ];
+
+  const handleDemoLogin = (demoUser) => {
+    setEmail(demoUser.email);
+    setPassword(demoUser.password);
+    // Auto-submit after selecting
+    setTimeout(() => {
+      dispatch(loginUser({ email: demoUser.email, password: demoUser.password }));
+    }, 100);
+  };
 
   // Redirect after successful login
   useEffect(() => {
@@ -67,6 +83,40 @@ const Login = () => {
             </div>
 
             {error && <Alert type="error" message={error} className="mb-4" />}
+
+            {/* Quick Demo Login Dropdown */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                🎯 Quick Demo Login
+              </label>
+              <select
+                onChange={(e) => {
+                  const selectedUser = demoUsers[e.target.value];
+                  if (selectedUser) handleDemoLogin(selectedUser);
+                }}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#144272] focus:border-transparent transition-all"
+                defaultValue=""
+              >
+                <option value="" disabled>Select a demo user to login instantly</option>
+                {demoUsers.map((user, index) => (
+                  <option key={index} value={index}>
+                    {user.label} - {user.email}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-2">
+                ⚡ Select any option above for instant login (for demonstration)
+              </p>
+            </div>
+
+            <div className="relative mb-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or login manually</span>
+              </div>
+            </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
               <Input
