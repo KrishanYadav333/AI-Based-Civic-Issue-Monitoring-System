@@ -3,7 +3,11 @@
  * Core business logic for issue management
  */
 
-const db = require('./database');
+const Issue = require('../models/Issue');
+const IssueType = require('../models/IssueType');
+const IssueLog = require('../models/IssueLog');
+const User = require('../models/User');
+const Ward = require('../models/Ward');
 const geoService = require('./geoService');
 const aiService = require('./aiService');
 const workflowService = require('./workflowService');
@@ -66,9 +70,9 @@ async function submitIssue(data) {
         const selectedIssueTypeCode = data.issueType || processedClassification.issueType;
 
         // Get issue type from database
-        const issueType = await db.findOne('issue_types', {
-            code: selectedIssueTypeCode
-        });
+        const issueType = await IssueType.findOne({
+            name: selectedIssueTypeCode
+        }).lean();
 
         if (!issueType) {
             throw new Error(`Issue type not found: ${selectedIssueTypeCode}`);

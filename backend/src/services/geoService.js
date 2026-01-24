@@ -1,9 +1,10 @@
 /**
  * Geo-Fencing Service
- * PostGIS spatial queries for ward detection and duplicate checking
+ * MongoDB geospatial queries for ward detection and duplicate checking
  */
 
-const db = require('./database');
+const Ward = require('../models/Ward');
+const Issue = require('../models/Issue');
 const logger = require('../utils/logger');
 const { GEO_CONFIG, DUPLICATE_DETECTION } = require('../core/constants');
 const { validateCoordinates } = require('../utils/validation');
@@ -22,23 +23,23 @@ async function getWardFromCoordinates(latitude, longitude) {
             throw new Error(validation.error);
         }
 
-        // Since the actual DB uses boundary_json (JSONB) not PostGIS geometry,
-        // we find the nearest ward by centroid distance as a fallback.
-        // For a production system, you would parse boundary_json and do proper containment.
-        const result = await db.query(`
-            SELECT *,
-                   SQRT(POWER(centroid_lat - $1, 2) + POWER(centroid_lng - $2, 2)) as distance
-            FROM wards
-            ORDER BY distance ASC
-            LIMIT 1
-        `, [latitude, longitude]);
+        // Use MongoDB $geoWithin to find which ward polygon contains the point
+        const ward = await Ward.findOne({
+            boundary: {
+                $geoIntersects: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: [longitude, latitude] // GeoJSON is [lng, lat]
+                    }
+                }
+            }
+        }).lean();
 
-        if (result.rows.length === 0) {
+        if (!ward) {
             logger.warn(`No ward found for coordinates: ${latitude}, ${longitude}`);
             return null;
         }
 
-        const ward = result.rows[0];
         logger.info(`Ward ${ward.ward_number} (${ward.ward_name}) found for coordinates: ${latitude}, ${longitude}`);
 
         return ward;
@@ -65,29 +66,29 @@ async function checkDuplicateIssues(latitude, longitude, issueTypeId, submittedA
             throw new Error(validation.error);
         }
 
-        // Use a simple distance calculation (approximation using degrees)
-        // 0.001 degree ~ 111 meters at equator. For ~100m radius, use ~0.0009
-        const radiusDegrees = 0.001; // Approx 100m
+        // Check for nearby issues using MongoDB $nearSphere
+        const radiusMeters = 100; // 100 meters radius
         const oneHourAgo = new Date(submittedAt.getTime() - 60 * 60 * 1000);
 
-        const result = await db.query(`
-            SELECT i.*, 
-                   SQRT(POWER(i.latitude - $1, 2) + POWER(i.longitude - $2, 2)) as distance_degrees
-            FROM issues i
-            WHERE i.issue_type_id = $3
-              AND i.created_at > $4
-              AND ABS(i.latitude - $1) < $5
-              AND ABS(i.longitude - $2) < $5
-              AND i.status NOT IN ('closed', 'rejected')
-            ORDER BY distance_degrees ASC
-            LIMIT 5
-        `, [latitude, longitude, issueTypeId, oneHourAgo, radiusDegrees]);
+        const duplicates = await Issue.find({
+            issue_type: issueTypeId,
+            created_at: { $gt: oneHourAgo },
+            location: {
+                $nearSphere: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: [longitude, latitude]
+                    },
+                    $maxDistance: radiusMeters
+                }
+            }
+        }).limit(10).lean();
 
-        if (result.rows.length > 0) {
-            logger.warn(`Found ${result.rows.length} potential duplicate issues nearby`);
+        if (duplicates.length > 0) {
+            logger.info(`Found ${duplicates.length} duplicate issues within ${radiusMeters}m`);
         }
 
-        return result.rows;
+        return duplicates;
 
     } catch (error) {
         logger.error('Error checking duplicate issues:', error);
@@ -96,7 +97,7 @@ async function checkDuplicateIssues(latitude, longitude, issueTypeId, submittedA
 }
 
 /**
- * Calculate distance between two points using PostGIS
+ * Calculate distance between two points using Haversine formula
  * @param {number} lat1 - First latitude
  * @param {number} lon1 - First longitude
  * @param {number} lat2 - Second latitude
@@ -105,18 +106,21 @@ async function checkDuplicateIssues(latitude, longitude, issueTypeId, submittedA
  */
 async function calculateDistancePostGIS(lat1, lon1, lat2, lon2) {
     try {
-        const result = await db.query(
-            `SELECT ST_Distance(
-                ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography,
-                ST_SetSRID(ST_MakePoint($3, $4), 4326)::geography
-            ) as distance`,
-            [lon1, lat1, lon2, lat2]
-        );
+        // Haversine formula
+        const R = 6371000; // Earth radius in meters
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c;
 
-        return parseFloat(result.rows[0].distance);
+        return distance;
 
     } catch (error) {
-        logger.error('Error calculating distance with PostGIS:', error);
+        logger.error('Error calculating distance:', error);
         throw error;
     }
 }
@@ -126,7 +130,7 @@ async function calculateDistancePostGIS(lat1, lon1, lat2, lon2) {
  * @param {number} latitude - Center latitude
  * @param {number} longitude - Center longitude
  * @param {number} radiusMeters - Radius in meters
- * @param {Object} filters - Additional filters (issue_type_id, status)
+ * @param {Object} filters - Additional filters (issue_type, status)
  * @returns {Promise<Array>} Issues within radius
  */
 async function findIssuesWithinRadius(latitude, longitude, radiusMeters, filters = {}) {
@@ -137,40 +141,33 @@ async function findIssuesWithinRadius(latitude, longitude, radiusMeters, filters
             throw new Error(validation.error);
         }
 
-        let sql = `
-            SELECT i.*, 
-                   ST_Distance(
-                       i.location::geography,
-                       ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography
-                   ) as distance_meters
-            FROM issues i
-            WHERE ST_DWithin(
-                i.location::geography,
-                ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography,
-                $3
-            )
-        `;
-
-        const params = [longitude, latitude, radiusMeters];
-        let paramIndex = 4;
+        const query = {
+            location: {
+                $nearSphere: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: [longitude, latitude]
+                    },
+                    $maxDistance: radiusMeters
+                }
+            }
+        };
 
         // Add filters
-        if (filters.issue_type_id) {
-            sql += ` AND i.issue_type_id = $${paramIndex}`;
-            params.push(filters.issue_type_id);
-            paramIndex++;
+        if (filters.issue_type) {
+            query.issue_type = filters.issue_type;
         }
 
         if (filters.status) {
-            sql += ` AND i.status = $${paramIndex}`;
-            params.push(filters.status);
-            paramIndex++;
+            query.status = filters.status;
         }
 
-        sql += ' ORDER BY distance_meters ASC';
+        const issues = await Issue.find(query)
+            .populate('assigned_to', 'username email')
+            .populate('ward_id', 'ward_number ward_name')
+            .lean();
 
-        const result = await db.query(sql, params);
-        return result.rows;
+        return issues;
 
     } catch (error) {
         logger.error('Error finding issues within radius:', error);
@@ -184,24 +181,11 @@ async function findIssuesWithinRadius(latitude, longitude, radiusMeters, filters
  */
 async function getAllWards() {
     try {
-        const result = await db.query(`
-            SELECT 
-                id,
-                ward_number,
-                name,
-                ST_AsGeoJSON(boundary) as boundary_geojson,
-                ST_AsGeoJSON(centroid) as centroid_geojson,
-                ST_X(centroid) as centroid_longitude,
-                ST_Y(centroid) as centroid_latitude,
-                area_sq_km,
-                population,
-                created_at,
-                updated_at
-            FROM wards
-            ORDER BY ward_number ASC
-        `);
+        const wards = await Ward.find({})
+            .sort({ ward_number: 1 })
+            .lean();
 
-        return result.rows;
+        return wards;
 
     } catch (error) {
         logger.error('Error getting all wards:', error);
@@ -216,24 +200,14 @@ async function getAllWards() {
  */
 async function getWardById(wardId) {
     try {
-        const result = await db.query(`
-            SELECT 
-                id,
-                ward_number,
-                name,
-                ST_AsGeoJSON(boundary) as boundary_geojson,
-                ST_AsGeoJSON(centroid) as centroid_geojson,
-                ST_X(centroid) as centroid_longitude,
-                ST_Y(centroid) as centroid_latitude,
-                area_sq_km,
-                population,
-                created_at,
-                updated_at
-            FROM wards
-            WHERE id = $1
-        `, [wardId]);
+        const ward = await Ward.findById(wardId).lean();
 
-        return result.rows[0] || null;
+        if (!ward) {
+            logger.warn(`Ward not found: ${wardId}`);
+            return null;
+        }
+
+        return ward;
 
     } catch (error) {
         logger.error('Error getting ward by ID:', error);
@@ -248,18 +222,38 @@ async function getWardById(wardId) {
  */
 async function getWardStatistics(wardId = null) {
     try {
-        let sql = 'SELECT * FROM ward_statistics';
-        const params = [];
+        const matchStage = wardId ? { ward_id: wardId } : {};
 
-        if (wardId) {
-            sql += ' WHERE ward_id = $1';
-            params.push(wardId);
-        }
+        const stats = await Issue.aggregate([
+            { $match: matchStage },
+            {
+                $group: {
+                    _id: '$ward_id',
+                    total_issues: { $sum: 1 },
+                    pending_issues: {
+                        $sum: { $cond: [{ $eq: ['$status', 'pending'] }, 1, 0] }
+                    },
+                    in_progress_issues: {
+                        $sum: { $cond: [{ $eq: ['$status', 'in_progress'] }, 1, 0] }
+                    },
+                    resolved_issues: {
+                        $sum: { $cond: [{ $eq: ['$status', 'resolved'] }, 1, 0] }
+                    }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'wards',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'ward'
+                }
+            },
+            { $unwind: { path: '$ward', preserveNullAndEmptyArrays: true } },
+            { $sort: { total_issues: -1 } }
+        ]);
 
-        sql += ' ORDER BY total_issues DESC';
-
-        const result = await db.query(sql, params);
-        return result.rows;
+        return stats;
 
     } catch (error) {
         logger.error('Error getting ward statistics:', error);
@@ -276,16 +270,19 @@ async function getWardStatistics(wardId = null) {
  */
 async function isPointInWard(latitude, longitude, wardId) {
     try {
-        const result = await db.query(`
-            SELECT ST_Contains(
-                boundary,
-                ST_SetSRID(ST_MakePoint($1, $2), 4326)
-            ) as is_within
-            FROM wards
-            WHERE id = $3
-        `, [longitude, latitude, wardId]);
+        const ward = await Ward.findOne({
+            _id: wardId,
+            boundary: {
+                $geoIntersects: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: [longitude, latitude]
+                    }
+                }
+            }
+        });
 
-        return result.rows[0]?.is_within || false;
+        return !!ward;
 
     } catch (error) {
         logger.error('Error checking point in ward:', error);
@@ -301,21 +298,29 @@ async function isPointInWard(latitude, longitude, wardId) {
  */
 async function getNearestWard(latitude, longitude) {
     try {
-        const result = await db.query(`
-            SELECT 
-                id,
-                ward_number,
-                name,
-                ST_Distance(
-                    centroid::geography,
-                    ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography
-                ) as distance_meters
-            FROM wards
-            ORDER BY distance_meters ASC
-            LIMIT 1
-        `, [longitude, latitude]);
+        // Find ward whose boundary is closest to the point
+        const wards = await Ward.find({}).lean();
+        
+        if (wards.length === 0) return null;
+        
+        // Calculate distance to each ward's centroid
+        let nearestWard = null;
+        let minDistance = Infinity;
+        
+        for (const ward of wards) {
+            // Simple distance calculation
+            const distance = Math.sqrt(
+                Math.pow(ward.latitude - latitude, 2) + 
+                Math.pow(ward.longitude - longitude, 2)
+            );
+            
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestWard = ward;
+            }
+        }
 
-        return result.rows[0] || null;
+        return nearestWard;
 
     } catch (error) {
         logger.error('Error getting nearest ward:', error);
