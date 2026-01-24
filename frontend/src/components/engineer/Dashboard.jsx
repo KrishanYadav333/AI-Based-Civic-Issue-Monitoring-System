@@ -22,68 +22,67 @@ const VMC_COLORS = {
 
 // Animation variants
 const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
-  },
-};
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
+        </div>
+      </motion.div>
 
-const headerVariants = {
-  hidden: { opacity: 0, y: -20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
-
-const EngineerDashboard = () => {
-  const dispatch = useDispatch();
-  const { issues, loading } = useSelector(state => state.issues);
-  const user = useSelector(state => state.auth.user);
-
-  useEffect(() => {
-    dispatch(fetchIssues());
-  }, [dispatch]);
-
-  // Calculate metrics for engineer
-  const assignedIssues = issues.filter(issue => issue.assignedTo === user?.id || issue.assignedTo === 'Engineer001');
-  const resolvedCount = assignedIssues.filter(issue => issue.status === 'resolved').length;
-  const inProgressCount = assignedIssues.filter(issue => issue.status === 'assigned').length;
-  const pendingCount = assignedIssues.filter(issue => issue.status === 'pending').length;
-
-  const resolutionRate = assignedIssues.length > 0 
-    ? Math.round((resolvedCount / assignedIssues.length) * 100)
-    : 0;
-
-  const avgResolutionTime = assignedIssues.length > 0 
-    ? Math.round(assignedIssues
-        .filter(i => i.resolutionDate && i.createdDate)
-        .reduce((acc, i) => {
-          const created = new Date(i.createdDate);
-          const resolved = new Date(i.resolutionDate);
-          return acc + (resolved - created) / (1000 * 60 * 60 * 24);
-        }, 0) / resolvedCount)
-    : 0;
-
-  if (loading) {
-    return <CardSkeleton count={4} />;
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="p-6 md:p-8 space-y-6">
-        {/* Header */}
-        <motion.div variants={headerVariants} initial="hidden" animate="visible">
-          <h1 className="text-3xl font-bold text-[#0a2647] mb-2">Engineer Dashboard</h1>
-          <p className="text-gray-600 text-sm font-medium">Track your progress and manage assigned issues</p>
-        </motion.div>
-
-        {/* Key Metrics */}
+      {/* Recent Activity */}
+      <motion.div
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        whileHover={{ scale: 1.01 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+        className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6"
+      >
+        <motion.h3 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-lg font-semibold text-[#0a2647] mb-4"
+        >
+          Recent Issues
+        </motion.h3>
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+          className="space-y-3"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ staggerChildren: 0.08, delayChildren: 0.55 }}
+        >
+          {assignedIssues.slice(0, 5).map((issue, index) => (
+            <motion.div
+              key={issue.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              whileHover={{ scale: 1.01, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.3 }}
+              className="flex items-start justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg hover:shadow-md transition-all duration-300 cursor-pointer"
+            >
+              <div className="flex-1">
+                <p className="font-semibold text-gray-900">{issue.title}</p>
+                <p className="text-xs text-gray-500 mt-1">{issue.ward}</p>
+              </div>
+              <motion.span 
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.55 + index * 0.08, type: 'spring', stiffness: 200 }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
+                  issue.status === 'resolved' ? 'bg-green-100 text-green-800 border border-green-300' :
+                  issue.status === 'assigned' ? 'bg-orange-100 text-orange-800 border border-orange-300' :
+                  'bg-blue-100 text-blue-800 border border-blue-300'
+                }`}
+              >
+                {issue.status}
+              </motion.span>
+            </motion.div>
+          ))}
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+};
+
+export default EngineerDashboard;
           variants={containerVariants}
           initial="hidden"
           animate="visible"
