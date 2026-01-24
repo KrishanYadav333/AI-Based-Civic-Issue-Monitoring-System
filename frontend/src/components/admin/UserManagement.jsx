@@ -5,7 +5,6 @@ import { Card, Button, Input, Select, Modal } from '../common/FormElements';
 import { CardSkeleton } from '../common/Loaders';
 import { Edit2, Trash2, Plus, User as UserIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
-import backgroundImage from '../../assets/images/Background_image.jpg';
 
 // Animation variants
 const containerVariants = {
@@ -87,20 +86,8 @@ const UserManagement = () => {
   }
 
   return (
-    <div 
-      className="min-h-screen relative"
-      style={{
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed'
-      }}
-    >
-      {/* Navy blue gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-blue-800/30 to-blue-600/35 pointer-events-none"></div>
-      
-      <div className="relative z-10 p-8 space-y-6">
+    <div className="min-h-screen bg-gray-50">
+      <div className="p-8 space-y-6">
       {/* Header */}
       <motion.div 
         variants={headerVariants}
@@ -109,16 +96,17 @@ const UserManagement = () => {
         className="flex items-center justify-between mb-6"
       >
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+          <div className="p-3 rounded-xl shadow-lg" style={{ backgroundColor: '#144272' }}>
             <UserIcon className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-4xl font-bold metallic-text">User Management</h1>
+          <h1 className="text-4xl font-bold" style={{ color: '#0a2647' }}>User Management</h1>
         </div>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-5 py-3 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 font-medium"
+          className="flex items-center gap-2 text-white px-5 py-3 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 font-medium"
+          style={{ backgroundColor: '#144272' }}
         >
           <Plus className="w-4 h-4" />
           Add User
@@ -131,18 +119,18 @@ const UserManagement = () => {
         initial="hidden"
         animate="visible"
         whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
-        className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden"
+        className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-500 overflow-hidden"
       >
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/20">
-                  <th className="text-left py-4 px-6 font-semibold text-white/90">Name</th>
-                  <th className="text-left py-4 px-6 font-semibold text-white/90">Email</th>
-                  <th className="text-left py-4 px-6 font-semibold text-white/90">Role</th>
-                  <th className="text-left py-4 px-6 font-semibold text-white/90">Ward(s)</th>
-                  <th className="text-left py-4 px-6 font-semibold text-white/90">Status</th>
-                  <th className="text-left py-4 px-6 font-semibold text-white/90">Actions</th>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-4 px-6 font-semibold text-gray-700">Name</th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-700">Email</th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-700">Role</th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-700">Ward(s)</th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-700">Status</th>
+                  <th className="text-left py-4 px-6 font-semibold text-gray-700">Actions</th>
                 </tr>
               </thead>
               <tbody>

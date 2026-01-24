@@ -260,13 +260,15 @@ const Analytics = () => {
           animate="visible"
           transition={{ delay: 0.2 }}
           whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
-          className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
+          className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-500 p-6 border-l-4"
+          style={{ borderLeftColor: VMC_COLORS.primaryBlue }}
         >
           <motion.h3 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-lg font-semibold text-white mb-4 transition-colors duration-300"
+            className="text-lg font-semibold mb-4 transition-colors duration-300"
+            style={{ color: VMC_COLORS.primaryDark }}
           >
             Issue Type Distribution
           </motion.h3>
@@ -300,13 +302,15 @@ const Analytics = () => {
           animate="visible"
           transition={{ delay: 0.3 }}
           whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
-          className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
+          className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-500 p-6 border-l-4"
+          style={{ borderLeftColor: VMC_COLORS.orange }}
         >
           <motion.h3 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="text-lg font-semibold text-white mb-4 transition-colors duration-300"
+            className="text-lg font-semibold mb-4 transition-colors duration-300"
+            style={{ color: VMC_COLORS.primaryDark }}
           >
             Priority Breakdown
           </motion.h3>
@@ -335,13 +339,15 @@ const Analytics = () => {
           animate="visible"
           transition={{ delay: 0.4 }}
           whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
-          className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
+          className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-500 p-6 border-l-4"
+          style={{ borderLeftColor: VMC_COLORS.green }}
         >
           <motion.h3 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-lg font-semibold text-white mb-4 transition-colors duration-300"
+            className="text-lg font-semibold mb-4 transition-colors duration-300"
+            style={{ color: VMC_COLORS.primaryDark }}
           >
             Issues Trend
           </motion.h3>
@@ -365,13 +371,15 @@ const Analytics = () => {
           animate="visible"
           transition={{ delay: 0.5 }}
           whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
-          className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
+          className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-500 p-6 border-l-4"
+          style={{ borderLeftColor: VMC_COLORS.purple }}
         >
           <motion.h3 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="text-lg font-semibold text-white mb-4 transition-colors duration-300"
+            className="text-lg font-semibold mb-4 transition-colors duration-300"
+            style={{ color: VMC_COLORS.primaryDark }}
           >
             Status Distribution
           </motion.h3>
@@ -398,9 +406,10 @@ const Analytics = () => {
         animate="visible"
         transition={{ delay: 0.6 }}
         whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
-        className="glass-card rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6"
+        className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-500 p-6 border-l-4"
+        style={{ borderLeftColor: VMC_COLORS.teal }}
       >
-        <h3 className="text-lg font-semibold text-white mb-4 transition-colors duration-300">Ward Performance Overview</h3>
+        <h3 className="text-lg font-semibold mb-4 transition-colors duration-300" style={{ color: VMC_COLORS.primaryDark }}>Ward Performance Overview</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={wardData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -421,34 +430,35 @@ const Analytics = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.7 }}
         whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
-        className="glass-card-light rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6 border border-white/20"
+        className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-500 p-6 border-l-4"
+        style={{ borderLeftColor: VMC_COLORS.primaryBlue }}
       >
-        <h3 className="text-lg font-semibold text-white mb-4">Summary Insights</h3>
+        <h3 className="text-lg font-semibold mb-4" style={{ color: VMC_COLORS.primaryDark }}>Summary Insights</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <p className="text-white/80 text-sm font-medium">Highest Priority Type</p>
-            <p className="text-2xl font-bold text-white mt-1">
+            <p className="text-gray-600 text-sm font-medium">Highest Priority Type</p>
+            <p className="text-2xl font-bold mt-1" style={{ color: VMC_COLORS.primaryBlue }}>
               {typeData.length > 0 ? typeData[0].name : 'N/A'}
             </p>
-            <p className="text-sm text-white/70 mt-1">
+            <p className="text-sm text-gray-500 mt-1">
               {typeData.length > 0 ? `${typeData[0].value} issues` : ''}
             </p>
           </div>
           <div>
-            <p className="text-white/80 text-sm font-medium">Most Issues Ward</p>
-            <p className="text-2xl font-bold text-white mt-1">
+            <p className="text-gray-600 text-sm font-medium">Most Issues Ward</p>
+            <p className="text-2xl font-bold mt-1" style={{ color: VMC_COLORS.green }}>
               {wardData.length > 0 ? wardData.reduce((a, b) => a.total > b.total ? a : b).ward : 'N/A'}
             </p>
-            <p className="text-sm text-white/70 mt-1">
+            <p className="text-sm text-gray-500 mt-1">
               {wardData.length > 0 ? `${wardData.reduce((a, b) => a.total > b.total ? a : b).total} issues` : ''}
             </p>
           </div>
           <div>
-            <p className="text-white/80 text-sm font-medium">Pending Action</p>
-            <p className="text-2xl font-bold text-white mt-1">
+            <p className="text-gray-600 text-sm font-medium">Pending Action</p>
+            <p className="text-2xl font-bold mt-1" style={{ color: VMC_COLORS.orange }}>
               {issues.filter(i => i.status === 'Pending').length}
             </p>
-            <p className="text-sm text-white/70 mt-1">Issues awaiting assignment</p>
+            <p className="text-sm text-gray-500 mt-1">Issues awaiting assignment</p>
           </div>
         </div>
       </motion.div>
