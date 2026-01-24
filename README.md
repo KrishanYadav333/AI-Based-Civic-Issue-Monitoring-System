@@ -2,14 +2,14 @@
 
 A comprehensive solution for monitoring and managing civic issues in Vadodara city, featuring AI-powered issue classification, geographic assignment, and role-based dashboards.
 
-## ✅ Current Status
+## Current Status
 
-- **Backend Tests**: 14/34 passing (41% - All auth tests passing ✅)
+- **Backend Tests**: 14/34 passing (41% - All auth tests passing )
 - **Database**: Fully configured with 5 tables
 - **Deployment**: Automated scripts ready
 - **Documentation**: Complete setup guides
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── ai-service/          # Python Flask AI classification service
@@ -28,7 +28,7 @@ A comprehensive solution for monitoring and managing civic issues in Vadodara ci
 └── README.md            # This file
 ```
 
-## 🌟 Features
+## Features
 
 ### Core Functionality
 - **AI-Powered Issue Detection**: Automatic classification of civic issues from images
@@ -61,14 +61,14 @@ A comprehensive solution for monitoring and managing civic issues in Vadodara ci
 
 A comprehensive solution for monitoring and managing civic issues in Vadodara city, featuring AI-powered issue classification, geographic assignment, and role-based dashboards.
 
-## ✅ Current Status
+## Current Status
 
-- **Backend Tests**: 14/34 passing (41% - All auth tests passing ✅)
+- **Backend Tests**: 14/34 passing (41% - All auth tests passing )
 - **Database**: Fully configured with 5 tables
 - **Deployment**: Automated scripts ready
 - **Documentation**: Complete setup guides
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── ai-service/          # Python Flask AI classification service
@@ -87,7 +87,7 @@ A comprehensive solution for monitoring and managing civic issues in Vadodara ci
 └── README.md            # This file
 ```
 
-## 🌟 Features
+## Features
 
 ### Core Functionality
 - **AI-Powered Issue Detection**: Automatic classification of civic issues from images
@@ -119,7 +119,7 @@ A comprehensive solution for monitoring and managing civic issues in Vadodara ci
 - API documentation (Swagger)
 - Logging with Winston
 
-## 📋 Prerequisites
+## Prerequisites
 
 - **Node.js**: 18.x or higher
 - **Python**: 3.8 or higher
@@ -127,7 +127,7 @@ A comprehensive solution for monitoring and managing civic issues in Vadodara ci
 - **Redis**: 7.x or higher
 - **Docker**: 20.10+ and Docker Compose 2.0+ (optional)
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Option 1: Docker (Recommended)
 
@@ -166,7 +166,7 @@ PowerShell -ExecutionPolicy Bypass -File scripts/setup.ps1
  - API documentation (Swagger)
  - Logging with Winston
 
-## 📋 Prerequisites
+## Prerequisites
 
 - **Node.js**: 18.x or higher
 - **Python**: 3.8 or higher
@@ -174,7 +174,7 @@ PowerShell -ExecutionPolicy Bypass -File scripts/setup.ps1
 - **Redis**: 7.x or higher
 - **Docker**: 20.10+ and Docker Compose 2.0+ (optional)
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Option 1: Docker (Recommended)
 
@@ -214,7 +214,7 @@ cd ai-service && source venv/bin/activate && gunicorn app:app
 cd frontend && npm run dev
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 AI-Based-Civic-Issue-Monitoring-System/
