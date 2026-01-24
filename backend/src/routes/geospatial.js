@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../services/database');
 const { authenticate, authorize } = require('../middleware/auth');
-const cacheService = require('../utils/cacheService');
 const logger = require('../utils/logger');
 
 /**
@@ -11,13 +10,6 @@ const logger = require('../utils/logger');
 router.get('/heatmap', authenticate, authorize('admin', 'engineer'), async (req, res) => {
   try {
     const { ward_id, status, priority, start_date, end_date, cluster_radius = 0.01 } = req.query;
-
-    const cacheKey = `heatmap:${ward_id}:${status}:${priority}:${start_date}:${end_date}:${cluster_radius}`;
-    const cached = await cacheService.get(cacheKey);
-    
-    if (cached) {
-      return res.json(JSON.parse(cached));
-    }
 
     let query = `
       SELECT 

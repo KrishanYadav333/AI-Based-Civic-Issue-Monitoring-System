@@ -1,8 +1,7 @@
 const rateLimit = require('express-rate-limit');
 
 // Note: Using memory store for rate limiting
-// For production with multiple instances, configure Redis
-// npm install rate-limit-redis
+// Redis support removed. For distributed rate limiting, use a managed service or alternative approach.
 
 // General API rate limiter
 const apiLimiter = rateLimit({

@@ -22,84 +22,8 @@ redis.on('connect', () => {
 /**
  * Cache wrapper with TTL
  */
-class CacheService {
-  /**
-   * Get cached value
-   * @param {string} key - Cache key
-   * @returns {Promise<any>} Cached value or null
-   */
-  async get(key) {
-    try {
-      const value = await redis.get(key);
-      return value ? JSON.parse(value) : null;
-    } catch (error) {
-      logger.error('Cache get error', { key, error: error.message });
-      return null;
-    }
-  }
-
-  /**
-   * Set cache value with TTL
-   * @param {string} key - Cache key
-   * @param {any} value - Value to cache
-   * @param {number} ttl - Time to live in seconds (default: 300 = 5 minutes)
-   */
-  async set(key, value, ttl = 300) {
-    try {
-      await redis.setex(key, ttl, JSON.stringify(value));
-    } catch (error) {
-      logger.error('Cache set error', { key, error: error.message });
-    }
-  }
-
-  /**
-   * Delete cached value
-   * @param {string} key - Cache key
-   */
-  async del(key) {
-    try {
-      await redis.del(key);
-    } catch (error) {
-      logger.error('Cache delete error', { key, error: error.message });
-    }
-  }
-
-  /**
-   * Delete all keys matching pattern
-   * @param {string} pattern - Key pattern (e.g., 'issues:*')
-   */
-  async delPattern(pattern) {
-    try {
-      const keys = await redis.keys(pattern);
-      if (keys.length > 0) {
-        await redis.del(...keys);
-      }
-    } catch (error) {
-      logger.error('Cache delete pattern error', { pattern, error: error.message });
-    }
-  }
-
-  /**
-   * Check if key exists
-   * @param {string} key - Cache key
-   * @returns {Promise<boolean>}
-   */
-  async exists(key) {
-    try {
-      const result = await redis.exists(key);
-      return result === 1;
-    } catch (error) {
-      logger.error('Cache exists error', { key, error: error.message });
-      return false;
-    }
-  }
-
-  /**
-   * Increment counter
-   * @param {string} key - Cache key
-   * @param {number} ttl - Time to live in seconds (optional)
-   * @returns {Promise<number>} New value
-   */
+// Redis cacheService removed. All Redis-related logic has been deleted as part of Redis removal from the project.
+// If you need caching, implement an in-memory or alternative cache here.
   async incr(key, ttl = null) {
     try {
       const value = await redis.incr(key);
