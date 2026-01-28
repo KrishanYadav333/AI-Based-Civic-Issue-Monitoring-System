@@ -5,7 +5,7 @@ Maps YOLOv8 detections to civic issue types
 
 import logging
 from typing import List, Dict, Optional
-from config import config
+from .config import config
 
 logger = logging.getLogger(__name__)
 
