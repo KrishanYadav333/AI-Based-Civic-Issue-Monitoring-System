@@ -27,12 +27,13 @@ RUN mkdir -p temp uploads logs
 RUN useradd -m appuser && chown -R appuser /app
 USER appuser
 
-# Expose port
+# Expose port (Render will assign dynamic PORT)
 EXPOSE 5000
+ENV PORT=5000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:5000/health').read()"
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:' + __import__('os').getenv('PORT', '5000') + '/health').read()"
 
-# Start FastAPI with uvicorn
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "5000"]
+# Start FastAPI with uvicorn - bind to PORT from environment
+CMD uvicorn src.main:app --host 0.0.0.0 --port $PORT

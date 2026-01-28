@@ -15,8 +15,8 @@ load_dotenv()
 class Config:
     # Server
     HOST = os.getenv('HOST', '0.0.0.0')
-    PORT = int(os.getenv('PORT', 8000))
-    ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
+    PORT = int(os.getenv('PORT', 5000))
+    ENVIRONMENT = os.getenv('ENVIRONMENT', 'production')
     
     # Model
     MODEL_PATH = os.getenv('MODEL_PATH', './models/yolov8n.pt')
