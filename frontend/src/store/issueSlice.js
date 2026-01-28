@@ -1,27 +1,50 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { mockIssues } from '../data/mockData';
+import { issueService } from '../services/api';
 
 export const fetchIssues = createAsyncThunk(
   'issues/fetchIssues',
-  async (_, { rejectWithValue }) => {
+  async (filters = {}, { rejectWithValue }) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800));
-      return mockIssues;
+      const response = await issueService.getIssues(filters);
+      return response.data || response.issues || response;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
 
 export const updateIssue = createAsyncThunk(
   'issues/updateIssue',
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const response = await issueService.updateIssue(id, data);
+      return response.data || response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const createIssue = createAsyncThunk(
+  'issues/createIssue',
   async (issueData, { rejectWithValue }) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return issueData;
+      const response = await issueService.createIssue(issueData);
+      return response.data || response;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const resolveIssue = createAsyncThunk(
+  'issues/resolveIssue',
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const response = await issueService.resolveIssue(id, data);
+      return response.data || response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );

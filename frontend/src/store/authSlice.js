@@ -1,29 +1,23 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { authService } from '../services/api';
 
-// Mock async authentication
+// Real authentication with backend
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const response = await authService.login(email, password);
+      const userData = response.data || response;
       
-      // Mock validation
-      if (!email || !password) {
-        return rejectWithValue('Email and password required');
+      // Store token
+      if (userData.token) {
+        localStorage.setItem('authToken', userData.token);
+        localStorage.setItem('userRole', userData.user?.role || userData.role);
       }
-
-      const mockUser = {
-        id: email === 'admin@example.com' ? '1' : '2',
-        email,
-        role: email === 'admin@example.com' ? 'admin' : 'engineer',
-        name: email === 'admin@example.com' ? 'Admin User' : 'Engineer User',
-        wardAssigned: email === 'admin@example.com' ? null : ['Ward 1', 'Ward 2'],
-      };
-
-      return mockUser;
+      
+      return userData.user || userData;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.message || 'Invalid credentials');
     }
   }
 );

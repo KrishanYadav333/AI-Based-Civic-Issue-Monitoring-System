@@ -6,6 +6,7 @@ import ProtectedRoute from './pages/ProtectedRoute';
 import MainLayout from './pages/MainLayout';
 import Homepage from './pages/Homepage';
 import Login from './pages/Login';
+import SubmitIssue from './pages/SubmitIssue';
 import EngineerDashboard from './pages/EngineerDashboard';
 import EngineerIssues from './pages/EngineerIssues';
 import EngineerPerformance from './pages/EngineerPerformance';
@@ -35,6 +36,7 @@ function App() {
         {/* Public routes */}
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/submit-issue" element={<SubmitIssue />} />
 
         {/* Protected routes */}
         <Route
@@ -103,8 +105,24 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/engineer/settings"
+            element={
+              <ProtectedRoute requiredRole="engineer">
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Common routes */}
+          <Route
+            path="/admin/settings"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/settings"
             element={<Settings />}

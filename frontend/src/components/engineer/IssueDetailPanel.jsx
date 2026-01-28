@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { updateIssue, addComment } from '../../store/issueSlice';
+import { resolveIssue, addComment } from '../../store/issueSlice';
 import { Modal, Button, Input } from '../common/FormElements';
 import { PriorityBadge, StatusBadge } from '../common/Badges';
 import ResolutionWorkflow from './ResolutionWorkflow';
@@ -17,6 +17,13 @@ import {
 } from 'lucide-react';
 import { formatDateTime } from '../../utils/helpers';
 import { motion } from 'framer-motion';
+
+// VMC Government Colors
+const VMC_COLORS = {
+  primary: '#003366',
+  primaryBlue: '#0056b3',
+  green: '#27ae60',
+};
 
 const IssueDetailPanel = ({ isOpen = true, onClose, issue }) => {
   if (!issue) return null;
@@ -38,26 +45,31 @@ const IssueDetailPanel = ({ isOpen = true, onClose, issue }) => {
     setNewComment('');
   };
 
-  const handleResolveIssue = () => {
+  const handleResolveIssue = async () => {
     if (!resolutionNotes.trim()) {
       alert('Please add resolution notes');
       return;
     }
 
     setIsResolving(true);
-    setTimeout(() => {
-      dispatch(updateIssue({
-        ...issue,
-        status: 'resolved',
-        resolutionDate: new Date().toISOString().split('T')[0],
-        notes: resolutionNotes,
-        resolutionImages: uploadedImages,
-      }));
+    try {
+      await dispatch(resolveIssue({
+        id: issue.id,
+        data: {
+          status: 'resolved',
+          resolutionNotes: resolutionNotes,
+          resolutionImages: uploadedImages,
+        }
+      })).unwrap();
       setIsResolving(false);
       setResolutionNotes('');
       setUploadedImages([]);
       onClose();
-    }, 500);
+    } catch (error) {
+      console.error('Failed to resolve issue:', error);
+      alert('Failed to resolve issue. Please try again.');
+      setIsResolving(false);
+    }
   };
 
   const handleImageUpload = (e) => {

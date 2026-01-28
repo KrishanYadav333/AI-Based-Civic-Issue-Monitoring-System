@@ -9,11 +9,11 @@ import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, Cart
 
 // VMC Government Colors
 const VMC_COLORS = {
-  primary: '#0a2647',
-  primaryBlue: '#144272',
-  primaryLight: '#205295',
-  accent: '#2c74b3',
-  orange: '#e67e22',
+  primary: '#003366',
+  primaryBlue: '#0056b3',
+  primaryLight: '#0066cc',
+  accent: '#0077dd',
+  orange: '#ff6b35',
   green: '#27ae60',
   red: '#e74c3c',
   yellow: '#f39c12',
