@@ -9,8 +9,9 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
-New UI to be followed
+/New UI to be followed
 docs
+/vmc-ai-civic-monitoring-portal
 /ai-service-old-archived
 # Python
 __pycache__/

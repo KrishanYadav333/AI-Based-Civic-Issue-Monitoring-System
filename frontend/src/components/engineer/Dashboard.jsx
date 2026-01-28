@@ -147,11 +147,13 @@ const EngineerDashboard = () => {
         </motion.div>
 
         {/* Quick Stats */}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        whileHover={{ scale: 1.01 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
-        className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6"
-      >
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          whileHover={{ scale: 1.01 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6"
+        >
           <motion.h3 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

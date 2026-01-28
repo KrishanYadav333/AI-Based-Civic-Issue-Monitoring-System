@@ -373,7 +373,7 @@ const MapView = () => {
               whileHover={{ x: 8, scale: 1.05, transition: { duration: 0.2 } }}
               className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-all duration-300 cursor-pointer"
             >
-              <div className=\"w-10 h-10 rounded-full shadow-lg transition-transform duration-300 hover:scale-110\" style={{ backgroundColor: item.color }} />
+              <div className="w-10 h-10 rounded-full shadow-lg transition-transform duration-300 hover:scale-110" style={{ backgroundColor: item.color }} />
               <div>
                 <p className="font-semibold text-gray-900 text-sm transition-colors duration-300">{item.name}</p>
                 <p className="text-xs text-gray-600 transition-colors duration-300">{item.desc}</p>

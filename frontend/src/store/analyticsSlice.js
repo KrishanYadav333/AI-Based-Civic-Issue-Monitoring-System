@@ -1,14 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { mockUsers } from '../data/mockData';
+import { userService } from '../services/api';
 
 export const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
-  async (_, { rejectWithValue }) => {
+  async (filters = {}, { rejectWithValue }) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 600));
-      return mockUsers;
+      const response = await userService.getUsers(filters);
+      return response.data || response.users || response;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -17,10 +17,10 @@ export const addUser = createAsyncThunk(
   'users/addUser',
   async (userData, { rejectWithValue }) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return { ...userData, id: `user-${Date.now()}` };
+      const response = await userService.createUser(userData);
+      return response.data || response;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -29,10 +29,10 @@ export const deleteUser = createAsyncThunk(
   'users/deleteUser',
   async (userId, { rejectWithValue }) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 400));
+      const response = await userService.deleteUser(userId);
       return userId;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );

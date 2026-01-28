@@ -42,20 +42,10 @@ api.interceptors.response.use(
 export const authService = {
   login: async (email, password) => {
     try {
-      if (USE_MOCK_DATA) {
-        // Mock login for development
-        await new Promise(resolve => setTimeout(resolve, 500));
-        const mockUser = {
-          id: email === 'admin@example.com' ? '1' : '2',
-          email,
-          role: email === 'admin@example.com' ? 'admin' : 'engineer',
-          name: email === 'admin@example.com' ? 'Admin User' : 'Engineer User',
-          token: `mock-token-${Date.now()}`,
-        };
-        return mockUser;
-      }
-      
       const response = await api.post('/auth/login', { email, password });
+      if (response.data.token) {
+        localStorage.setItem('authToken', response.data.token);
+      }
       return response.data;
     } catch (error) {
       throw error;
@@ -309,35 +299,3 @@ export const analyticsService = {
 // Export default api instance for custom requests
 export default api;
 
-export const analyticsService = {
-  getDashboardMetrics: async () => {
-    try {
-      const response = await api.get('/analytics/dashboard');
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  getIssueAnalytics: async (filters = {}) => {
-    try {
-      const response = await api.get('/analytics/issues', { params: filters });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  exportReport: async (format = 'csv') => {
-    try {
-      const response = await api.get(`/analytics/export/${format}`, {
-        responseType: format === 'pdf' ? 'blob' : 'text',
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  },
-};
-
-export default api;

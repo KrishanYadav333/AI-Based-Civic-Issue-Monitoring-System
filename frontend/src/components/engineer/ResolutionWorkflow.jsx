@@ -1,11 +1,19 @@
 import React, { useState, memo } from 'react';
 import { useDispatch } from 'react-redux';
-import { updateIssue } from '../../store/issueSlice';
+import { resolveIssue } from '../../store/issueSlice';
 import { 
   CheckCircle, Upload, AlertCircle, Clock, MapPin, User, 
   Calendar, MessageCircle, X, ChevronRight, ImagePlus
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+
+// VMC Government Colors
+const VMC_COLORS = {
+  primary: '#003366',
+  primaryBlue: '#0056b3',
+  orange: '#e67e22',
+  green: '#27ae60',
+};
 
 const ResolutionWorkflow = ({ issue, onClose }) => {
   const dispatch = useDispatch();
@@ -59,19 +67,24 @@ const ResolutionWorkflow = ({ issue, onClose }) => {
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      dispatch(updateIssue({
-        ...issue,
-        status: 'Resolved',
-        resolutionDate: new Date().toISOString().split('T')[0],
-        resolutionNotes: formData.resolutionNotes,
-        resolutionImages: formData.resolutionImages,
-        findings: formData.findings,
-        actionsTaken: formData.actionsTaken
-      }));
+    try {
+      await dispatch(resolveIssue({
+        id: issue.id,
+        data: {
+          status: 'resolved',
+          resolutionNotes: formData.resolutionNotes,
+          resolutionImages: formData.resolutionImages,
+          findings: formData.findings,
+          actionsTaken: formData.actionsTaken
+        }
+      })).unwrap();
       setIsSubmitting(false);
       onClose();
-    }, 800);
+    } catch (error) {
+      console.error('Failed to resolve issue:', error);
+      alert('Failed to resolve issue. Please try again.');
+      setIsSubmitting(false);
+    }
   };
 
   const progressPercentage = ((currentStep + 1) / steps.length) * 100;
@@ -85,14 +98,14 @@ const ResolutionWorkflow = ({ issue, onClose }) => {
         className="bg-white rounded-2xl w-full max-w-2xl max-h-96 overflow-hidden flex flex-col shadow-xl"
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-emerald-50 to-cyan-50 border-b border-gray-200 px-6 py-5 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-blue-900 to-blue-700 border-b border-gray-200 px-6 py-5 flex items-center justify-between" style={{ background: `linear-gradient(to right, ${VMC_COLORS.primary}, ${VMC_COLORS.primaryBlue})` }}>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Resolution Workflow</h2>
-            <p className="text-sm text-gray-600 mt-1">Issue {issue.id} - {issue.title}</p>
+            <h2 className="text-2xl font-bold text-white">Resolution Workflow</h2>
+            <p className="text-sm text-blue-100 mt-1">Issue {issue.id} - {issue.title}</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/50 rounded-lg transition-colors"
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white"
           >
             <X className="w-6 h-6" />
           </button>
@@ -111,9 +124,9 @@ const ResolutionWorkflow = ({ issue, onClose }) => {
                   <motion.div
                     className={`flex items-center justify-center w-8 h-8 rounded-full font-medium text-sm transition-all ${
                       isCompleted
-                        ? 'bg-emerald-500 text-white'
+                        ? 'bg-green-600 text-white'
                         : isActive
-                        ? 'bg-emerald-100 text-emerald-700 ring-2 ring-emerald-500'
+                        ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-600'
                         : 'bg-gray-100 text-gray-600'
                     }`}
                   >
@@ -121,7 +134,7 @@ const ResolutionWorkflow = ({ issue, onClose }) => {
                   </motion.div>
                   {idx < steps.length - 1 && (
                     <div className={`flex-1 h-1 rounded-full transition-all ${
-                      isCompleted ? 'bg-emerald-500' : 'bg-gray-200'
+                      isCompleted ? 'bg-green-600' : 'bg-gray-200'
                     }`} />
                   )}
                 </div>
@@ -130,7 +143,8 @@ const ResolutionWorkflow = ({ issue, onClose }) => {
           </div>
           <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
             <motion.div
-              className="bg-gradient-to-r from-emerald-500 to-cyan-500 h-full"
+              className="h-full"
+              style={{ background: `linear-gradient(to right, ${VMC_COLORS.primaryBlue}, ${VMC_COLORS.green})` }}
               initial={{ width: 0 }}
               animate={{ width: `${progressPercentage}%` }}
               transition={{ duration: 0.5 }}
@@ -310,7 +324,8 @@ const ResolutionWorkflow = ({ issue, onClose }) => {
           {currentStep < steps.length - 1 ? (
             <button
               onClick={() => setCurrentStep(currentStep + 1)}
-              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium flex items-center gap-2"
+              className="px-4 py-2 text-white rounded-lg hover:opacity-90 transition-colors font-medium flex items-center gap-2"
+              style={{ backgroundColor: VMC_COLORS.primaryBlue }}
             >
               Next
               <ChevronRight className="w-4 h-4" />
@@ -319,7 +334,8 @@ const ResolutionWorkflow = ({ issue, onClose }) => {
             <button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2"
+              className="px-4 py-2 text-white rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2"
+              style={{ backgroundColor: VMC_COLORS.green }}
             >
               {isSubmitting ? 'Submitting...' : 'Complete Resolution'}
               <CheckCircle className="w-4 h-4" />

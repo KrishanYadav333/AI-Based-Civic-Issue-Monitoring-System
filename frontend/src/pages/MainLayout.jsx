@@ -1,25 +1,28 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import TopUtilityBar from '../components/common/TopUtilityBar';
+import VMCHeader from '../components/common/VMCHeader';
 import Navbar from '../components/common/Navbar';
 import Sidebar from '../components/common/Sidebar';
-import { motion } from 'framer-motion';
 
 const MainLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-slate-50">
+      <TopUtilityBar />
+      <VMCHeader />
       <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-      <Sidebar isOpen={sidebarOpen} />
-
-      <motion.main
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.2 }}
-        className={`transition-all duration-300 ${sidebarOpen ? 'md:ml-64' : 'md:ml-0'}`}
-      >
-        <Outlet />
-      </motion.main>
+      
+      <div className="flex">
+        <Sidebar isOpen={sidebarOpen} />
+        
+        <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-0' : ''}`}>
+          <div className="p-6">
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 };
