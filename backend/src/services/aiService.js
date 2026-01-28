@@ -33,7 +33,7 @@ async function classifyImageFromFile(imagePath) {
         
         // Call AI service
         const response = await axios.post(
-            `${AI_SERVICE_URL}/api/detect`,
+            `${AI_SERVICE_URL}/classify`,
             formData,
             {
                 headers: {
@@ -89,8 +89,8 @@ async function classifyImageFromBase64(imageBase64) {
         
         // Call AI service
         const response = await axios.post(
-            `${AI_SERVICE_URL}/api/detect`,
-            { image: base64Image },
+            `${AI_SERVICE_URL}/classify-base64`,
+            { image_base64: imageBase64 },
             {
                 timeout: AI_CONFIG.REQUEST_TIMEOUT_MS || 30000,
                 headers: {
