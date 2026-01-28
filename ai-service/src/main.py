@@ -11,10 +11,10 @@ from fastapi.responses import JSONResponse
 import uvicorn
 from datetime import datetime
 
-from config import config, ClassificationRequest, ClassificationResponse
-from model import get_model_handler
-from classifier import get_classification_service
-from cache import get_cache_service
+from .config import config, ClassificationRequest, ClassificationResponse
+from .model import get_model_handler
+from .classifier import get_classification_service
+from .cache import get_cache_service
 
 # Configure logging
 logging.basicConfig(
