@@ -1,0 +1,63 @@
+services:
+  # Backend API - Node.js Service
+  - type: web
+    name: civic-backend
+    env: node
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: AI_SERVICE_URL
+        value: https://civic-ai-robot.onrender.com
+      - key: ROBOT_SERVICE_URL
+        value: https://civic-ai-robot.onrender.com:5001
+      # Add your MongoDB connection string
+      - key: MONGODB_URI
+        sync: false
+
+  # AI + Robot Service - Docker Service
+  - type: web
+    name: civic-ai-robot
+    env: docker
+    region: oregon
+    plan: free
+    rootDir: ai-service
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: AI_PORT
+        value: 5000
+      - key: ROBOT_PORT
+        value: 5001
+      - key: ROBOFLOW_API_KEY
+        value: wDn97RYRazmoOEE8okiH
+      - key: DEBUG
+        value: "False"
+
+  # Frontend - Static Site
+  - type: web
+    name: civic-frontend
+    env: static
+    region: oregon
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://civic-backend.onrender.com
+      - key: VITE_AI_SERVICE_URL
+        value: https://civic-ai-robot.onrender.com
