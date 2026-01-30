@@ -4,6 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { fetchIssues } from '../store/issueSlice';
 import { motion } from 'framer-motion';
 import { Camera, MapPin, FileText, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import TopUtilityBar from '../components/common/TopUtilityBar';
+import VMCHeader from '../components/common/VMCHeader';
+import VMCFooter from '../components/common/VMCFooter';
+import BottomNav from '../components/surveyor/BottomNav';
 
 // VMC Government Colors
 const VMC_COLORS = {
@@ -76,8 +80,11 @@ const SurveyorDashboard = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="p-6 md:p-8 space-y-6">
+    <>
+      <TopUtilityBar />
+      <VMCHeader />
+      <div className="min-h-screen bg-gray-50">
+        <div className="p-6 md:p-8 space-y-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -201,7 +208,13 @@ const SurveyorDashboard = () => {
           )}
         </motion.div>
       </div>
-    </div>
+
+          {/* Bottom Navigation */}
+          <BottomNav />
+        </div>
+      </div>
+      <VMCFooter />
+    </>
   );
 };
 

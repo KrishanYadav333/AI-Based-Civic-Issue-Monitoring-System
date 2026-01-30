@@ -49,7 +49,7 @@ services:
       - civic-network
     restart: unless-stopped
 
-  # AI Service
+  # AI Service (Main Issue Classification)
   ai-service:
     build:
       context: ./ai-service
@@ -60,6 +60,34 @@ services:
       DEBUG: "False"
     ports:
       - "5000:5000"
+    volumes:
+      - ./ai-service/models:/app/models
+      - ./ai-service/uploads:/app/uploads
+      - ./ai-service/logs:/app/logs
+    networks:
+      - civic-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Robot Survey Service (Autonomous Surveys)
+  robot-service:
+    build:
+      context: ./robot-service
+      dockerfile: Dockerfile
+    container_name: civic-issues-robot
+    environment:
+      PORT: 5001
+      ROBOFLOW_API_KEY: ${ROBOFLOW_API_KEY:-wDn97RYRazmoOEE8okiH}
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./robot-service/static/uploads:/app/static/uploads
+      - ./robot-service/static/results:/app/static/results
+      - ./robot-service/test_images:/app/test_images
     networks:
       - civic-network
     restart: unless-stopped

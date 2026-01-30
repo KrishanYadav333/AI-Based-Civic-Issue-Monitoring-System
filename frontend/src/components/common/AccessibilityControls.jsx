@@ -110,7 +110,9 @@ const AccessibilityControls = () => {
             </button>
           </div>
 
-          {/* Language Selector */}
+          {/* Language Selector - DISABLED: Translation not yet implemented */}
+          {/* Uncomment when i18n/react-i18next is integrated */}
+          {/*
           <div className="relative">
             <button
               onClick={() => setShowControls(!showControls)}
@@ -163,6 +165,7 @@ const AccessibilityControls = () => {
               </div>
             )}
           </div>
+          */}
 
           {/* High Contrast Toggle */}
           <button

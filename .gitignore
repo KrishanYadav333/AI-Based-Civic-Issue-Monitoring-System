@@ -10,6 +10,7 @@ lerna-debug.log*
 .pnpm-debug.log*
 
 /New UI to be followed
+docs/reference
 docs
 /vmc-ai-civic-monitoring-portal
 /ai-service-old-archived
@@ -50,6 +51,11 @@ logs/
 */logs/
 */logs/*.log
 !backend/logs/.gitkeep
+
+# Temporary comparison files
+krishan_*.txt
+our_*.txt
+missing_files.txt
 
 # Uploads and Training Data (keep trained models for deployment)
 uploads/

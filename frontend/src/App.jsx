@@ -9,6 +9,9 @@ import Login from './pages/Login';
 import SubmitIssue from './pages/SubmitIssue';
 import SurveyorDashboard from './pages/SurveyorDashboard';
 import ReportIssue from './pages/ReportIssue';
+import IssueList from './pages/IssueList';
+import IssueDetail from './pages/IssueDetail';
+import Profile from './pages/Profile';
 import EngineerDashboard from './pages/EngineerDashboard';
 import EngineerIssues from './pages/EngineerIssues';
 import EngineerPerformance from './pages/EngineerPerformance';
@@ -138,6 +141,30 @@ function App() {
             element={
               <ProtectedRoute requiredRole="surveyor">
                 <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/surveyor/issues"
+            element={
+              <ProtectedRoute requiredRole="surveyor">
+                <IssueList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/surveyor/issues/:id"
+            element={
+              <ProtectedRoute requiredRole="surveyor">
+                <IssueDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/surveyor/profile"
+            element={
+              <ProtectedRoute requiredRole="surveyor">
+                <Profile />
               </ProtectedRoute>
             }
           />

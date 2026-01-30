@@ -108,7 +108,7 @@ const Login = () => {
             {/* Quick Demo Login Dropdown */}
             <div className="mb-6">
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                🎯 Quick Demo Login
+                Quick Demo Login
               </label>
               <select
                 onChange={(e) => {
@@ -126,7 +126,7 @@ const Login = () => {
                 ))}
               </select>
               <p className="text-xs text-gray-500 mt-2">
-                ⚡ Select any option above for instant login (for demonstration)
+                Select any option above for instant login (for demonstration)
               </p>
             </div>
 
