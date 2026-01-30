@@ -28,15 +28,22 @@ class YOLOv8Handler:
     def _initialize_model(self):
         """Initialize YOLOv8 model"""
         try:
+            model_path = config.MODEL_PATH
+            
+            # Check if it's a keras model (wrong format for YOLOv8)
+            if model_path.endswith('.keras'):
+                logger.warning(f"Model path points to Keras file ({model_path}), using default YOLOv8n instead")
+                model_path = 'yolov8n.pt'
+            
             # Check if model file exists
-            if not os.path.exists(config.MODEL_PATH):
-                logger.warning(f"Model not found at {config.MODEL_PATH}, using YOLOv8n...")
+            if not os.path.exists(model_path):
+                logger.warning(f"Model not found at {model_path}, using YOLOv8n...")
                 # YOLOv8 will automatically download if not found
                 self.model = YOLO('yolov8n.pt')  # Nano version (fastest, smallest)
                 logger.info("YOLOv8n model downloaded and loaded successfully")
             else:
-                logger.info(f"Loading model from {config.MODEL_PATH}")
-                self.model = YOLO(config.MODEL_PATH)
+                logger.info(f"Loading model from {model_path}")
+                self.model = YOLO(model_path)
             
             # Set device (CPU or CUDA)
             if self.device == 'cuda' and torch.cuda.is_available():
