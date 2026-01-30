@@ -30,9 +30,13 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Unauthorized - clear token and redirect to login
-      localStorage.removeItem('authToken');
-      window.location.href = '/login';
+      // Unauthorized - clear token and redirect to login (only if not already on login page)
+      const currentPath = window.location.pathname;
+      if (!currentPath.includes('/login')) {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userRole');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
@@ -42,7 +46,7 @@ api.interceptors.response.use(
 export const authService = {
   login: async (username, password) => {
     try {
-      const response = await api.post('/api/auth/login', { username, password });
+      const response = await api.post('/auth/login', { username, password });
       if (response.data.token) {
         localStorage.setItem('authToken', response.data.token);
       }
@@ -54,7 +58,7 @@ export const authService = {
 
   register: async (userData) => {
     try {
-      const response = await api.post('/api/auth/register', userData);
+      const response = await api.post('/auth/register', userData);
       return response.data;
     } catch (error) {
       throw error;
@@ -63,7 +67,7 @@ export const authService = {
 
   logout: async () => {
     try {
-      await api.post('/api/auth/logout');
+      await api.post('/auth/logout');
       localStorage.removeItem('authToken');
     } catch (error) {
       // Still clear token even if request fails
@@ -74,7 +78,7 @@ export const authService = {
 
   refreshToken: async () => {
     try {
-      const response = await api.post('/api/auth/refresh');
+      const response = await api.post('/auth/refresh');
       return response.data;
     } catch (error) {
       throw error;
@@ -298,6 +302,45 @@ export const analyticsService = {
         params: { reportType, ...filters },
         responseType: 'blob',
       });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+// Notification Service
+export const notificationService = {
+  getNotifications: async () => {
+    try {
+      const response = await api.get('/notifications');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  markAsRead: async (notificationId) => {
+    try {
+      const response = await api.patch(`/notifications/${notificationId}/read`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  markAllAsRead: async () => {
+    try {
+      const response = await api.patch('/notifications/read-all');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  deleteNotification: async (notificationId) => {
+    try {
+      const response = await api.delete(`/notifications/${notificationId}`);
       return response.data;
     } catch (error) {
       throw error;

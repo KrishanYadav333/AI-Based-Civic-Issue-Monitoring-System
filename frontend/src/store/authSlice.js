@@ -57,8 +57,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload;
         state.isAuthenticated = true;
-        state.token = `token-${action.payload.id}`;
-        localStorage.setItem('authToken', state.token);
+        state.token = localStorage.getItem('authToken'); // Use the actual JWT token stored during login
         localStorage.setItem('userRole', action.payload.role);
       })
       .addCase(loginUser.rejected, (state, action) => {
