@@ -258,7 +258,16 @@ export const wardService = {
 export const analyticsService = {
   getDashboardStats: async () => {
     try {
-      const response = await api.get('/analytics/dashboard');
+      const response = await api.get('/dashboard/admin/stats');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getHeatmapData: async (filters = {}) => {
+    try {
+      const response = await api.get('/dashboard/admin/heatmap', { params: filters });
       return response.data;
     } catch (error) {
       throw error;

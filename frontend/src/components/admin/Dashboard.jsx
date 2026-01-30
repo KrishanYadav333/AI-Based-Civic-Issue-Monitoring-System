@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchIssues } from '../../store/issueSlice';
 import { fetchUsers } from '../../store/analyticsSlice';
+import { analyticsService } from '../../services/api';
 import { CardSkeleton } from '../common/Loaders';
 import { FileText, AlertCircle, CheckCircle, Clock, Users, TrendingUp, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -55,10 +56,23 @@ const AdminDashboard = () => {
   const dispatch = useDispatch();
   const { issues, loading } = useSelector(state => state.issues);
   const { users } = useSelector(state => state.users);
+  const [dashboardStats, setDashboardStats] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(true);
 
   useEffect(() => {
     dispatch(fetchIssues());
     dispatch(fetchUsers());
+    
+    // Fetch dashboard stats
+    analyticsService.getDashboardStats()
+      .then(response => {
+        setDashboardStats(response.data || response);
+        setStatsLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching dashboard stats:', error);
+        setStatsLoading(false);
+      });
   }, [dispatch]);
 
   // Calculate metrics
@@ -75,7 +89,7 @@ const AdminDashboard = () => {
   const prevResolutionRate = 65;
   const resolutionTrend = resolutionRate - prevResolutionRate;
 
-  if (loading) {
+  if (loading || statsLoading) {
     return <CardSkeleton count={6} />;
   }
 
@@ -94,15 +108,35 @@ const AdminDashboard = () => {
     { name: 'Resolved', value: resolvedIssues },
   ];
 
-  const trendData = [
-    { day: 'Mon', issues: 12, resolved: 8 },
-    { day: 'Tue', issues: 15, resolved: 10 },
-    { day: 'Wed', issues: 14, resolved: 12 },
-    { day: 'Thu', issues: 18, resolved: 14 },
-    { day: 'Fri', issues: 22, resolved: 16 },
-    { day: 'Sat', issues: 19, resolved: 18 },
-    { day: 'Sun', issues: 16, resolved: 15 },
-  ];
+  // Calculate trend data from last 7 days of actual issues
+  const trendData = React.useMemo(() => {
+    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (6 - i));
+      return date;
+    });
+
+    return last7Days.map(date => {
+      const dayStart = new Date(date.setHours(0, 0, 0, 0));
+      const dayEnd = new Date(date.setHours(23, 59, 59, 999));
+      
+      const dayIssues = issues.filter(issue => {
+        const createdAt = new Date(issue.created_at || issue.createdAt);
+        return createdAt >= dayStart && createdAt <= dayEnd;
+      });
+      
+      const dayResolved = dayIssues.filter(issue => 
+        issue.status === 'Resolved' || issue.status === 'resolved'
+      );
+
+      return {
+        day: daysOfWeek[date.getDay()],
+        issues: dayIssues.length,
+        resolved: dayResolved.length
+      };
+    });
+  }, [issues]);
 
   const recentIssues = [...issues].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 6);
 
