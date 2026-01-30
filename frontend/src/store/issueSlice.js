@@ -113,7 +113,16 @@ const issueSlice = createSlice({
       })
       .addCase(fetchIssues.fulfilled, (state, action) => {
         state.loading = false;
-        state.issues = action.payload;
+        // Handle nested data structure from API: {data: {data: [], pagination: {}}}
+        const payload = action.payload;
+        if (payload.data && Array.isArray(payload.data)) {
+          state.issues = payload.data;
+          state.pagination = payload.pagination || state.pagination;
+        } else if (Array.isArray(payload)) {
+          state.issues = payload;
+        } else {
+          state.issues = [];
+        }
       })
       .addCase(fetchIssues.rejected, (state, action) => {
         state.loading = false;

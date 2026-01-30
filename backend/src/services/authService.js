@@ -43,7 +43,7 @@ function comparePassword(password, storedPassword) {
 function generateToken(user) {
     try {
         const payload = {
-            id: user.id,
+            id: user._id?.toString() || user.id,  // Use _id first, fallback to id
             username: user.username,
             email: user.email,
             role: user.role,

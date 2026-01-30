@@ -34,8 +34,11 @@ const SurveyorDashboard = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    // Ensure issues is always an array
+    const issuesArray = Array.isArray(issues) ? issues : [];
+    
     // Calculate stats for surveyor's issues
-    const surveyorIssues = issues.filter(issue => 
+    const surveyorIssues = issuesArray.filter(issue => 
       issue.submitted_by === user?.id || issue.surveyor_id === user?.id
     );
     
@@ -47,7 +50,9 @@ const SurveyorDashboard = () => {
     });
   }, [issues, user]);
 
-  const myIssues = issues.filter(issue => 
+  // Ensure issues is always an array
+  const issuesArray = Array.isArray(issues) ? issues : [];
+  const myIssues = issuesArray.filter(issue => 
     issue.submitted_by === user?.id || issue.surveyor_id === user?.id
   ).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 

@@ -77,30 +77,29 @@ const AdminDashboard = () => {
       });
   }, [dispatch]);
 
+  // Ensure issues is always an array
+  const issuesArray = Array.isArray(issues) ? issues : [];
+
   // Calculate metrics
-  const totalIssues = issues.length;
-  const pendingIssues = issues.filter(i => i.status === 'Pending').length;
-  const assignedIssues = issues.filter(i => i.status === 'Assigned').length;
-  const inProgressIssues = issues.filter(i => i.status === 'In Progress').length;
-  const resolvedIssues = issues.filter(i => i.status === 'Resolved').length;
-  const criticalIssues = issues.filter(i => i.priority === 'Critical').length;
-  const highIssues = issues.filter(i => i.priority === 'High').length;
+  const totalIssues = issuesArray.length;
+  const pendingIssues = issuesArray.filter(i => i.status === 'Pending').length;
+  const assignedIssues = issuesArray.filter(i => i.status === 'Assigned').length;
+  const inProgressIssues = issuesArray.filter(i => i.status === 'In Progress').length;
+  const resolvedIssues = issuesArray.filter(i => i.status === 'Resolved').length;
+  const criticalIssues = issuesArray.filter(i => i.priority === 'Critical').length;
+  const highIssues = issuesArray.filter(i => i.priority === 'High').length;
 
   const resolutionRate = totalIssues > 0 ? Math.round((resolvedIssues / totalIssues) * 100) : 0;
   const avgResolutionTime = 4.2;
   const prevResolutionRate = 65;
   const resolutionTrend = resolutionRate - prevResolutionRate;
 
-  if (loading || statsLoading) {
-    return <CardSkeleton count={6} />;
-  }
-
   // Chart data with VMC colors
   const priorityData = [
     { name: 'Critical', value: criticalIssues, color: VMC_COLORS.red },
     { name: 'High', value: highIssues, color: VMC_COLORS.orange },
-    { name: 'Medium', value: issues.filter(i => i.priority === 'Medium').length, color: VMC_COLORS.yellow },
-    { name: 'Low', value: issues.filter(i => i.priority === 'Low').length, color: VMC_COLORS.green },
+    { name: 'Medium', value: issuesArray.filter(i => i.priority === 'Medium').length, color: VMC_COLORS.yellow },
+    { name: 'Low', value: issuesArray.filter(i => i.priority === 'Low').length, color: VMC_COLORS.green },
   ];
 
   const statusData = [
@@ -123,7 +122,7 @@ const AdminDashboard = () => {
       const dayStart = new Date(date.setHours(0, 0, 0, 0));
       const dayEnd = new Date(date.setHours(23, 59, 59, 999));
       
-      const dayIssues = issues.filter(issue => {
+      const dayIssues = issuesArray.filter(issue => {
         const createdAt = new Date(issue.created_at || issue.createdAt);
         return createdAt >= dayStart && createdAt <= dayEnd;
       });
@@ -138,9 +137,14 @@ const AdminDashboard = () => {
         resolved: dayResolved.length
       };
     });
-  }, [issues]);
+  }, [issuesArray]);
 
-  const recentIssues = [...issues].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 6);
+  const recentIssues = [...issuesArray].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 6);
+
+  // Show loading state AFTER all hooks have been called
+  if (loading || statsLoading) {
+    return <CardSkeleton count={6} />;
+  }
 
   const StatCard = ({ icon: Icon, label, value, trend, borderColor, bgColor }) => (
     <motion.div 

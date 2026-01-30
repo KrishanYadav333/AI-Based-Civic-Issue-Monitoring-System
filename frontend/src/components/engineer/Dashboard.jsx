@@ -50,8 +50,11 @@ const EngineerDashboard = () => {
     dispatch(fetchIssues());
   }, [dispatch]);
 
+  // Ensure issues is always an array
+  const issuesArray = Array.isArray(issues) ? issues : [];
+
   // Calculate metrics for engineer
-  const assignedIssues = issues.filter(issue => issue.assignedTo === user?.id || issue.assignedTo === 'Engineer001');
+  const assignedIssues = issuesArray.filter(issue => issue.assignedTo === user?.id || issue.assignedTo === 'Engineer001');
   const resolvedCount = assignedIssues.filter(issue => issue.status === 'resolved').length;
   const inProgressCount = assignedIssues.filter(issue => issue.status === 'assigned').length;
   const pendingCount = assignedIssues.filter(issue => issue.status === 'pending').length;

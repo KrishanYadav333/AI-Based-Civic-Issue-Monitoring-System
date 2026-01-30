@@ -56,7 +56,12 @@ async function sendNotification(userId, type, title, message, data = {}) {
 }
 
 /**
- * Notifconst User = require('../models/User');
+ * Notify Admins of Civic Voice Escalation
+ * @param {Object} issue - Escalated issue
+ */
+async function notifyAdminOfEscalation(issue) {
+    try {
+        const User = require('../models/User');
         // Find all admins
         const admins = await User.find({ role: 'admin' });
 
@@ -66,12 +71,7 @@ async function sendNotification(userId, type, title, message, data = {}) {
                 TYPES.PRIORITY_ESCALATED,
                 '🚨 Metric Alarm: Civic Voice Escalation',
                 `Issue #${issue.issue_number || issue._id} has received 50+ upvotes and is now CRITICAL. Immediate attention required.`,
-                { issueId: issue._n(
-                admin.id,
-                TYPES.PRIORITY_ESCALATED,
-                '🚨 Metric Alarm: Civic Voice Escalation',
-                `Issue #${issue.issue_number} has received 50+ upvotes and is now CRITICAL. Immediate attention required.`,
-                { issueId: issue.id }
+                { issueId: issue._id }
             );
         }
     } catch (error) {
@@ -89,7 +89,8 @@ async function notifyComplainantResolution(issue) {
     await sendNotification(
         issue.submitted_by,
         TYPES.ISSUE_RESOLVED,
-        '🎉 Your Issue is Fixed!', || issue._id} (${issue.issue_type || issue.issue_type_code}) has been marked as Resolved by the engineering team. Please rate the quality.`,
+        '🎉 Your Issue is Fixed!',
+        `Issue #${issue.issue_id || issue._id} (${issue.issue_type || issue.issue_type_code}) has been marked as Resolved by the engineering team. Please rate the quality.`,
         { issueId: issue._id, requestRating: true }
     );
 }
@@ -182,8 +183,7 @@ async function markAllAsRead(userId) {
             { is_read: true }
         );
         
-        return result.modifiedCount
-        return result.rows.length;
+        return result.modifiedCount;
     } catch (error) {
         logger.error('Error marking all as read:', error);
         throw error;

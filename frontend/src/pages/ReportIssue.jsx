@@ -45,7 +45,7 @@ const ReportIssue = () => {
 
   useEffect(() => {
     // Auto-fetch location on page load
-    getCurrentLocation();
+    getLocation();
     
     return () => {
       stopCamera();

@@ -55,20 +55,12 @@ const MapView = () => {
   useEffect(() => {
     // Initialize map only once when component mounts
     if (mapInstanceRef.current) return;
-    if (!mapRef.current) {
-      console.log('Map ref not available yet');
-      return;
-    }
+    if (!mapRef.current) return;
 
     const initializeMap = () => {
       try {
-        console.log('Attempting to initialize map with container:', mapRef.current);
-        
         const mapContainer = mapRef.current;
-        if (!mapContainer) {
-          console.error('Map container is null');
-          return;
-        }
+        if (!mapContainer) return;
 
         // Create the map instance with Vadodara coordinates
         const mapInstance = L.map(mapContainer, {
@@ -78,23 +70,17 @@ const MapView = () => {
           attributionControl: true,
         });
 
-        console.log('Map instance created:', mapInstance);
-
         // Add tile layer
-        const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap contributors',
           maxZoom: 19,
           minZoom: 2,
         }).addTo(mapInstance);
 
-        console.log('Tile layer added');
-
         // Force map to recalculate size
         mapInstance.invalidateSize();
-        console.log('Map size invalidated');
         
         mapInstanceRef.current = mapInstance;
-        console.log('Map initialization complete');
       } catch (error) {
         console.error('Error initializing map:', error);
       }
