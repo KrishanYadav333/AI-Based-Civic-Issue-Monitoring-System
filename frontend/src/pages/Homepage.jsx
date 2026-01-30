@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import axios from 'axios';
 import { 
   FileText, MapPin, BarChart3, ShieldAlert, Download, Brain, 
   Phone, Mail, CircleDot, Trash2, HardHat, Dog, CornerDownRight, 
@@ -9,41 +11,149 @@ import TopUtilityBar from '../components/common/TopUtilityBar';
 import VMCHeader from '../components/common/VMCHeader';
 import VMCFooter from '../components/common/VMCFooter';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const Homepage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [selectedWard, setSelectedWard] = useState('all');
+  const [wardData, setWardData] = useState([]);
+  const [issueCategories, setIssueCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalIssues: 0,
+    pending: 0,
+    resolved: 0,
+    resolvedPercentage: 0
+  });
 
-  // Ward data - 19 wards from VMC
-  const wardData = [
-    { id: '1', name: 'Ward 1 - Fatehganj', totalIssues: 234, pending: 45, resolved: 189, resolvedPercentage: 81, topIssueType: 'Potholes' },
-    { id: '2', name: 'Ward 2 - Raopura', totalIssues: 312, pending: 67, resolved: 245, resolvedPercentage: 78, topIssueType: 'Garbage' },
-    { id: '3', name: 'Ward 3 - Mandvi', totalIssues: 189, pending: 34, resolved: 155, resolvedPercentage: 82, topIssueType: 'Broken Roads' },
-    { id: '4', name: 'Ward 4 - Panigate', totalIssues: 267, pending: 56, resolved: 211, resolvedPercentage: 79, topIssueType: 'Potholes' },
-    { id: '5', name: 'Ward 5 - Sayajigunj', totalIssues: 423, pending: 89, resolved: 334, resolvedPercentage: 79, topIssueType: 'Garbage' },
-    { id: '6', name: 'Ward 6 - Karelibaug', totalIssues: 356, pending: 72, resolved: 284, resolvedPercentage: 80, topIssueType: 'Potholes' },
-    { id: '7', name: 'Ward 7 - Gorwa', totalIssues: 298, pending: 61, resolved: 237, resolvedPercentage: 79, topIssueType: 'Debris' },
-    { id: '8', name: 'Ward 8 - Waghodia Road', totalIssues: 401, pending: 85, resolved: 316, resolvedPercentage: 79, topIssueType: 'Garbage' },
-    { id: '9', name: 'Ward 9 - Alkapuri', totalIssues: 334, pending: 68, resolved: 266, resolvedPercentage: 80, topIssueType: 'Potholes' },
-    { id: '10', name: 'Ward 10 - Akota', totalIssues: 389, pending: 79, resolved: 310, resolvedPercentage: 80, topIssueType: 'Broken Roads' },
-    { id: '11', name: 'Ward 11 - Tarsali', totalIssues: 278, pending: 57, resolved: 221, resolvedPercentage: 79, topIssueType: 'Garbage' },
-    { id: '12', name: 'Ward 12 - Sama', totalIssues: 445, pending: 92, resolved: 353, resolvedPercentage: 79, topIssueType: 'Potholes' },
-    { id: '13', name: 'Ward 13 - Harni', totalIssues: 367, pending: 75, resolved: 292, resolvedPercentage: 80, topIssueType: 'Debris' },
-    { id: '14', name: 'Ward 14 - Vasna', totalIssues: 412, pending: 87, resolved: 325, resolvedPercentage: 79, topIssueType: 'Garbage' },
-    { id: '15', name: 'Ward 15 - Tandalja', totalIssues: 323, pending: 66, resolved: 257, resolvedPercentage: 80, topIssueType: 'Potholes' },
-    { id: '16', name: 'Ward 16 - Manjalpur', totalIssues: 298, pending: 62, resolved: 236, resolvedPercentage: 79, topIssueType: 'Broken Roads' },
-    { id: '17', name: 'Ward 17 - Bapod', totalIssues: 256, pending: 53, resolved: 203, resolvedPercentage: 79, topIssueType: 'Potholes' },
-    { id: '18', name: 'Ward 18 - Vadsar', totalIssues: 334, pending: 69, resolved: 265, resolvedPercentage: 79, topIssueType: 'Garbage' },
-    { id: '19', name: 'Ward 19 - Khanderao Market', totalIssues: 378, pending: 78, resolved: 300, resolvedPercentage: 79, topIssueType: 'Debris' }
-  ];
+  // Fetch LIVE data from backend
+  useEffect(() => {
+    const fetchLiveData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch all issues
+        const issuesResponse = await axios.get(`${API_URL}/api/issues`);
+        const issues = issuesResponse.data;
 
-  const issueCategories = [
-    { title: 'Potholes', count: 421, priority: 'High', icon: CircleDot, color: 'red' },
-    { title: 'Garbage Collection', count: 1102, priority: 'Medium', icon: Trash2, color: 'orange' },
-    { title: 'Debris Removal', count: 189, priority: 'Medium', icon: HardHat, color: 'green' },
-    { title: 'Stray Cattle', count: 56, priority: 'High', icon: Dog, color: 'purple' },
-    { title: 'Broken Roads', count: 324, priority: 'High', icon: CornerDownRight, color: 'blue' },
-    { title: 'Open Manholes', count: 12, priority: 'High', icon: AlertCircle, color: 'red' }
-  ];
+        // Calculate ward statistics
+        const wardStats = {};
+        issues.forEach(issue => {
+          const wardId = issue.ward_id || issue.ward || 'unknown';
+          if (!wardStats[wardId]) {
+            wardStats[wardId] = {
+              id: wardId,
+              name: `Ward ${wardId}`,
+              totalIssues: 0,
+              pending: 0,
+              resolved: 0,
+              issues: []
+            };
+          }
+          wardStats[wardId].totalIssues++;
+          wardStats[wardId].issues.push(issue);
+          
+          const status = (issue.status || '').toLowerCase();
+          if (status === 'resolved' || status === 'closed') {
+            wardStats[wardId].resolved++;
+          } else if (status === 'pending' || status === 'open') {
+            wardStats[wardId].pending++;
+          }
+        });
+
+        // Convert to array and calculate percentages
+        const wardDataArray = Object.values(wardStats).map(ward => ({
+          ...ward,
+          resolvedPercentage: ward.totalIssues > 0 
+            ? Math.round((ward.resolved / ward.totalIssues) * 100) 
+            : 0,
+          topIssueType: getTopIssueType(ward.issues)
+        }));
+
+        setWardData(wardDataArray);
+
+        // Calculate issue categories
+        const categoryCount = {};
+        issues.forEach(issue => {
+          const type = issue.issue_type || issue.type || 'Other';
+          categoryCount[type] = (categoryCount[type] || 0) + 1;
+        });
+
+        const categoriesArray = Object.entries(categoryCount).map(([type, count]) => ({
+          title: type,
+          count: count,
+          priority: count > 100 ? 'High' : count > 50 ? 'Medium' : 'Low',
+          icon: getIconForType(type),
+          color: getColorForType(type)
+        }));
+
+        setIssueCategories(categoriesArray);
+
+        // Calculate overall stats
+        const totalIssues = issues.length;
+        const resolved = issues.filter(i => 
+          (i.status || '').toLowerCase() === 'resolved' || 
+          (i.status || '').toLowerCase() === 'closed'
+        ).length;
+        const pending = issues.filter(i => 
+          (i.status || '').toLowerCase() === 'pending' || 
+          (i.status || '').toLowerCase() === 'open'
+        ).length;
+
+        setStats({
+          totalIssues,
+          pending,
+          resolved,
+          resolvedPercentage: totalIssues > 0 ? Math.round((resolved / totalIssues) * 100) : 0
+        });
+
+      } catch (error) {
+        console.error('Error fetching live data:', error);
+        // Fallback to empty arrays on error
+        setWardData([]);
+        setIssueCategories([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLiveData();
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchLiveData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const getTopIssueType = (issues) => {
+    if (!issues || issues.length === 0) return 'N/A';
+    const typeCounts = {};
+    issues.forEach(issue => {
+      const type = issue.issue_type || issue.type || 'Other';
+      typeCounts[type] = (typeCounts[type] || 0) + 1;
+    });
+    return Object.entries(typeCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
+  };
+
+  const getIconForType = (type) => {
+    const lowerType = type.toLowerCase();
+    if (lowerType.includes('pothole')) return CircleDot;
+    if (lowerType.includes('garbage') || lowerType.includes('waste')) return Trash2;
+    if (lowerType.includes('debris') || lowerType.includes('construction')) return HardHat;
+    if (lowerType.includes('animal') || lowerType.includes('cattle') || lowerType.includes('dog')) return Dog;
+    if (lowerType.includes('road') || lowerType.includes('broken')) return CornerDownRight;
+    if (lowerType.includes('manhole')) return AlertCircle;
+    return FileText;
+  };
+
+  const getColorForType = (type) => {
+    const lowerType = type.toLowerCase();
+    if (lowerType.includes('pothole') || lowerType.includes('manhole')) return 'red';
+    if (lowerType.includes('garbage')) return 'orange';
+    if (lowerType.includes('debris')) return 'green';
+    if (lowerType.includes('animal')) return 'purple';
+    if (lowerType.includes('road')) return 'blue';
+    return 'gray';
+  };
 
   const notices = [
     { id: 1, text: 'New waste segregation rules effective from next month', date: '2024-02-15', isNew: true },
@@ -73,13 +183,24 @@ const Homepage = () => {
   };
 
   const selectedWardData = selectedWard === 'all' 
-    ? {
-        totalIssues: wardData.reduce((sum, w) => sum + w.totalIssues, 0),
-        pending: wardData.reduce((sum, w) => sum + w.pending, 0),
-        resolved: wardData.reduce((sum, w) => sum + w.resolved, 0),
-        resolvedPercentage: Math.round((wardData.reduce((sum, w) => sum + w.resolved, 0) / wardData.reduce((sum, w) => sum + w.totalIssues, 0)) * 100)
-      }
-    : wardData.find(w => w.id === selectedWard) || wardData[0];
+    ? stats
+    : wardData.find(w => w.id === selectedWard) || stats;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-slate-50">
+        <TopUtilityBar />
+        <VMCHeader />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#0056b3] mx-auto"></div>
+            <p className="mt-4 text-slate-600">Loading live data...</p>
+          </div>
+        </div>
+        <VMCFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { fetchIssues } from '../store/issueSlice';
 import { motion } from 'framer-motion';
 import { Camera, MapPin, FileText, CheckCircle, Clock, AlertCircle } from 'lucide-react';
@@ -19,6 +20,7 @@ const VMC_COLORS = {
 };
 
 const SurveyorDashboard = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { issues, loading } = useSelector(state => state.issues);
@@ -207,14 +209,13 @@ const SurveyorDashboard = () => {
             </div>
           )}
         </motion.div>
-      </div>
 
-          {/* Bottom Navigation */}
-          <BottomNav />
-        </div>
+        {/* Bottom Navigation */}
+        <BottomNav />
       </div>
-      <VMCFooter />
-    </>
+    </div>
+    <VMCFooter />
+  </>
   );
 };
 

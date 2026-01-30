@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { logout } from '../store/authSlice';
 import { User, Mail, LogOut, Trash2, Info } from 'lucide-react';
 import TopUtilityBar from '../components/common/TopUtilityBar';
@@ -8,6 +9,7 @@ import VMCFooter from '../components/common/VMCFooter';
 import BottomNav from '../components/surveyor/BottomNav';
 
 export default function Profile() {
+  const { t } = useTranslation();
   const { user } = useSelector((state) => state.auth);
   const { issues } = useSelector((state) => state.issues);
   const dispatch = useDispatch();

@@ -22,33 +22,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Backend API Server
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: civic-issues-backend
-    environment:
-      DB_HOST: mongodb
-      DB_PORT: 27017
-      DB_NAME: civic_issues
-      DB_USER: ${DB_USER:-admin}
-      DB_PASSWORD: ${DB_PASSWORD:-admin123}
-      JWT_SECRET: ${JWT_SECRET:-your_secret_key_change_in_production}
-      AI_SERVICE_URL: http://ai-service:5000
-      PORT: 3000
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./backend/uploads:/app/uploads
-      - ./backend/logs:/app/logs
-    depends_on:
-      mongodb:
-        condition: service_healthy
-    networks:
-      - civic-network
-    restart: unless-stopped
-
   # AI Service (Main Issue Classification)
   ai-service:
     build:
@@ -88,20 +61,6 @@ services:
       - ./robot-service/static/uploads:/app/static/uploads
       - ./robot-service/static/results:/app/static/results
       - ./robot-service/test_images:/app/test_images
-    networks:
-      - civic-network
-    restart: unless-stopped
-
-  # Frontend Web Dashboard
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: civic-issues-frontend
-    ports:
-      - "3001:80"
-    depends_on:
-      - backend
     networks:
       - civic-network
     restart: unless-stopped

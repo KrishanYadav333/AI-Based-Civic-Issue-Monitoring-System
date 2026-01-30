@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { MapPin, Calendar, Tag, AlertCircle, ArrowLeft, ExternalLink } from 'lucide-react';
 import TopUtilityBar from '../components/common/TopUtilityBar';
 import VMCHeader from '../components/common/VMCHeader';
@@ -19,6 +20,7 @@ L.Icon.Default.mergeOptions({
 });
 
 export default function IssueDetail() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { issues } = useSelector((state) => state.issues);

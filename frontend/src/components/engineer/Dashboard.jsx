@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { fetchIssues, setSelectedIssue } from '../../store/issueSlice';
 import { Card, MetricCard, Button } from '../common/FormElements';
 import { LoadingSpinner, CardSkeleton } from '../common/Loaders';

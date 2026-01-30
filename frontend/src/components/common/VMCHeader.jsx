@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const VMCHeader = () => {
+  const { t } = useTranslation();
   return (
     <header className="bg-white border-b py-4 px-4 md:px-10 flex flex-col md:flex-row justify-between items-center gap-6">
       <div className="flex items-center gap-4">

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { issueService } from '../services/api';
 import { fetchIssues } from '../store/issueSlice';
 import { motion } from 'framer-motion';
@@ -23,6 +24,7 @@ const ISSUE_TYPES = [
 ];
 
 const ReportIssue = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);

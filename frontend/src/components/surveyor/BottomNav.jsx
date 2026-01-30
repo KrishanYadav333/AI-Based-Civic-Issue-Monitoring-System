@@ -1,12 +1,14 @@
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Home, FileText, Camera, User } from 'lucide-react';
 
 export default function BottomNav() {
+  const { t } = useTranslation();
   const navItems = [
-    { path: '/surveyor/dashboard', label: 'Home', icon: Home },
-    { path: '/surveyor/issues', label: 'Issues', icon: FileText },
-    { path: '/surveyor/report-issue', label: 'Report', icon: Camera },
-    { path: '/surveyor/profile', label: 'Profile', icon: User },
+    { path: '/surveyor/dashboard', label: t('home'), icon: Home },
+    { path: '/surveyor/issues', label: t('issueList.title').split(' ')[0], icon: FileText },
+    { path: '/surveyor/report-issue', label: t('reportIssue.title').split(' ')[0], icon: Camera },
+    { path: '/surveyor/profile', label: t('profile.title').split(' ')[0], icon: User },
   ];
 
   return (

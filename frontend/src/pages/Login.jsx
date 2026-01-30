@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { loginUser } from '../store/authSlice';
 import TopUtilityBar from '../components/common/TopUtilityBar';
 import VMCHeader from '../components/common/VMCHeader';
@@ -10,6 +11,7 @@ import { Alert } from '../components/common/Alerts';
 import { motion } from 'framer-motion';
 
 const Login = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error, isAuthenticated, user } = useSelector(state => state.auth);
@@ -18,9 +20,9 @@ const Login = () => {
   
   // Demo users for quick login
   const demoUsers = [
-    { label: 'Admin User', username: 'admin', password: 'Admin@123' },
-    { label: 'Engineer User', username: 'engineer1', password: 'Engineer@123' },
-    { label: 'Surveyor User', username: 'surveyor1', password: 'Survey@123' },
+    { label: t('loginPage.adminUser'), username: 'admin', password: 'Admin@123' },
+    { label: t('loginPage.engineerUser'), username: 'engineer1', password: 'Engineer@123' },
+    { label: t('loginPage.surveyorUser'), username: 'surveyor1', password: 'Survey@123' },
   ];
 
   const handleDemoLogin = (demoUser) => {
@@ -59,15 +61,15 @@ const Login = () => {
       <nav className="sticky top-0 z-40 bg-[#0056b3] text-white shadow-md">
         <div className="px-4 md:px-10 py-3 flex items-center justify-between">
           <ul className="hidden md:flex items-center gap-1 text-sm font-medium">
-            <li className="px-4 py-2 hover:bg-white/10 transition-colors cursor-pointer" onClick={() => navigate('/')}>Home</li>
-            <li className="px-4 py-2 hover:bg-white/10 transition-colors cursor-pointer border-l border-white/20">About VMC System</li>
-            <li className="px-4 py-2 hover:bg-white/10 transition-colors cursor-pointer border-l border-white/20">Contact Us</li>
+            <li className="px-4 py-2 hover:bg-white/10 transition-colors cursor-pointer" onClick={() => navigate('/')}>{t('home')}</li>
+            <li className="px-4 py-2 hover:bg-white/10 transition-colors cursor-pointer border-l border-white/20">{t('aboutVMC')}</li>
+            <li className="px-4 py-2 hover:bg-white/10 transition-colors cursor-pointer border-l border-white/20">{t('contactUs')}</li>
           </ul>
           <button 
             onClick={() => navigate('/')}
             className="bg-white text-[#0056b3] px-6 py-2 rounded-sm font-bold text-sm hover:bg-slate-100 transition-colors"
           >
-            Back to Home
+            {t('loginPage.backToHome')}
           </button>
         </div>
       </nav>
@@ -76,8 +78,8 @@ const Login = () => {
       <div className="bg-[#003366] py-12">
         <div className="container mx-auto px-5">
           <div className="text-center text-white">
-            <h1 className="text-3xl font-bold mb-2">Staff Login Portal</h1>
-            <p className="text-white/80">Access your administrative dashboard</p>
+            <h1 className="text-3xl font-bold mb-2">{t('loginPage.staffLoginPortal')}</h1>
+            <p className="text-white/80">{t('loginPage.accessDashboard')}</p>
           </div>
         </div>
       </div>

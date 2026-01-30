@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Settings as SettingsIcon, Save, Lock, Bell, Eye, EyeOff, Check, Moon, Sun, Download, Trash2, Shield } from 'lucide-react';
 import { logout } from '../store/authSlice';
 
 export default function Settings() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { user } = useSelector(state => state.auth);
   const [activeTab, setActiveTab] = useState('profile');

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Search, Filter, ChevronRight } from 'lucide-react';
 import TopUtilityBar from '../components/common/TopUtilityBar';
 import VMCHeader from '../components/common/VMCHeader';
@@ -8,6 +9,7 @@ import VMCFooter from '../components/common/VMCFooter';
 import BottomNav from '../components/surveyor/BottomNav';
 
 export default function IssueList() {
+  const { t } = useTranslation();
   const { issues } = useSelector((state) => state.issues);
   const { user } = useSelector((state) => state.auth);
   const [filteredIssues, setFilteredIssues] = useState([]);

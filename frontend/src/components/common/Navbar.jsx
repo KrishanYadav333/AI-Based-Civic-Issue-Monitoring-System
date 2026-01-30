@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Menu, X, LogOut, Settings } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { logout } from '../../store/authSlice';
 import { motion } from 'framer-motion';
 
 const Navbar = ({ sidebarOpen, setSidebarOpen, onSearch }) => {
+  const { t } = useTranslation();
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
