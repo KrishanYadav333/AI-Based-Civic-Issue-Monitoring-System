@@ -7,6 +7,8 @@ import MainLayout from './pages/MainLayout';
 import Homepage from './pages/Homepage';
 import Login from './pages/Login';
 import SubmitIssue from './pages/SubmitIssue';
+import SurveyorDashboard from './pages/SurveyorDashboard';
+import ReportIssue from './pages/ReportIssue';
 import EngineerDashboard from './pages/EngineerDashboard';
 import EngineerIssues from './pages/EngineerIssues';
 import EngineerPerformance from './pages/EngineerPerformance';
@@ -109,6 +111,32 @@ function App() {
             path="/engineer/settings"
             element={
               <ProtectedRoute requiredRole="engineer">
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Surveyor routes */}
+          <Route
+            path="/surveyor/dashboard"
+            element={
+              <ProtectedRoute requiredRole="surveyor">
+                <SurveyorDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/surveyor/report-issue"
+            element={
+              <ProtectedRoute requiredRole="surveyor">
+                <ReportIssue />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/surveyor/settings"
+            element={
+              <ProtectedRoute requiredRole="surveyor">
                 <Settings />
               </ProtectedRoute>
             }

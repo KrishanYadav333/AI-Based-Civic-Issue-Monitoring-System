@@ -35,7 +35,12 @@ const Login = () => {
   // Redirect after successful login
   useEffect(() => {
     if (isAuthenticated && user) {
-      const redirectPath = user.role === 'admin' ? '/dashboard' : '/engineer/dashboard';
+      const roleRedirects = {
+        'admin': '/dashboard',
+        'engineer': '/engineer/dashboard',
+        'surveyor': '/surveyor/dashboard'
+      };
+      const redirectPath = roleRedirects[user.role] || '/';
       navigate(redirectPath, { replace: true });
     }
   }, [isAuthenticated, user, navigate]);
