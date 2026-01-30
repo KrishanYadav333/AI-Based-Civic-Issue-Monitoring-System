@@ -232,5 +232,8 @@ def detect():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    # Run on port 5001 to avoid conflict with main AI service (port 5000)
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    # Run on port from environment or default 5001
+    import os
+    port = int(os.getenv('ROBOT_PORT', 5001))
+    print(f"🤖 Starting Robot Service on port {port}...")
+    app.run(debug=False, host='0.0.0.0', port=port)

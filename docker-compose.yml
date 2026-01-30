@@ -1,72 +1,33 @@
 version: '3.8'
 
 services:
-  # MongoDB Database
-  mongodb:
-    image: mongo:7.0
-    container_name: civic-issues-db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USER:-admin}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD:-admin123}
-      MONGO_INITDB_DATABASE: civic_issues
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-      - ./database/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    networks:
-      - civic-network
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # AI Service (Main Issue Classification)
-  ai-service:
+  # Combined AI + Robot Service (Both services in one container)
+  ai-robot-service:
     build:
       context: ./ai-service
       dockerfile: Dockerfile
-    container_name: civic-issues-ai
+    container_name: civic-issues-ai-robot
     environment:
-      PORT: 5000
+      AI_PORT: 5000
+      ROBOT_PORT: 5001
+      ROBOFLOW_API_KEY: ${ROBOFLOW_API_KEY:-wDn97RYRazmoOEE8okiH}
       DEBUG: "False"
     ports:
-      - "5000:5000"
+      - "5000:5000"  # AI Service (YOLOv8)
+      - "5001:5001"  # Robot Service (Roboflow)
     volumes:
       - ./ai-service/models:/app/models
       - ./ai-service/uploads:/app/uploads
       - ./ai-service/logs:/app/logs
+      - ./ai-service/robot-service/static:/app/robot-service/static
     networks:
       - civic-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/health && curl -f http://localhost:5001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # Robot Survey Service (Autonomous Surveys)
-  robot-service:
-    build:
-      context: ./robot-service
-      dockerfile: Dockerfile
-    container_name: civic-issues-robot
-    environment:
-      PORT: 5001
-      ROBOFLOW_API_KEY: ${ROBOFLOW_API_KEY:-wDn97RYRazmoOEE8okiH}
-    ports:
-      - "5001:5001"
-    volumes:
-      - ./robot-service/static/uploads:/app/static/uploads
-      - ./robot-service/static/results:/app/static/results
-      - ./robot-service/test_images:/app/test_images
-    networks:
-      - civic-network
-    restart: unless-stopped
-
-volumes:
-  mongodb_data:
 
 networks:
   civic-network:

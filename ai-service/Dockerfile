@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -12,30 +12,37 @@ RUN apt-get update && apt-get install -y \
     libgomp1 \
     libfontconfig1 \
     libice6 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
+# Install Python dependencies (AI + Robot services)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy AI service code
 COPY src/ ./src/
 COPY models/ ./models/
 
+# Copy Robot service code
+COPY robot-service/ ./robot-service/
+
 # Create directories
-RUN mkdir -p temp uploads logs
+RUN mkdir -p temp uploads logs robot-service/static/uploads robot-service/static/results
 
 # Create non-root user for security
 RUN useradd -m appuser && chown -R appuser /app
 USER appuser
 
-# Expose port (Render will assign dynamic PORT)
-EXPOSE 5000
-ENV PORT=5000
+# Expose both ports
+EXPOSE 5000 5001
+ENV AI_PORT=5000
+ENV ROBOT_PORT=5001
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:' + __import__('os').getenv('PORT', '5000') + '/health').read()"
+# Copy startup script
+COPY start-services.sh /app/start-services.sh
+USER root
+RUN chmod +x /app/start-services.sh
+USER appuser
 
-# Start FastAPI with uvicorn - bind to PORT from environment
-CMD uvicorn src.main:app --host 0.0.0.0 --port $PORT
+# Start both services
+CMD ["/app/start-services.sh"]

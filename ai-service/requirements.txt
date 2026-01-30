@@ -1,5 +1,7 @@
-# AI Service - YOLOv8 Classification (100% FREE)
+# AI Service + Robot Service Combined (100% FREE)
 # Python 3.9+
+
+# AI Service - YOLOv8 Classification
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 torch==2.1.0
@@ -12,3 +14,8 @@ python-multipart==0.0.6
 pydantic==2.5.0
 redis==5.0.1
 python-dotenv==1.0.0
+
+# Robot Service - Roboflow Detection
+Flask==3.0.0
+Flask-CORS==4.0.0
+inference-sdk==0.9.10
