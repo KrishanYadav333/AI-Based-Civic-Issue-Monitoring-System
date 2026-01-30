@@ -4,9 +4,9 @@ import { authService } from '../services/api';
 // Real authentication with backend
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
-  async ({ email, password }, { rejectWithValue }) => {
+  async ({ username, password }, { rejectWithValue }) => {
     try {
-      const response = await authService.login(email, password);
+      const response = await authService.login(username, password);
       const userData = response.data || response;
       
       // Store token

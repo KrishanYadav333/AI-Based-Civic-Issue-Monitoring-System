@@ -1,9 +1,9 @@
 /**
  * Authentication Service
  * User authentication and authorization
+ * NOTE: Using plain text passwords for demo purposes - NOT FOR PRODUCTION!
  */
 
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const logger = require('../utils/logger');
@@ -13,35 +13,26 @@ const { AuthenticationError, ValidationError, ConflictError } = require('../util
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
-const SALT_ROUNDS = 10;
 
 /**
- * Hash password
+ * Store password (plain text for demo)
  * @param {string} password - Plain text password
- * @returns {Promise<string>} Hashed password
+ * @returns {string} Same password
  */
-async function hashPassword(password) {
-    try {
-        return await bcrypt.hash(password, SALT_ROUNDS);
-    } catch (error) {
-        logger.error('Error hashing password:', error);
-        throw error;
-    }
+function hashPassword(password) {
+    // No hashing - plain text for demo
+    return password;
 }
 
 /**
- * Compare password with hash
+ * Compare passwords (plain text)
  * @param {string} password - Plain text password
- * @param {string} hash - Hashed password
- * @returns {Promise<boolean>} Match result
+ * @param {string} storedPassword - Stored plain text password
+ * @returns {boolean} Match result
  */
-async function comparePassword(password, hash) {
-    try {
-        return await bcrypt.compare(password, hash);
-    } catch (error) {
-        logger.error('Error comparing password:', error);
-        throw error;
-    }
+function comparePassword(password, storedPassword) {
+    // Direct comparison - no bcrypt
+    return password === storedPassword;
 }
 
 /**
@@ -114,8 +105,8 @@ async function register(data) {
             throw new ConflictError('Email already exists');
         }
         
-        // Hash password
-        const password_hash = await hashPassword(password);
+        // Store password (plain text)
+        const password_hash = hashPassword(password);
         
         // Create user
         const user = await User.create({
@@ -173,8 +164,8 @@ async function login(username, password) {
             throw new AuthenticationError(ERROR_MESSAGES.INVALID_CREDENTIALS);
         }
         
-        // Verify password
-        const isValidPassword = await comparePassword(password, user.password_hash);
+        // Verify password (plain text comparison)
+        const isValidPassword = comparePassword(password, user.password_hash);
         
         if (!isValidPassword) {
             throw new AuthenticationError(ERROR_MESSAGES.INVALID_CREDENTIALS);

@@ -13,22 +13,22 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error, isAuthenticated, user } = useSelector(state => state.auth);
-  const [email, setEmail] = useState('admin@civic.com');
-  const [password, setPassword] = useState('admin123');
+  const [username, setUsername] = useState('admin');
+  const [password, setPassword] = useState('Admin@123');
   
   // Demo users for quick login
   const demoUsers = [
-    { label: 'Admin User', email: 'admin@civic.com', password: 'admin123' },
-    { label: 'Engineer User', email: 'engineer@civic.com', password: 'engineer123' },
-    { label: 'Surveyor User', email: 'surveyor@civic.com', password: 'surveyor123' },
+    { label: 'Admin User', username: 'admin', password: 'Admin@123' },
+    { label: 'Engineer User', username: 'engineer1', password: 'Engineer@123' },
+    { label: 'Surveyor User', username: 'surveyor1', password: 'Survey@123' },
   ];
 
   const handleDemoLogin = (demoUser) => {
-    setEmail(demoUser.email);
+    setUsername(demoUser.username);
     setPassword(demoUser.password);
     // Auto-submit after selecting
     setTimeout(() => {
-      dispatch(loginUser({ email: demoUser.email, password: demoUser.password }));
+      dispatch(loginUser({ username: demoUser.username, password: demoUser.password }));
     }, 100);
   };
 
@@ -42,7 +42,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    dispatch(loginUser({ email, password }));
+    dispatch(loginUser({ username, password }));
   };
 
   return (
@@ -116,7 +116,7 @@ const Login = () => {
                 <option value="" disabled>Select a demo user to login instantly</option>
                 {demoUsers.map((user, index) => (
                   <option key={index} value={index}>
-                    {user.label} - {user.email}
+                    {user.label} - {user.username}
                   </option>
                 ))}
               </select>
@@ -136,11 +136,11 @@ const Login = () => {
 
             <form onSubmit={handleLogin} className="space-y-4">
               <Input
-                label="Email Address"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@civic.com"
+                label="Username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="admin"
                 required
               />
 
@@ -166,8 +166,9 @@ const Login = () => {
             <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-sm">
               <p className="font-semibold text-[#003366] mb-2 text-sm">Demo Credentials:</p>
               <div className="text-sm text-slate-700 space-y-1">
-                <p><span className="font-semibold">Admin:</span> admin@civic.com / admin123</p>
-                <p><span className="font-semibold">Engineer:</span> engineer@civic.com / engineer123</p>
+                <p><span className="font-semibold">Admin:</span> admin / Admin@123</p>
+                <p><span className="font-semibold">Engineer:</span> engineer1 / Engineer@123</p>
+                <p><span className="font-semibold">Surveyor:</span> surveyor1 / Survey@123</p>
               </div>
             </div>
           </Card>

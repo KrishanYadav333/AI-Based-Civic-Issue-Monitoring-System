@@ -40,9 +40,9 @@ api.interceptors.response.use(
 
 // Authentication Service
 export const authService = {
-  login: async (email, password) => {
+  login: async (username, password) => {
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post('/api/auth/login', { username, password });
       if (response.data.token) {
         localStorage.setItem('authToken', response.data.token);
       }
@@ -54,7 +54,7 @@ export const authService = {
 
   register: async (userData) => {
     try {
-      const response = await api.post('/auth/register', userData);
+      const response = await api.post('/api/auth/register', userData);
       return response.data;
     } catch (error) {
       throw error;
@@ -63,7 +63,7 @@ export const authService = {
 
   logout: async () => {
     try {
-      await api.post('/auth/logout');
+      await api.post('/api/auth/logout');
       localStorage.removeItem('authToken');
     } catch (error) {
       // Still clear token even if request fails
@@ -74,7 +74,7 @@ export const authService = {
 
   refreshToken: async () => {
     try {
-      const response = await api.post('/auth/refresh');
+      const response = await api.post('/api/auth/refresh');
       return response.data;
     } catch (error) {
       throw error;
