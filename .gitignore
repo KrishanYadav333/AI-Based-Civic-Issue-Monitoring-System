@@ -159,11 +159,12 @@ ai-service/models/*.h5
 ai-service/models/*.pkl
 ai-service/models/*.tflite
 ai-service/models/*.onnx
-ai-service/models/best_model.keras
+# ai-service/models/best_model.keras - ALLOW TRAINED MODEL FOR DEPLOYMENT
 ai-service/dataset/
 # ai-service/training_data/ (tracking for M4 training)
 !ai-service/models/.gitkeep
 !ai-service/models/class_indices.json
+!ai-service/models/best_model.keras
 # !ai-service/training_data/.gitkeep (not needed - tracking all training data)
 
 # AI Service Logs
