@@ -2,7 +2,7 @@ services:
   # Backend API - Node.js Service
   - type: web
     name: civic-backend
-    env: node
+    runtime: node
     region: oregon
     plan: free
     rootDir: backend
@@ -28,7 +28,7 @@ services:
   # AI + Robot Service - Docker Service
   - type: web
     name: civic-ai-robot
-    env: docker
+    runtime: docker
     region: oregon
     plan: free
     rootDir: ai-service
@@ -46,16 +46,16 @@ services:
   # Frontend - Static Site
   - type: web
     name: civic-frontend
-    env: static
+    runtime: static
     region: oregon
     plan: free
     rootDir: frontend
     buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    publishPath: dist
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
     envVars:
       - key: VITE_API_BASE_URL
         value: https://civic-backend.onrender.com
