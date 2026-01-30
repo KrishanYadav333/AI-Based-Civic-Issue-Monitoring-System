@@ -30,13 +30,10 @@ class YOLOv8Handler:
         try:
             # Check if model file exists
             if not os.path.exists(config.MODEL_PATH):
-                logger.warning(f"Model not found at {config.MODEL_PATH}, downloading YOLOv8n...")
+                logger.warning(f"Model not found at {config.MODEL_PATH}, using YOLOv8n...")
                 # YOLOv8 will automatically download if not found
                 self.model = YOLO('yolov8n.pt')  # Nano version (fastest, smallest)
-                
-                # Save to configured path
-                os.makedirs(os.path.dirname(config.MODEL_PATH), exist_ok=True)
-                self.model.save(config.MODEL_PATH)
+                logger.info("YOLOv8n model downloaded and loaded successfully")
             else:
                 logger.info(f"Loading model from {config.MODEL_PATH}")
                 self.model = YOLO(config.MODEL_PATH)

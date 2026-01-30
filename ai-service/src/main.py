@@ -119,7 +119,7 @@ async def health_check():
             "status": "healthy",
             "timestamp": datetime.utcnow().isoformat(),
             "model": {
-                "loaded": model_info['loaded'],
+                "loaded": model_info['model_loaded'],
                 "device": model_info['device'],
                 "confidence_threshold": model_info['confidence_threshold']
             },
