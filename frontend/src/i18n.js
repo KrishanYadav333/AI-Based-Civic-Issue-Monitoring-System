@@ -60,6 +60,12 @@ const resources = {
       "loginPage.signInButton": "Sign In",
       "loginPage.demoCredentials": "Demo Credentials:",
       
+      // Hero Section
+      "heroTitle": "AI-Powered Civic Issue Monitoring for Vadodara",
+      "heroSubtitle": "Report civic issues instantly with AI classification. Real-time tracking, automatic ward assignment, and 24/7 monitoring for efficient resolution.",
+      "reportIssue": "Report Issue",
+      "trackStatus": "Track Status",
+      
       // Dashboards
       "adminDash.title": "Admin Dashboard",
       "adminDash.subtitle": "System overview and key metrics",
@@ -272,6 +278,12 @@ const resources = {
       "loginPage.signingIn": "સાઇન ઇન કરી રહ્યા છીએ...",
       "loginPage.signInButton": "સાઇન ઇન",
       "loginPage.demoCredentials": "ડેમો પ્રમાણપત્રો:",
+      
+      // Hero Section
+      "heroTitle": "વડોદરા માટે AI-આધારિત નાગરિક સમસ્યા નિરીક્ષણ",
+      "heroSubtitle": "AI વર્ગીકરણ સાથે નાગરિક સમસ્યાઓ તરત જ જાણ કરો. રીઅલ-ટાઇમ ટ્રેકિંગ, સ્વચાલિત વોર્ડ સોંપણી અને કાર્યક્ષમ ઉકેલ માટે 24/7 નિરીક્ષણ.",
+      "reportIssue": "સમસ્યા જાણ કરો",
+      "trackStatus": "સ્થિતિ ટ્રેક કરો",
       
       // Dashboards
       "adminDash.title": "એડમિન ડેશબોર્ડ",
