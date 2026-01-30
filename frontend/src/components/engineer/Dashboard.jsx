@@ -41,6 +41,7 @@ const headerVariants = {
 };
 
 const EngineerDashboard = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { issues, loading } = useSelector(state => state.issues);
   const user = useSelector(state => state.auth.user);

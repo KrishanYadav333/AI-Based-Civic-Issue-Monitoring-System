@@ -3,10 +3,6 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Search, Filter, ChevronRight } from 'lucide-react';
-import TopUtilityBar from '../components/common/TopUtilityBar';
-import VMCHeader from '../components/common/VMCHeader';
-import VMCFooter from '../components/common/VMCFooter';
-import BottomNav from '../components/surveyor/BottomNav';
 
 export default function IssueList() {
   const { t } = useTranslation();
@@ -76,10 +72,7 @@ export default function IssueList() {
   };
 
   return (
-    <>
-      <TopUtilityBar />
-      <VMCHeader />
-      <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50 pb-24">
       {/* Header */}
       <div className="bg-[#0a2647] text-white px-6 py-6 shadow-lg">
         <h1 className="text-2xl font-bold">My Reported Issues</h1>
@@ -193,11 +186,6 @@ export default function IssueList() {
           </div>
         )}
       </div>
-
-      {/* Bottom Navigation */}
-      <BottomNav />
     </div>
-    <VMCFooter />
-    </>
   );
 }

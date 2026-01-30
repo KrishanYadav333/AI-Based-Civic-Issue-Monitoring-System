@@ -137,14 +137,6 @@ function App() {
             }
           />
           <Route
-            path="/surveyor/settings"
-            element={
-              <ProtectedRoute requiredRole="surveyor">
-                <Settings />
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="/surveyor/issues"
             element={
               <ProtectedRoute requiredRole="surveyor">
@@ -165,6 +157,14 @@ function App() {
             element={
               <ProtectedRoute requiredRole="surveyor">
                 <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/surveyor/settings"
+            element={
+              <ProtectedRoute requiredRole="surveyor">
+                <Settings />
               </ProtectedRoute>
             }
           />

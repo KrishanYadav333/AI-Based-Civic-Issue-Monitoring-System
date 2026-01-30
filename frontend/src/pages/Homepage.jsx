@@ -233,24 +233,23 @@ const Homepage = () => {
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-8 items-center">
           <div>
             <h2 className="text-3xl md:text-4xl font-extrabold text-[#003366] mb-4 leading-tight">
-              Building a Smarter, Cleaner Vadodara
+              {t('heroTitle')}
             </h2>
             <p className="text-lg text-slate-600 mb-6 leading-relaxed">
-              AI-powered civic issue monitoring system for real-time tracking, efficient resolution, 
-              and transparent governance across all 19 wards of Vadodara.
+              {t('heroSubtitle')}
             </p>
             <div className="flex gap-4">
               <button 
                 onClick={() => navigate('/submit-issue')}
                 className="bg-[#003366] text-white px-8 py-3 rounded-sm font-bold hover:bg-[#002244] transition-colors shadow-md"
               >
-                Report an Issue
+                {t('reportIssue')}
               </button>
               <button 
                 onClick={() => navigate('/login')}
                 className="bg-white text-[#003366] border-2 border-[#003366] px-8 py-3 rounded-sm font-bold hover:bg-slate-50 transition-colors"
               >
-                Track Status
+                {t('trackStatus')}
               </button>
             </div>
           </div>

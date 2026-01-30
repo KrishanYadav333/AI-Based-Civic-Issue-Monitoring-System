@@ -62,6 +62,7 @@ import {
 } from 'recharts';
 
 const Analytics = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { issues } = useSelector(state => state.issues);
 

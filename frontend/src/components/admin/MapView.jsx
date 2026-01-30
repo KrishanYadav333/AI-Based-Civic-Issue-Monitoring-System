@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchIssues } from '../../store/issueSlice';
 import { Card } from '../common/FormElements';
 import { LoadingSpinner } from '../common/Loaders';
-import { MapPin, Filter, Search, AlertCircle, Clock, CheckCircle, Zap, TrendingUp } from 'lucide-react';
+import { MapPin, Filter, Search, AlertCircle, Clock, CheckCircle, Zap, TrendingUp, Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet.heat';
 
 // Fix Leaflet default icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -21,10 +22,12 @@ const MapView = () => {
   const { issues, loading } = useSelector(state => state.issues);
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
+  const heatLayerRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
+  const [showHeatmap, setShowHeatmap] = useState(false);
 
   useEffect(() => {
     dispatch(fetchIssues());
@@ -118,39 +121,79 @@ const MapView = () => {
       }
     });
 
-    // Add markers for each filtered issue
-    filteredIssues.forEach(issue => {
-      const color = issue.priority === 'Critical' ? 'red' : 
-                   issue.priority === 'High' ? 'orange' : 
-                   issue.priority === 'Medium' ? 'yellow' : 'green';
+    // Remove heatmap if switching modes
+    if (!showHeatmap && heatLayerRef.current) {
+      map.removeLayer(heatLayerRef.current);
+      heatLayerRef.current = null;
+    }
 
-      const icon = L.icon({
-        iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-${color}.png`,
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41],
+    // Show heatmap or markers based on toggle
+    if (showHeatmap) {
+      // Create heatmap data points
+      const heatData = filteredIssues.map(issue => {
+        // Intensity based on priority
+        const intensity = issue.priority === 'Critical' ? 1.0 : 
+                         issue.priority === 'High' ? 0.8 : 
+                         issue.priority === 'Medium' ? 0.6 : 0.4;
+        return [issue.location.lat, issue.location.lng, intensity];
       });
 
-      const marker = L.marker(
-        [issue.location.lat, issue.location.lng],
-        { icon }
-      ).addTo(map);
+      // Remove old heatmap layer
+      if (heatLayerRef.current) {
+        map.removeLayer(heatLayerRef.current);
+      }
 
-      marker.bindPopup(`
-        <div style="font-family: system-ui;">
-          <h3 style="margin: 0 0 8px 0; font-weight: bold; font-size: 14px; color: #000;">${issue.title}</h3>
-          <p style="margin: 4px 0; font-size: 13px; color: #555;">${issue.description}</p>
-          <div style="border-top: 1px solid #e5e7eb; margin: 8px 0; padding-top: 8px;">
-            <p style="margin: 4px 0; font-size: 12px; color: #666;"><strong>Ward:</strong> ${issue.ward}</p>
-            <p style="margin: 4px 0; font-size: 12px; color: #666;"><strong>Status:</strong> <span style="padding: 2px 6px; border-radius: 4px; background: ${issue.status === 'Resolved' ? '#d1fae5' : issue.status === 'In Progress' ? '#dbeafe' : '#fef3c7'}; color: ${issue.status === 'Resolved' ? '#065f46' : issue.status === 'In Progress' ? '#0c4a6e' : '#92400e'}; font-size: 11px;">${issue.status}</span></p>
-            <p style="margin: 4px 0; font-size: 12px; color: #666;"><strong>Priority:</strong> <span style="padding: 2px 6px; border-radius: 4px; background: ${issue.priority === 'Critical' ? '#fee2e2' : '#f3e8ff'}; color: ${issue.priority === 'Critical' ? '#7f1d1d' : '#6b21a8'}; font-size: 11px;">${issue.priority}</span></p>
+      // Add new heatmap layer
+      const heatLayer = L.heatLayer(heatData, {
+        radius: 25,
+        blur: 15,
+        maxZoom: 17,
+        max: 1.0,
+        gradient: {
+          0.0: 'blue',
+          0.5: 'lime',
+          0.7: 'yellow',
+          0.9: 'orange',
+          1.0: 'red'
+        }
+      }).addTo(map);
+
+      heatLayerRef.current = heatLayer;
+    } else {
+      // Add markers for each filtered issue
+      filteredIssues.forEach(issue => {
+        const color = issue.priority === 'Critical' ? 'red' : 
+                     issue.priority === 'High' ? 'orange' : 
+                     issue.priority === 'Medium' ? 'yellow' : 'green';
+
+        const icon = L.icon({
+          iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-${color}.png`,
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41],
+        });
+
+        const marker = L.marker(
+          [issue.location.lat, issue.location.lng],
+          { icon }
+        ).addTo(map);
+
+        marker.bindPopup(`
+          <div style="font-family: system-ui;">
+            <h3 style="margin: 0 0 8px 0; font-weight: bold; font-size: 14px; color: #000;">${issue.title}</h3>
+            <p style="margin: 4px 0; font-size: 13px; color: #555;">${issue.description}</p>
+            <div style="border-top: 1px solid #e5e7eb; margin: 8px 0; padding-top: 8px;">
+              <p style="margin: 4px 0; font-size: 12px; color: #666;"><strong>Ward:</strong> ${issue.ward}</p>
+              <p style="margin: 4px 0; font-size: 12px; color: #666;"><strong>Status:</strong> <span style="padding: 2px 6px; border-radius: 4px; background: ${issue.status === 'Resolved' ? '#d1fae5' : issue.status === 'In Progress' ? '#dbeafe' : '#fef3c7'}; color: ${issue.status === 'Resolved' ? '#065f46' : issue.status === 'In Progress' ? '#0c4a6e' : '#92400e'}; font-size: 11px;">${issue.status}</span></p>
+              <p style="margin: 4px 0; font-size: 12px; color: #666;"><strong>Priority:</strong> <span style="padding: 2px 6px; border-radius: 4px; background: ${issue.priority === 'Critical' ? '#fee2e2' : '#f3e8ff'}; color: ${issue.priority === 'Critical' ? '#7f1d1d' : '#6b21a8'}; font-size: 11px;">${issue.priority}</span></p>
+            </div>
           </div>
-        </div>
-      `);
-    });
-  }, [filteredIssues]);
+        `);
+      });
+    }
+  }, [filteredIssues, showHeatmap]);
 
   if (loading) {
     return (
@@ -249,6 +292,19 @@ const MapView = () => {
               className="w-full pl-12 pr-4 py-3 bg-gray-50 text-gray-900 placeholder-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#144272] border border-gray-200 transition-all duration-300"
             />
           </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowHeatmap(!showHeatmap)}
+            className={`flex items-center gap-2 px-5 py-3 rounded-xl font-medium transition-all duration-300 ${
+              showHeatmap 
+                ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg' 
+                : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'
+            }`}
+          >
+            <Activity className="w-4 h-4 transition-transform duration-300" />
+            {showHeatmap ? 'Show Markers' : 'Show Heatmap'}
+          </motion.button>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

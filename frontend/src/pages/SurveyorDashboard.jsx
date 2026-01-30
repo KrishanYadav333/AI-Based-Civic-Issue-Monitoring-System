@@ -5,10 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { fetchIssues } from '../store/issueSlice';
 import { motion } from 'framer-motion';
 import { Camera, MapPin, FileText, CheckCircle, Clock, AlertCircle } from 'lucide-react';
-import TopUtilityBar from '../components/common/TopUtilityBar';
-import VMCHeader from '../components/common/VMCHeader';
-import VMCFooter from '../components/common/VMCFooter';
-import BottomNav from '../components/surveyor/BottomNav';
 
 // VMC Government Colors
 const VMC_COLORS = {
@@ -82,18 +78,15 @@ const SurveyorDashboard = () => {
   );
 
   return (
-    <>
-      <TopUtilityBar />
-      <VMCHeader />
-      <div className="min-h-screen bg-gray-50">
-        <div className="p-6 md:p-8 space-y-6">
+    <div className="min-h-screen bg-gray-50">
+      <div className="p-6 md:p-8 space-y-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-3xl font-bold text-[#0a2647]">Surveyor Dashboard</h1>
-          <p className="text-gray-600 mt-1 font-medium">Welcome, {user?.username || 'Surveyor'}! Report and track civic issues</p>
+          <h1 className="text-3xl font-bold text-[#0a2647]">{t('surveyorDash.title')}</h1>
+          <p className="text-gray-600 mt-1 font-medium">{t('surveyorDash.welcome')}{user?.username || 'Surveyor'}{t('surveyorDash.welcomeDesc')}</p>
         </motion.div>
 
         {/* Quick Action Button */}
@@ -113,28 +106,28 @@ const SurveyorDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             icon={FileText}
-            label="Total Issues"
+            label={t('surveyorDash.totalIssues')}
             value={stats.total}
             color="border-[#0056b3]"
             bgColor="bg-white"
           />
           <StatCard
             icon={Clock}
-            label="Pending"
+            label={t('surveyorDash.pending')}
             value={stats.pending}
             color="border-yellow-500"
             bgColor="bg-white"
           />
           <StatCard
             icon={AlertCircle}
-            label="Assigned"
+            label={t('surveyorDash.assigned')}
             value={stats.assigned}
             color="border-blue-500"
             bgColor="bg-white"
           />
           <StatCard
             icon={CheckCircle}
-            label="Resolved"
+            label={t('surveyorDash.resolved')}
             value={stats.resolved}
             color="border-green-500"
             bgColor="bg-white"
@@ -210,12 +203,8 @@ const SurveyorDashboard = () => {
           )}
         </motion.div>
 
-        {/* Bottom Navigation */}
-        <BottomNav />
       </div>
     </div>
-    <VMCFooter />
-  </>
   );
 };
 

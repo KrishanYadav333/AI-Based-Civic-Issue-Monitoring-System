@@ -54,6 +54,7 @@ const chartVariants = {
 };
 
 const AdminDashboard = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { issues, loading } = useSelector(state => state.issues);
   const { users } = useSelector(state => state.users);

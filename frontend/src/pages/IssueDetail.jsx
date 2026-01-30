@@ -3,10 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Calendar, Tag, AlertCircle, ArrowLeft, ExternalLink } from 'lucide-react';
-import TopUtilityBar from '../components/common/TopUtilityBar';
-import VMCHeader from '../components/common/VMCHeader';
-import VMCFooter from '../components/common/VMCFooter';
-import BottomNav from '../components/surveyor/BottomNav';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -71,10 +67,7 @@ export default function IssueDetail() {
   };
 
   return (
-    <>
-      <TopUtilityBar />
-      <VMCHeader />
-      <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50 pb-24">
       {/* Header */}
       <div className="bg-[#0a2647] text-white px-6 py-4 shadow-lg">
         <button
@@ -246,11 +239,6 @@ export default function IssueDetail() {
           </div>
         )}
       </div>
-
-      {/* Bottom Navigation */}
-      <BottomNav />
     </div>
-    <VMCFooter />
-    </>
   );
 }

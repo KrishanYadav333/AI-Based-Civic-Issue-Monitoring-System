@@ -44,10 +44,10 @@ const Navbar = ({ sidebarOpen, setSidebarOpen, onSearch }) => {
               className="flex items-center gap-2 px-3 py-2 hover:bg-slate-100 rounded-sm transition-all border border-slate-200"
             >
               <div className="w-8 h-8 bg-[#0056b3] rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                {user?.name?.charAt(0) || 'A'}
+                {user?.username?.charAt(0)?.toUpperCase() || user?.name?.charAt(0)?.toUpperCase() || (user?.role === 'admin' ? 'A' : user?.role === 'engineer' ? 'E' : 'S')}
               </div>
               <span className="hidden sm:inline text-sm font-medium text-[#003366]">
-                Admin User
+                {user?.username || (user?.role === 'admin' ? 'Admin User' : user?.role === 'engineer' ? 'Engineer' : 'Surveyor')}
               </span>
             </button>
 

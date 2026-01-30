@@ -6,10 +6,6 @@ import { issueService } from '../services/api';
 import { fetchIssues } from '../store/issueSlice';
 import { motion } from 'framer-motion';
 import { Camera, MapPin, FileText, AlertCircle, Upload, X, CheckCircle } from 'lucide-react';
-import TopUtilityBar from '../components/common/TopUtilityBar';
-import VMCHeader from '../components/common/VMCHeader';
-import VMCFooter from '../components/common/VMCFooter';
-import BottomNav from '../components/surveyor/BottomNav';
 
 const ISSUE_TYPES = [
   { value: 'pothole', label: '🕳️ Pothole', icon: '🕳️' },
@@ -48,6 +44,9 @@ const ReportIssue = () => {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
+    // Auto-fetch location on page load
+    getCurrentLocation();
+    
     return () => {
       stopCamera();
     };
@@ -224,10 +223,7 @@ const ReportIssue = () => {
   };
 
   return (
-    <>
-      <TopUtilityBar />
-      <VMCHeader />
-      <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50 pb-20">
       {/* Success Popup */}
       {showSuccess && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -503,12 +499,7 @@ const ReportIssue = () => {
           </button>
         </form>
       </div>
-
-      {/* Bottom Navigation */}
-      <BottomNav />
     </div>
-    <VMCFooter />
-    </>
   );
 };
 

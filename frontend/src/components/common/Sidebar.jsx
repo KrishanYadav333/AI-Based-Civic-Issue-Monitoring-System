@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MapPin, BarChart3, Settings, Users, ClipboardList, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, MapPin, BarChart3, Settings, Users, ClipboardList, TrendingUp, Camera, FileText, User } from 'lucide-react';
 import { useSelector } from 'react-redux';
 
 const Sidebar = ({ isOpen }) => {
@@ -24,13 +24,21 @@ const Sidebar = ({ isOpen }) => {
     { icon: Settings, label: 'Settings', path: '/engineer/settings' },
   ];
 
-  const menu = user?.role === 'admin' ? adminMenu : engineerMenu;
+  const surveyorMenu = [
+    { icon: LayoutDashboard, label: 'Home', path: '/surveyor/dashboard' },
+    { icon: FileText, label: 'My Issues', path: '/surveyor/issues' },
+    { icon: Camera, label: 'Report Issue', path: '/surveyor/report-issue' },
+    { icon: User, label: 'Profile', path: '/surveyor/profile' },
+    { icon: Settings, label: 'Settings', path: '/surveyor/settings' },
+  ];
+
+  const menu = user?.role === 'admin' ? adminMenu : user?.role === 'engineer' ? engineerMenu : surveyorMenu;
 
   return (
     <aside className={`w-64 bg-white border-r border-slate-200 min-h-screen ${isOpen ? '' : 'hidden md:block'}`}>
       <div className="p-6 border-b border-slate-200">
         <h2 className="text-lg font-bold text-[#003366] uppercase tracking-wide">
-          {user?.role === 'admin' ? 'Admin Panel' : 'Engineer Panel'}
+          {user?.role === 'admin' ? 'Admin Panel' : user?.role === 'engineer' ? 'Engineer Panel' : 'Surveyor Panel'}
         </h2>
         <p className="text-xs text-slate-500 mt-1">VMC Portal</p>
       </div>
